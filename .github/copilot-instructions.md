@@ -13,6 +13,8 @@
 - Use Tailwind CSS for all styling. Do not use inline styles or other CSS frameworks.
 - Use Shadcn UI for all base UI components whenever applicable.
 - Use `lucide-react` for all icons. Do not introduce other icon libraries.
+- Do not hard-code color values. All colors must come from the pre-defined color styling in `globals.css`.
+- The top-most container of each page must use the `container` className for responsiveness.
 
 ## Shadcn UI Installation & Usage
 
@@ -39,7 +41,7 @@
 
 ## Forms & Validation
 
-- Use `react-hook-form` for all forms.
+- Use Shadcn UI form for all forms.
 - Use Zod for schema-based validation and type inference.
 - Share validation schemas between client and server when applicable.
 
