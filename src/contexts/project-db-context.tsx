@@ -3,24 +3,9 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
 // Types
-export type ComplaintCategory =
-  | "noise"
-  | "sanitation"
-  | "public_safety"
-  | "traffic"
-  | "infrastructure"
-  | "water_electricity"
-  | "domestic"
-  | "environment"
-  | "others";
-
-export type ComplaintStatus =
-  | "submitted"
-  | "under_review"
-  | "scheduled"
-  | "in_progress"
-  | "resolved"
-  | "dismissed";
+export interface Image {
+  uri: string;
+}
 
 export interface Comment {
   id: string;
@@ -31,48 +16,6 @@ export interface Comment {
   dislikes?: string[];
   createdAt: Date;
   updatedAt: Date;
-}
-
-export interface Complaint {
-  id: string;
-  title: string;
-  description: string;
-  category: ComplaintCategory;
-  status: ComplaintStatus;
-  complainantName: string;
-  complainantId: string;
-  location: {
-    latitude: number;
-    longitude: number;
-  };
-  images?: { uri: string }[];
-  likes?: string[];
-  dislikes?: string[];
-  comments?: Comment[];
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface CreateComplaintInput {
-  title: string;
-  description: string;
-  category: ComplaintCategory;
-  location: {
-    latitude: number;
-    longitude: number;
-  };
-  images?: { uri: string }[];
-}
-
-export interface UpdateComplaintInput {
-  title?: string;
-  description?: string;
-  category?: ComplaintCategory;
-  location?: {
-    latitude: number;
-    longitude: number;
-  };
-  images?: { uri: string }[];
 }
 
 export type ProjectCategory =
@@ -100,6 +43,12 @@ export interface ProjectLocation {
   address?: string;
 }
 
+export interface ProgressUpdate {
+  description: string;
+  image?: { uri: string };
+  createdAt: Date;
+}
+
 export interface Project {
   id: string;
   title: string;
@@ -107,12 +56,15 @@ export interface Project {
   category: ProjectCategory;
   status: ProjectStatus;
   startDate: Date;
-  endDate?: Date;
+  expectedCompletionDate?: Date;
+  actualCompletionDate?: Date;
   budget?: number;
   contractor?: string;
   sourceOfFunds?: string;
   location?: ProjectLocation;
-  images?: { uri: string }[];
+  images?: Image[];
+  progressPercentage: number;
+  progressUpdates?: ProgressUpdate[];
   likes?: string[];
   dislikes?: string[];
   comments?: Comment[];
@@ -126,12 +78,15 @@ export interface CreateProjectInput {
   category: ProjectCategory;
   status: ProjectStatus;
   startDate: Date;
-  endDate?: Date;
+  expectedCompletionDate?: Date;
+  actualCompletionDate?: Date;
   budget?: number;
   contractor?: string;
   sourceOfFunds?: string;
   location?: ProjectLocation;
-  images?: { uri: string }[];
+  images?: Image[];
+  progressPercentage: number;
+  progressUpdates?: ProgressUpdate[];
 }
 
 export interface UpdateProjectInput {
@@ -140,68 +95,25 @@ export interface UpdateProjectInput {
   category?: ProjectCategory;
   status?: ProjectStatus;
   startDate?: Date;
-  endDate?: Date;
+  expectedCompletionDate?: Date;
+  actualCompletionDate?: Date;
   budget?: number;
   contractor?: string;
   sourceOfFunds?: string;
   location?: ProjectLocation;
-  images?: { uri: string }[];
+  images?: Image[];
+  progressPercentage?: number;
+  progressUpdates?: ProgressUpdate[];
 }
 
 // Context types
-interface DummyDbContextType {
-  // Complaint state
-  complaints: Complaint[];
-  
-  // Complaint CRUD operations
-  getComplaints: () => Complaint[];
-  getComplaintById: (id: string) => Complaint | undefined;
-  createComplaint: (
-    input: CreateComplaintInput,
-    complainantName: string,
-    complainantId: string
-  ) => Complaint;
-  updateComplaint: (id: string, input: UpdateComplaintInput) => Complaint | null;
-  deleteComplaint: (id: string) => boolean;
-  updateComplaintStatus: (id: string, status: ComplaintStatus) => Complaint | null;
-  
-  // Complaint interaction operations
-  likeComplaint: (complaintId: string, userId: string) => boolean;
-  dislikeComplaint: (complaintId: string, userId: string) => boolean;
-  addComplaintComment: (
-    complaintId: string,
-    userId: string,
-    userName: string,
-    content: string
-  ) => Comment | null;
-  updateComplaintComment: (
-    complaintId: string,
-    commentId: string,
-    content: string
-  ) => Comment | null;
-  deleteComplaintComment: (complaintId: string, commentId: string) => boolean;
-  likeComplaintComment: (
-    complaintId: string,
-    commentId: string,
-    userId: string
-  ) => boolean;
-  dislikeComplaintComment: (
-    complaintId: string,
-    commentId: string,
-    userId: string
-  ) => boolean;
-
-  // Project state
+interface ProjectDbContextType {
   projects: Project[];
-  
-  // Project CRUD operations
   getProjects: () => Project[];
   getProjectById: (id: string) => Project | undefined;
   createProject: (input: CreateProjectInput) => Project;
   updateProject: (id: string, input: UpdateProjectInput) => Project | null;
   deleteProject: (id: string) => boolean;
-  
-  // Project interaction operations
   likeProject: (projectId: string, userId: string) => boolean;
   dislikeProject: (projectId: string, userId: string) => boolean;
   addProjectComment: (
@@ -229,155 +141,6 @@ interface DummyDbContextType {
 }
 
 // Initial dummy data
-const initialComplaints: Complaint[] = [
-  {
-    id: "c1",
-    title: "Broken Street Light on Main Road",
-    description:
-      "The street light near the corner of Main Road has been broken for two weeks. It's causing safety concerns for pedestrians at night.",
-    category: "infrastructure",
-    status: "under_review",
-    complainantName: "Juan Dela Cruz",
-    complainantId: "user1",
-    location: {
-      latitude: 14.5995,
-      longitude: 120.9842,
-    },
-    images: [{ uri: "https://example.com/streetlight.jpg" }],
-    likes: ["user2", "user3"],
-    dislikes: [],
-    comments: [
-      {
-        id: "comment1",
-        userId: "user2",
-        userName: "Maria Santos",
-        content: "I noticed this too! It's really dark at night.",
-        likes: ["user1"],
-        dislikes: [],
-        createdAt: new Date("2025-12-20T10:30:00"),
-        updatedAt: new Date("2025-12-20T10:30:00"),
-      },
-    ],
-    createdAt: new Date("2025-12-18T14:20:00"),
-    updatedAt: new Date("2025-12-19T09:15:00"),
-  },
-  {
-    id: "c2",
-    title: "Noise Complaint from Construction Site",
-    description:
-      "Construction work starting at 6 AM is causing excessive noise disturbance in the residential area.",
-    category: "noise",
-    status: "scheduled",
-    complainantName: "Maria Santos",
-    complainantId: "user2",
-    location: {
-      latitude: 14.6091,
-      longitude: 120.9896,
-    },
-    images: [],
-    likes: ["user1", "user4", "user5"],
-    dislikes: [],
-    comments: [],
-    createdAt: new Date("2025-12-19T07:15:00"),
-    updatedAt: new Date("2025-12-20T11:00:00"),
-  },
-  {
-    id: "c3",
-    title: "Overflowing Garbage Bins",
-    description:
-      "The garbage bins at the corner of Rizal Street have been overflowing for three days. This is attracting pests and creating unsanitary conditions.",
-    category: "sanitation",
-    status: "in_progress",
-    complainantName: "Pedro Reyes",
-    complainantId: "user3",
-    location: {
-      latitude: 14.5876,
-      longitude: 120.9793,
-    },
-    images: [
-      { uri: "https://example.com/garbage1.jpg" },
-      { uri: "https://example.com/garbage2.jpg" },
-    ],
-    likes: ["user1", "user2", "user4"],
-    dislikes: ["user6"],
-    comments: [
-      {
-        id: "comment2",
-        userId: "user4",
-        userName: "Ana Lopez",
-        content: "This is a health hazard. Needs immediate attention!",
-        likes: ["user1", "user2", "user3"],
-        dislikes: [],
-        createdAt: new Date("2025-12-20T15:45:00"),
-        updatedAt: new Date("2025-12-20T15:45:00"),
-      },
-      {
-        id: "comment3",
-        userId: "user5",
-        userName: "Carlos Gomez",
-        content: "The smell is unbearable.",
-        likes: ["user3"],
-        dislikes: [],
-        createdAt: new Date("2025-12-21T08:20:00"),
-        updatedAt: new Date("2025-12-21T08:20:00"),
-      },
-    ],
-    createdAt: new Date("2025-12-17T09:30:00"),
-    updatedAt: new Date("2025-12-22T14:10:00"),
-  },
-  {
-    id: "c4",
-    title: "Water Leak on Bonifacio Avenue",
-    description:
-      "There's a significant water leak from the main pipe on Bonifacio Avenue. Water is flooding the street.",
-    category: "water_electricity",
-    status: "resolved",
-    complainantName: "Rosa Martinez",
-    complainantId: "user4",
-    location: {
-      latitude: 14.5945,
-      longitude: 120.9912,
-    },
-    images: [{ uri: "https://example.com/waterleak.jpg" }],
-    likes: ["user1", "user2"],
-    dislikes: [],
-    comments: [
-      {
-        id: "comment4",
-        userId: "admin1",
-        userName: "Admin Staff",
-        content: "This has been fixed. Thank you for reporting!",
-        likes: ["user4", "user1", "user2"],
-        dislikes: [],
-        createdAt: new Date("2025-12-23T16:00:00"),
-        updatedAt: new Date("2025-12-23T16:00:00"),
-      },
-    ],
-    createdAt: new Date("2025-12-21T11:20:00"),
-    updatedAt: new Date("2025-12-23T16:30:00"),
-  },
-  {
-    id: "c5",
-    title: "Dangerous Pothole on Highway",
-    description:
-      "Large pothole on the highway entrance is causing accidents and vehicle damage.",
-    category: "public_safety",
-    status: "submitted",
-    complainantName: "Luis Fernandez",
-    complainantId: "user5",
-    location: {
-      latitude: 14.6125,
-      longitude: 120.9756,
-    },
-    images: [{ uri: "https://example.com/pothole.jpg" }],
-    likes: ["user1", "user3", "user6"],
-    dislikes: [],
-    comments: [],
-    createdAt: new Date("2025-12-22T13:45:00"),
-    updatedAt: new Date("2025-12-22T13:45:00"),
-  },
-];
-
 const initialProjects: Project[] = [
   {
     id: "p1",
@@ -387,7 +150,7 @@ const initialProjects: Project[] = [
     category: "health",
     status: "ongoing",
     startDate: new Date("2025-11-01"),
-    endDate: new Date("2026-02-28"),
+    expectedCompletionDate: new Date("2026-02-28"),
     budget: 2500000,
     contractor: "ABC Construction Corp.",
     sourceOfFunds: "Municipal Budget 2025",
@@ -399,6 +162,19 @@ const initialProjects: Project[] = [
     images: [
       { uri: "https://example.com/healthcenter1.jpg" },
       { uri: "https://example.com/healthcenter2.jpg" },
+    ],
+    progressPercentage: 65,
+    progressUpdates: [
+      {
+        description: "Foundation work completed. Starting wall construction.",
+        image: { uri: "https://example.com/progress1.jpg" },
+        createdAt: new Date("2025-11-15T10:00:00"),
+      },
+      {
+        description: "Electrical and plumbing installations in progress.",
+        image: { uri: "https://example.com/progress2.jpg" },
+        createdAt: new Date("2025-12-10T14:30:00"),
+      },
     ],
     likes: ["user1", "user2", "user3", "user4"],
     dislikes: [],
@@ -425,7 +201,7 @@ const initialProjects: Project[] = [
     category: "infrastructure",
     status: "approved",
     startDate: new Date("2026-01-15"),
-    endDate: new Date("2026-03-31"),
+    expectedCompletionDate: new Date("2026-03-31"),
     budget: 1800000,
     contractor: "LightWorks Inc.",
     sourceOfFunds: "DILG Grant",
@@ -435,6 +211,7 @@ const initialProjects: Project[] = [
       address: "Various locations across the barangay",
     },
     images: [],
+    progressPercentage: 0,
     likes: ["user1", "user2", "user5"],
     dislikes: [],
     comments: [],
@@ -449,7 +226,7 @@ const initialProjects: Project[] = [
     category: "environment",
     status: "ongoing",
     startDate: new Date("2025-10-01"),
-    endDate: new Date("2026-12-31"),
+    expectedCompletionDate: new Date("2026-12-31"),
     budget: 850000,
     contractor: "GreenEarth Solutions",
     sourceOfFunds: "Environmental Fund",
@@ -459,6 +236,14 @@ const initialProjects: Project[] = [
       address: "Barangay-wide implementation",
     },
     images: [{ uri: "https://example.com/recycling.jpg" }],
+    progressPercentage: 40,
+    progressUpdates: [
+      {
+        description: "Distributed color-coded bins to Zone 1 and Zone 2.",
+        image: { uri: "https://example.com/bins-distribution.jpg" },
+        createdAt: new Date("2025-10-20T09:00:00"),
+      },
+    ],
     likes: ["user2", "user3", "user4", "user5", "user6"],
     dislikes: [],
     comments: [
@@ -494,6 +279,7 @@ const initialProjects: Project[] = [
     category: "sports_culture",
     status: "planned",
     startDate: new Date("2026-06-01"),
+    expectedCompletionDate: new Date("2027-03-31"),
     budget: 5000000,
     sourceOfFunds: "Provincial Development Fund",
     location: {
@@ -502,6 +288,7 @@ const initialProjects: Project[] = [
       address: "Corner of Sports Ave and Recreation St.",
     },
     images: [{ uri: "https://example.com/sports-plan.jpg" }],
+    progressPercentage: 0,
     likes: ["user1", "user3", "user5"],
     dislikes: [],
     comments: [],
@@ -516,10 +303,18 @@ const initialProjects: Project[] = [
     category: "education",
     status: "ongoing",
     startDate: new Date("2025-06-01"),
-    endDate: new Date("2026-05-31"),
+    expectedCompletionDate: new Date("2026-05-31"),
     budget: 1200000,
     sourceOfFunds: "Barangay Development Fund",
     images: [],
+    progressPercentage: 80,
+    progressUpdates: [
+      {
+        description:
+          "Scholarship applications reviewed. 100 students selected and receiving assistance.",
+        createdAt: new Date("2025-06-20T11:00:00"),
+      },
+    ],
     likes: ["user1", "user2", "user3", "user4", "user5", "user6"],
     dislikes: [],
     comments: [
@@ -545,7 +340,8 @@ const initialProjects: Project[] = [
     category: "disaster_preparedness",
     status: "completed",
     startDate: new Date("2025-03-01"),
-    endDate: new Date("2025-10-31"),
+    expectedCompletionDate: new Date("2025-10-31"),
+    actualCompletionDate: new Date("2025-10-28"),
     budget: 3200000,
     contractor: "FloodSafe Engineering",
     sourceOfFunds: "Disaster Risk Reduction Fund",
@@ -558,6 +354,26 @@ const initialProjects: Project[] = [
       { uri: "https://example.com/drainage1.jpg" },
       { uri: "https://example.com/drainage2.jpg" },
       { uri: "https://example.com/drainage3.jpg" },
+    ],
+    progressPercentage: 100,
+    progressUpdates: [
+      {
+        description:
+          "Excavation and drainage pipe installation in Zone 3 completed.",
+        image: { uri: "https://example.com/zone3-progress.jpg" },
+        createdAt: new Date("2025-05-15T13:00:00"),
+      },
+      {
+        description:
+          "Zone 4 flood control infrastructure completed. Final testing in progress.",
+        image: { uri: "https://example.com/zone4-progress.jpg" },
+        createdAt: new Date("2025-09-20T10:30:00"),
+      },
+      {
+        description: "All work completed successfully. System operational.",
+        image: { uri: "https://example.com/completed-system.jpg" },
+        createdAt: new Date("2025-10-28T16:00:00"),
+      },
     ],
     likes: ["user1", "user2", "user3"],
     dislikes: [],
@@ -579,338 +395,18 @@ const initialProjects: Project[] = [
 ];
 
 // Create Context
-const DummyDbContext = createContext<DummyDbContextType | undefined>(undefined);
+const ProjectDbContext = createContext<ProjectDbContextType | undefined>(
+  undefined
+);
 
 // Provider Component
-export function DummyDbProvider({ children }: { children: ReactNode }) {
-  const [complaints, setComplaints] = useState<Complaint[]>(initialComplaints);
+export function ProjectDbProvider({ children }: { children: ReactNode }) {
   const [projects, setProjects] = useState<Project[]>(initialProjects);
 
   // Helper function to generate unique IDs
   const generateId = (prefix: string): string => {
     return `${prefix}${Date.now()}${Math.random().toString(36).substr(2, 9)}`;
   };
-
-  // ========== COMPLAINT CRUD OPERATIONS ==========
-
-  const getComplaints = (): Complaint[] => {
-    return complaints;
-  };
-
-  const getComplaintById = (id: string): Complaint | undefined => {
-    return complaints.find((complaint) => complaint.id === id);
-  };
-
-  const createComplaint = (
-    input: CreateComplaintInput,
-    complainantName: string,
-    complainantId: string
-  ): Complaint => {
-    const newComplaint: Complaint = {
-      id: generateId("c"),
-      ...input,
-      complainantName,
-      complainantId,
-      status: "submitted",
-      likes: [],
-      dislikes: [],
-      comments: [],
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-
-    setComplaints((prev) => [...prev, newComplaint]);
-    return newComplaint;
-  };
-
-  const updateComplaint = (
-    id: string,
-    input: UpdateComplaintInput
-  ): Complaint | null => {
-    let updatedComplaint: Complaint | null = null;
-
-    setComplaints((prev) =>
-      prev.map((complaint) => {
-        if (complaint.id === id) {
-          updatedComplaint = {
-            ...complaint,
-            ...input,
-            updatedAt: new Date(),
-          };
-          return updatedComplaint;
-        }
-        return complaint;
-      })
-    );
-
-    return updatedComplaint;
-  };
-
-  const deleteComplaint = (id: string): boolean => {
-    const initialLength = complaints.length;
-    setComplaints((prev) => prev.filter((complaint) => complaint.id !== id));
-    return complaints.length !== initialLength;
-  };
-
-  const updateComplaintStatus = (
-    id: string,
-    status: ComplaintStatus
-  ): Complaint | null => {
-    return updateComplaint(id, { status } as UpdateComplaintInput);
-  };
-
-  // ========== COMPLAINT INTERACTION OPERATIONS ==========
-
-  const likeComplaint = (complaintId: string, userId: string): boolean => {
-    let success = false;
-
-    setComplaints((prev) =>
-      prev.map((complaint) => {
-        if (complaint.id === complaintId) {
-          const likes = complaint.likes || [];
-          const dislikes = complaint.dislikes || [];
-
-          // Remove from dislikes if present
-          const newDislikes = dislikes.filter((id) => id !== userId);
-
-          // Toggle like
-          const newLikes = likes.includes(userId)
-            ? likes.filter((id) => id !== userId)
-            : [...likes, userId];
-
-          success = true;
-          return {
-            ...complaint,
-            likes: newLikes,
-            dislikes: newDislikes,
-            updatedAt: new Date(),
-          };
-        }
-        return complaint;
-      })
-    );
-
-    return success;
-  };
-
-  const dislikeComplaint = (complaintId: string, userId: string): boolean => {
-    let success = false;
-
-    setComplaints((prev) =>
-      prev.map((complaint) => {
-        if (complaint.id === complaintId) {
-          const likes = complaint.likes || [];
-          const dislikes = complaint.dislikes || [];
-
-          // Remove from likes if present
-          const newLikes = likes.filter((id) => id !== userId);
-
-          // Toggle dislike
-          const newDislikes = dislikes.includes(userId)
-            ? dislikes.filter((id) => id !== userId)
-            : [...dislikes, userId];
-
-          success = true;
-          return {
-            ...complaint,
-            likes: newLikes,
-            dislikes: newDislikes,
-            updatedAt: new Date(),
-          };
-        }
-        return complaint;
-      })
-    );
-
-    return success;
-  };
-
-  const addComplaintComment = (
-    complaintId: string,
-    userId: string,
-    userName: string,
-    content: string
-  ): Comment | null => {
-    let newComment: Comment | null = null;
-
-    setComplaints((prev) =>
-      prev.map((complaint) => {
-        if (complaint.id === complaintId) {
-          newComment = {
-            id: generateId("comment"),
-            userId,
-            userName,
-            content,
-            likes: [],
-            dislikes: [],
-            createdAt: new Date(),
-            updatedAt: new Date(),
-          };
-
-          return {
-            ...complaint,
-            comments: [...(complaint.comments || []), newComment],
-            updatedAt: new Date(),
-          };
-        }
-        return complaint;
-      })
-    );
-
-    return newComment;
-  };
-
-  const updateComplaintComment = (
-    complaintId: string,
-    commentId: string,
-    content: string
-  ): Comment | null => {
-    let updatedComment: Comment | null = null;
-
-    setComplaints((prev) =>
-      prev.map((complaint) => {
-        if (complaint.id === complaintId) {
-          const updatedComments = (complaint.comments || []).map((comment) => {
-            if (comment.id === commentId) {
-              updatedComment = {
-                ...comment,
-                content,
-                updatedAt: new Date(),
-              };
-              return updatedComment;
-            }
-            return comment;
-          });
-
-          return {
-            ...complaint,
-            comments: updatedComments,
-            updatedAt: new Date(),
-          };
-        }
-        return complaint;
-      })
-    );
-
-    return updatedComment;
-  };
-
-  const deleteComplaintComment = (
-    complaintId: string,
-    commentId: string
-  ): boolean => {
-    let success = false;
-
-    setComplaints((prev) =>
-      prev.map((complaint) => {
-        if (complaint.id === complaintId) {
-          const filteredComments = (complaint.comments || []).filter(
-            (comment) => comment.id !== commentId
-          );
-          success = filteredComments.length !== (complaint.comments || []).length;
-
-          return {
-            ...complaint,
-            comments: filteredComments,
-            updatedAt: new Date(),
-          };
-        }
-        return complaint;
-      })
-    );
-
-    return success;
-  };
-
-  const likeComplaintComment = (
-    complaintId: string,
-    commentId: string,
-    userId: string
-  ): boolean => {
-    let success = false;
-
-    setComplaints((prev) =>
-      prev.map((complaint) => {
-        if (complaint.id === complaintId) {
-          const updatedComments = (complaint.comments || []).map((comment) => {
-            if (comment.id === commentId) {
-              const likes = comment.likes || [];
-              const dislikes = comment.dislikes || [];
-
-              const newDislikes = dislikes.filter((id) => id !== userId);
-              const newLikes = likes.includes(userId)
-                ? likes.filter((id) => id !== userId)
-                : [...likes, userId];
-
-              success = true;
-              return {
-                ...comment,
-                likes: newLikes,
-                dislikes: newDislikes,
-                updatedAt: new Date(),
-              };
-            }
-            return comment;
-          });
-
-          return {
-            ...complaint,
-            comments: updatedComments,
-            updatedAt: new Date(),
-          };
-        }
-        return complaint;
-      })
-    );
-
-    return success;
-  };
-
-  const dislikeComplaintComment = (
-    complaintId: string,
-    commentId: string,
-    userId: string
-  ): boolean => {
-    let success = false;
-
-    setComplaints((prev) =>
-      prev.map((complaint) => {
-        if (complaint.id === complaintId) {
-          const updatedComments = (complaint.comments || []).map((comment) => {
-            if (comment.id === commentId) {
-              const likes = comment.likes || [];
-              const dislikes = comment.dislikes || [];
-
-              const newLikes = likes.filter((id) => id !== userId);
-              const newDislikes = dislikes.includes(userId)
-                ? dislikes.filter((id) => id !== userId)
-                : [...dislikes, userId];
-
-              success = true;
-              return {
-                ...comment,
-                likes: newLikes,
-                dislikes: newDislikes,
-                updatedAt: new Date(),
-              };
-            }
-            return comment;
-          });
-
-          return {
-            ...complaint,
-            comments: updatedComments,
-            updatedAt: new Date(),
-          };
-        }
-        return complaint;
-      })
-    );
-
-    return success;
-  };
-
-  // ========== PROJECT CRUD OPERATIONS ==========
 
   const getProjects = (): Project[] => {
     return projects;
@@ -924,6 +420,7 @@ export function DummyDbProvider({ children }: { children: ReactNode }) {
     const newProject: Project = {
       id: generateId("p"),
       ...input,
+      progressPercentage: input.progressPercentage ?? 0,
       likes: [],
       dislikes: [],
       comments: [],
@@ -963,8 +460,6 @@ export function DummyDbProvider({ children }: { children: ReactNode }) {
     setProjects((prev) => prev.filter((project) => project.id !== id));
     return projects.length !== initialLength;
   };
-
-  // ========== PROJECT INTERACTION OPERATIONS ==========
 
   const likeProject = (projectId: string, userId: string): boolean => {
     let success = false;
@@ -1209,38 +704,13 @@ export function DummyDbProvider({ children }: { children: ReactNode }) {
     return success;
   };
 
-  const value: DummyDbContextType = {
-    // Complaint state
-    complaints,
-    
-    // Complaint CRUD operations
-    getComplaints,
-    getComplaintById,
-    createComplaint,
-    updateComplaint,
-    deleteComplaint,
-    updateComplaintStatus,
-    
-    // Complaint interaction operations
-    likeComplaint,
-    dislikeComplaint,
-    addComplaintComment,
-    updateComplaintComment,
-    deleteComplaintComment,
-    likeComplaintComment,
-    dislikeComplaintComment,
-
-    // Project state
+  const value: ProjectDbContextType = {
     projects,
-    
-    // Project CRUD operations
     getProjects,
     getProjectById,
     createProject,
     updateProject,
     deleteProject,
-    
-    // Project interaction operations
     likeProject,
     dislikeProject,
     addProjectComment,
@@ -1251,15 +721,17 @@ export function DummyDbProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <DummyDbContext.Provider value={value}>{children}</DummyDbContext.Provider>
+    <ProjectDbContext.Provider value={value}>
+      {children}
+    </ProjectDbContext.Provider>
   );
 }
 
 // Custom hook to use the context
-export function useDummyDb() {
-  const context = useContext(DummyDbContext);
+export function useProjectDb() {
+  const context = useContext(ProjectDbContext);
   if (context === undefined) {
-    throw new Error("useDummyDb must be used within a DummyDbProvider");
+    throw new Error("useProjectDb must be used within a ProjectDbProvider");
   }
   return context;
 }

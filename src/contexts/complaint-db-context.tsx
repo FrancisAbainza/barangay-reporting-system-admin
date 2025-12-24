@@ -1,0 +1,654 @@
+"use client";
+
+import React, { createContext, useContext, useState, ReactNode } from "react";
+
+// Types
+export interface Image {
+  uri: string;
+}
+
+export interface ResolutionDetail {
+  description: string;
+  budget?: number;
+  images?: Image[];
+}
+
+export type ComplaintCategory =
+  | "noise"
+  | "sanitation"
+  | "public_safety"
+  | "traffic"
+  | "infrastructure"
+  | "water_electricity"
+  | "domestic"
+  | "environment"
+  | "others";
+
+export type ComplaintStatus =
+  | "submitted"
+  | "under_review"
+  | "scheduled"
+  | "in_progress"
+  | "resolved"
+  | "dismissed";
+
+export interface Comment {
+  id: string;
+  userId: string;
+  userName: string;
+  content: string;
+  likes?: string[];
+  dislikes?: string[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Complaint {
+  id: string;
+  title: string;
+  description: string;
+  category: ComplaintCategory;
+  status: ComplaintStatus;
+  priority: "low" | "medium" | "high" | "urgent";
+  complainantName: string;
+  complainantId: string;
+  location: {
+    latitude: number;
+    longitude: number;
+  };
+  images?: Image[];
+  resolutionDetails?: ResolutionDetail;
+  resolvedAt?: Date;
+  likes?: string[];
+  dislikes?: string[];
+  comments?: Comment[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface CreateComplaintInput {
+  title: string;
+  description: string;
+  category: ComplaintCategory;
+  location: {
+    latitude: number;
+    longitude: number;
+  };
+  images?: Image[];
+}
+
+export interface UpdateComplaintInput {
+  title?: string;
+  description?: string;
+  category?: ComplaintCategory;
+  location?: {
+    latitude: number;
+    longitude: number;
+  };
+  images?: Image[];
+}
+
+// Context types
+interface ComplaintDbContextType {
+  complaints: Complaint[];
+  getComplaints: () => Complaint[];
+  getComplaintById: (id: string) => Complaint | undefined;
+  createComplaint: (
+    input: CreateComplaintInput,
+    complainantName: string,
+    complainantId: string
+  ) => Complaint;
+  updateComplaint: (
+    id: string,
+    input: UpdateComplaintInput
+  ) => Complaint | null;
+  deleteComplaint: (id: string) => boolean;
+  updateComplaintStatus: (
+    id: string,
+    status: ComplaintStatus
+  ) => Complaint | null;
+  likeComplaint: (complaintId: string, userId: string) => boolean;
+  dislikeComplaint: (complaintId: string, userId: string) => boolean;
+  addComplaintComment: (
+    complaintId: string,
+    userId: string,
+    userName: string,
+    content: string
+  ) => Comment | null;
+  updateComplaintComment: (
+    complaintId: string,
+    commentId: string,
+    content: string
+  ) => Comment | null;
+  deleteComplaintComment: (complaintId: string, commentId: string) => boolean;
+  likeComplaintComment: (
+    complaintId: string,
+    commentId: string,
+    userId: string
+  ) => boolean;
+  dislikeComplaintComment: (
+    complaintId: string,
+    commentId: string,
+    userId: string
+  ) => boolean;
+}
+
+// Initial dummy data
+const initialComplaints: Complaint[] = [
+  {
+    id: "c1",
+    title: "Broken Street Light on Main Road",
+    description:
+      "The street light near the corner of Main Road has been broken for two weeks. It's causing safety concerns for pedestrians at night.",
+    category: "infrastructure",
+    status: "under_review",
+    priority: "high",
+    complainantName: "Juan Dela Cruz",
+    complainantId: "user1",
+    location: {
+      latitude: 14.5995,
+      longitude: 120.9842,
+    },
+    images: [{ uri: "https://example.com/streetlight.jpg" }],
+    likes: ["user2", "user3"],
+    dislikes: [],
+    comments: [
+      {
+        id: "comment1",
+        userId: "user2",
+        userName: "Maria Santos",
+        content: "I noticed this too! It's really dark at night.",
+        likes: ["user1"],
+        dislikes: [],
+        createdAt: new Date("2025-12-20T10:30:00"),
+        updatedAt: new Date("2025-12-20T10:30:00"),
+      },
+    ],
+    createdAt: new Date("2025-12-18T14:20:00"),
+    updatedAt: new Date("2025-12-19T09:15:00"),
+  },
+  {
+    id: "c2",
+    title: "Noise Complaint from Construction Site",
+    description:
+      "Construction work starting at 6 AM is causing excessive noise disturbance in the residential area.",
+    category: "noise",
+    status: "scheduled",
+    priority: "medium",
+    complainantName: "Maria Santos",
+    complainantId: "user2",
+    location: {
+      latitude: 14.6091,
+      longitude: 120.9896,
+    },
+    images: [],
+    likes: ["user1", "user4", "user5"],
+    dislikes: [],
+    comments: [],
+    createdAt: new Date("2025-12-19T07:15:00"),
+    updatedAt: new Date("2025-12-20T11:00:00"),
+  },
+  {
+    id: "c3",
+    title: "Overflowing Garbage Bins",
+    description:
+      "The garbage bins at the corner of Rizal Street have been overflowing for three days. This is attracting pests and creating unsanitary conditions.",
+    category: "sanitation",
+    status: "in_progress",
+    priority: "urgent",
+    complainantName: "Pedro Reyes",
+    complainantId: "user3",
+    location: {
+      latitude: 14.5876,
+      longitude: 120.9793,
+    },
+    images: [
+      { uri: "https://example.com/garbage1.jpg" },
+      { uri: "https://example.com/garbage2.jpg" },
+    ],
+    likes: ["user1", "user2", "user4"],
+    dislikes: ["user6"],
+    comments: [
+      {
+        id: "comment2",
+        userId: "user4",
+        userName: "Ana Lopez",
+        content: "This is a health hazard. Needs immediate attention!",
+        likes: ["user1", "user2", "user3"],
+        dislikes: [],
+        createdAt: new Date("2025-12-20T15:45:00"),
+        updatedAt: new Date("2025-12-20T15:45:00"),
+      },
+      {
+        id: "comment3",
+        userId: "user5",
+        userName: "Carlos Gomez",
+        content: "The smell is unbearable.",
+        likes: ["user3"],
+        dislikes: [],
+        createdAt: new Date("2025-12-21T08:20:00"),
+        updatedAt: new Date("2025-12-21T08:20:00"),
+      },
+    ],
+    createdAt: new Date("2025-12-17T09:30:00"),
+    updatedAt: new Date("2025-12-22T14:10:00"),
+  },
+  {
+    id: "c4",
+    title: "Water Leak on Bonifacio Avenue",
+    description:
+      "There's a significant water leak from the main pipe on Bonifacio Avenue. Water is flooding the street.",
+    category: "water_electricity",
+    status: "resolved",
+    priority: "urgent",
+    complainantName: "Rosa Martinez",
+    complainantId: "user4",
+    location: {
+      latitude: 14.5945,
+      longitude: 120.9912,
+    },
+    images: [{ uri: "https://example.com/waterleak.jpg" }],
+    resolutionDetails: {
+      description:
+        "Replaced the damaged section of the main water pipe. Repairs completed successfully.",
+      budget: 15000,
+      images: [{ uri: "https://example.com/repair-complete.jpg" }],
+    },
+    resolvedAt: new Date("2025-12-23T16:30:00"),
+    likes: ["user1", "user2"],
+    dislikes: [],
+    comments: [
+      {
+        id: "comment4",
+        userId: "admin1",
+        userName: "Admin Staff",
+        content: "This has been fixed. Thank you for reporting!",
+        likes: ["user4", "user1", "user2"],
+        dislikes: [],
+        createdAt: new Date("2025-12-23T16:00:00"),
+        updatedAt: new Date("2025-12-23T16:00:00"),
+      },
+    ],
+    createdAt: new Date("2025-12-21T11:20:00"),
+    updatedAt: new Date("2025-12-23T16:30:00"),
+  },
+  {
+    id: "c5",
+    title: "Dangerous Pothole on Highway",
+    description:
+      "Large pothole on the highway entrance is causing accidents and vehicle damage.",
+    category: "public_safety",
+    status: "submitted",
+    priority: "high",
+    complainantName: "Luis Fernandez",
+    complainantId: "user5",
+    location: {
+      latitude: 14.6125,
+      longitude: 120.9756,
+    },
+    images: [{ uri: "https://example.com/pothole.jpg" }],
+    likes: ["user1", "user3", "user6"],
+    dislikes: [],
+    comments: [],
+    createdAt: new Date("2025-12-22T13:45:00"),
+    updatedAt: new Date("2025-12-22T13:45:00"),
+  },
+];
+
+// Create Context
+const ComplaintDbContext = createContext<ComplaintDbContextType | undefined>(
+  undefined
+);
+
+// Provider Component
+export function ComplaintDbProvider({ children }: { children: ReactNode }) {
+  const [complaints, setComplaints] = useState<Complaint[]>(initialComplaints);
+
+  // Helper function to generate unique IDs
+  const generateId = (prefix: string): string => {
+    return `${prefix}${Date.now()}${Math.random().toString(36).substr(2, 9)}`;
+  };
+
+  const getComplaints = (): Complaint[] => {
+    return complaints;
+  };
+
+  const getComplaintById = (id: string): Complaint | undefined => {
+    return complaints.find((complaint) => complaint.id === id);
+  };
+
+  const createComplaint = (
+    input: CreateComplaintInput,
+    complainantName: string,
+    complainantId: string
+  ): Complaint => {
+    const newComplaint: Complaint = {
+      id: generateId("c"),
+      ...input,
+      complainantName,
+      complainantId,
+      status: "submitted",
+      priority: "medium",
+      likes: [],
+      dislikes: [],
+      comments: [],
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    setComplaints((prev) => [...prev, newComplaint]);
+    return newComplaint;
+  };
+
+  const updateComplaint = (
+    id: string,
+    input: UpdateComplaintInput
+  ): Complaint | null => {
+    let updatedComplaint: Complaint | null = null;
+
+    setComplaints((prev) =>
+      prev.map((complaint) => {
+        if (complaint.id === id) {
+          updatedComplaint = {
+            ...complaint,
+            ...input,
+            updatedAt: new Date(),
+          };
+          return updatedComplaint;
+        }
+        return complaint;
+      })
+    );
+
+    return updatedComplaint;
+  };
+
+  const deleteComplaint = (id: string): boolean => {
+    const initialLength = complaints.length;
+    setComplaints((prev) => prev.filter((complaint) => complaint.id !== id));
+    return complaints.length !== initialLength;
+  };
+
+  const updateComplaintStatus = (
+    id: string,
+    status: ComplaintStatus
+  ): Complaint | null => {
+    return updateComplaint(id, { status } as UpdateComplaintInput);
+  };
+
+  const likeComplaint = (complaintId: string, userId: string): boolean => {
+    let success = false;
+
+    setComplaints((prev) =>
+      prev.map((complaint) => {
+        if (complaint.id === complaintId) {
+          const likes = complaint.likes || [];
+          const dislikes = complaint.dislikes || [];
+
+          const newDislikes = dislikes.filter((id) => id !== userId);
+          const newLikes = likes.includes(userId)
+            ? likes.filter((id) => id !== userId)
+            : [...likes, userId];
+
+          success = true;
+          return {
+            ...complaint,
+            likes: newLikes,
+            dislikes: newDislikes,
+            updatedAt: new Date(),
+          };
+        }
+        return complaint;
+      })
+    );
+
+    return success;
+  };
+
+  const dislikeComplaint = (complaintId: string, userId: string): boolean => {
+    let success = false;
+
+    setComplaints((prev) =>
+      prev.map((complaint) => {
+        if (complaint.id === complaintId) {
+          const likes = complaint.likes || [];
+          const dislikes = complaint.dislikes || [];
+
+          const newLikes = likes.filter((id) => id !== userId);
+          const newDislikes = dislikes.includes(userId)
+            ? dislikes.filter((id) => id !== userId)
+            : [...dislikes, userId];
+
+          success = true;
+          return {
+            ...complaint,
+            likes: newLikes,
+            dislikes: newDislikes,
+            updatedAt: new Date(),
+          };
+        }
+        return complaint;
+      })
+    );
+
+    return success;
+  };
+
+  const addComplaintComment = (
+    complaintId: string,
+    userId: string,
+    userName: string,
+    content: string
+  ): Comment | null => {
+    let newComment: Comment | null = null;
+
+    setComplaints((prev) =>
+      prev.map((complaint) => {
+        if (complaint.id === complaintId) {
+          newComment = {
+            id: generateId("comment"),
+            userId,
+            userName,
+            content,
+            likes: [],
+            dislikes: [],
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          };
+
+          return {
+            ...complaint,
+            comments: [...(complaint.comments || []), newComment],
+            updatedAt: new Date(),
+          };
+        }
+        return complaint;
+      })
+    );
+
+    return newComment;
+  };
+
+  const updateComplaintComment = (
+    complaintId: string,
+    commentId: string,
+    content: string
+  ): Comment | null => {
+    let updatedComment: Comment | null = null;
+
+    setComplaints((prev) =>
+      prev.map((complaint) => {
+        if (complaint.id === complaintId) {
+          const updatedComments = (complaint.comments || []).map((comment) => {
+            if (comment.id === commentId) {
+              updatedComment = {
+                ...comment,
+                content,
+                updatedAt: new Date(),
+              };
+              return updatedComment;
+            }
+            return comment;
+          });
+
+          return {
+            ...complaint,
+            comments: updatedComments,
+            updatedAt: new Date(),
+          };
+        }
+        return complaint;
+      })
+    );
+
+    return updatedComment;
+  };
+
+  const deleteComplaintComment = (
+    complaintId: string,
+    commentId: string
+  ): boolean => {
+    let success = false;
+
+    setComplaints((prev) =>
+      prev.map((complaint) => {
+        if (complaint.id === complaintId) {
+          const filteredComments = (complaint.comments || []).filter(
+            (comment) => comment.id !== commentId
+          );
+          success =
+            filteredComments.length !== (complaint.comments || []).length;
+
+          return {
+            ...complaint,
+            comments: filteredComments,
+            updatedAt: new Date(),
+          };
+        }
+        return complaint;
+      })
+    );
+
+    return success;
+  };
+
+  const likeComplaintComment = (
+    complaintId: string,
+    commentId: string,
+    userId: string
+  ): boolean => {
+    let success = false;
+
+    setComplaints((prev) =>
+      prev.map((complaint) => {
+        if (complaint.id === complaintId) {
+          const updatedComments = (complaint.comments || []).map((comment) => {
+            if (comment.id === commentId) {
+              const likes = comment.likes || [];
+              const dislikes = comment.dislikes || [];
+
+              const newDislikes = dislikes.filter((id) => id !== userId);
+              const newLikes = likes.includes(userId)
+                ? likes.filter((id) => id !== userId)
+                : [...likes, userId];
+
+              success = true;
+              return {
+                ...comment,
+                likes: newLikes,
+                dislikes: newDislikes,
+                updatedAt: new Date(),
+              };
+            }
+            return comment;
+          });
+
+          return {
+            ...complaint,
+            comments: updatedComments,
+            updatedAt: new Date(),
+          };
+        }
+        return complaint;
+      })
+    );
+
+    return success;
+  };
+
+  const dislikeComplaintComment = (
+    complaintId: string,
+    commentId: string,
+    userId: string
+  ): boolean => {
+    let success = false;
+
+    setComplaints((prev) =>
+      prev.map((complaint) => {
+        if (complaint.id === complaintId) {
+          const updatedComments = (complaint.comments || []).map((comment) => {
+            if (comment.id === commentId) {
+              const likes = comment.likes || [];
+              const dislikes = comment.dislikes || [];
+
+              const newLikes = likes.filter((id) => id !== userId);
+              const newDislikes = dislikes.includes(userId)
+                ? dislikes.filter((id) => id !== userId)
+                : [...dislikes, userId];
+
+              success = true;
+              return {
+                ...comment,
+                likes: newLikes,
+                dislikes: newDislikes,
+                updatedAt: new Date(),
+              };
+            }
+            return comment;
+          });
+
+          return {
+            ...complaint,
+            comments: updatedComments,
+            updatedAt: new Date(),
+          };
+        }
+        return complaint;
+      })
+    );
+
+    return success;
+  };
+
+  const value: ComplaintDbContextType = {
+    complaints,
+    getComplaints,
+    getComplaintById,
+    createComplaint,
+    updateComplaint,
+    deleteComplaint,
+    updateComplaintStatus,
+    likeComplaint,
+    dislikeComplaint,
+    addComplaintComment,
+    updateComplaintComment,
+    deleteComplaintComment,
+    likeComplaintComment,
+    dislikeComplaintComment,
+  };
+
+  return (
+    <ComplaintDbContext.Provider value={value}>
+      {children}
+    </ComplaintDbContext.Provider>
+  );
+}
+
+// Custom hook to use the context
+export function useComplaintDb() {
+  const context = useContext(ComplaintDbContext);
+  if (context === undefined) {
+    throw new Error("useComplaintDb must be used within a ComplaintDbProvider");
+  }
+  return context;
+}
