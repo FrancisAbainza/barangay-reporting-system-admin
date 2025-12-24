@@ -12,6 +12,7 @@ export interface Comment {
   userId: string;
   userName: string;
   content: string;
+  isAdmin?: boolean;
   likes?: string[];
   dislikes?: string[];
   createdAt: Date;
@@ -120,7 +121,8 @@ interface ProjectDbContextType {
     projectId: string,
     userId: string,
     userName: string,
-    content: string
+    content: string,
+    isAdmin?: boolean
   ) => Comment | null;
   updateProjectComment: (
     projectId: string,
@@ -523,7 +525,8 @@ export function ProjectDbProvider({ children }: { children: ReactNode }) {
     projectId: string,
     userId: string,
     userName: string,
-    content: string
+    content: string,
+    isAdmin?: boolean
   ): Comment | null => {
     let newComment: Comment | null = null;
 
@@ -535,6 +538,7 @@ export function ProjectDbProvider({ children }: { children: ReactNode }) {
             userId,
             userName,
             content,
+            isAdmin,
             likes: [],
             dislikes: [],
             createdAt: new Date(),

@@ -37,6 +37,7 @@ export interface Comment {
   userId: string;
   userName: string;
   content: string;
+  isAdmin?: boolean;
   likes?: string[];
   dislikes?: string[];
   createdAt: Date;
@@ -86,6 +87,7 @@ export interface UpdateComplaintInput {
     longitude: number;
   };
   images?: Image[];
+  resolutionDetails?: ResolutionDetail;
 }
 
 // Context types
@@ -113,7 +115,8 @@ interface ComplaintDbContextType {
     complaintId: string,
     userId: string,
     userName: string,
-    content: string
+    content: string,
+    isAdmin?: boolean
   ) => Comment | null;
   updateComplaintComment: (
     complaintId: string,
@@ -263,6 +266,7 @@ const initialComplaints: Complaint[] = [
         userId: "admin1",
         userName: "Admin Staff",
         content: "This has been fixed. Thank you for reporting!",
+        isAdmin: true,
         likes: ["user4", "user1", "user2"],
         dislikes: [],
         createdAt: new Date("2025-12-23T16:00:00"),
@@ -373,7 +377,20 @@ export function ComplaintDbProvider({ children }: { children: ReactNode }) {
     id: string,
     status: ComplaintStatus
   ): Complaint | null => {
-    return updateComplaint(id, { status } as UpdateComplaintInput);
+    const updateData: UpdateComplaintInput & { status: ComplaintStatus; resolvedAt?: Date | null } = { status };
+    
+    // Set resolvedAt timestamp when marking as resolved
+    if (status === "resolved") {
+      updateData.resolvedAt = new Date();
+    } else {
+      // Clear resolvedAt if changing from resolved to another status
+      const complaint = complaints.find(c => c.id === id);
+      if (complaint?.status === "resolved") {
+        updateData.resolvedAt = null;
+      }
+    }
+    
+    return updateComplaint(id, updateData);
   };
 
   const likeComplaint = (complaintId: string, userId: string): boolean => {
@@ -438,7 +455,8 @@ export function ComplaintDbProvider({ children }: { children: ReactNode }) {
     complaintId: string,
     userId: string,
     userName: string,
-    content: string
+    content: string,
+    isAdmin?: boolean
   ): Comment | null => {
     let newComment: Comment | null = null;
 
@@ -450,6 +468,7 @@ export function ComplaintDbProvider({ children }: { children: ReactNode }) {
             userId,
             userName,
             content,
+            isAdmin,
             likes: [],
             dislikes: [],
             createdAt: new Date(),
