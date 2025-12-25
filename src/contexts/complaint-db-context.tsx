@@ -44,6 +44,28 @@ export interface Comment {
   updatedAt: Date;
 }
 
+export interface ComplaintAiAnalysis {
+  // --- Existing Logic ---
+  summary: string;
+
+  // --- Solution & Action Plan ---
+  suggestedSolution: string;        // Step-by-step fix for the problem
+  requiredResources: string[];     // Tools or materials needed (e.g., "Cere-mix", "Backhoe")
+  estimatedManpower: string;       // e.g., "2 maintenance staff", "Barangay Tanods"
+  estimatedTimeframe: string;      // AI's guess on how long the fix takes
+
+  // --- Barangay Context & Governance ---
+  departmentRouting: string;       // Which committee handles this (e.g., "Health & Sanitation")
+  budgetEstimate?: string;         // e.g., "₱1,000 - ₱5,000"
+
+  // --- Risk & Prevention ---
+  publicSafetyRisk: string;        // Immediate dangers (e.g., "Risk of electrocution")
+  preventionAdvice: string;        // How the Barangay can prevent this from happening again
+
+  commentsSentiment: 'supportive' | 'positive' | 'negative' | 'neutral'
+  commentsSummary: string; // e.g., "Most residents are concerned about the smell, while others are asking for a specific pickup schedule."
+}
+
 export interface Complaint {
   id: string;
   title: string;
@@ -63,6 +85,7 @@ export interface Complaint {
   likes?: string[];
   dislikes?: string[];
   comments?: Comment[];
+  aiAnalysis?: ComplaintAiAnalysis;
   createdAt: Date;
   updatedAt: Date;
 }
