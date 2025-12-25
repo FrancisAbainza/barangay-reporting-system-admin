@@ -1,3 +1,4 @@
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -16,7 +17,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Eye, MoreVertical, ThumbsUp, MessageSquare, Trash2 } from "lucide-react";
+import { MoreVertical, ThumbsUp, MessageSquare, Trash2 } from "lucide-react";
 import type { Complaint, ComplaintStatus, ComplaintCategory } from "@/contexts/complaint-db-context";
 
 interface ComplaintTableProps {
@@ -26,7 +27,6 @@ interface ComplaintTableProps {
   getCategoryLabel: (category: ComplaintCategory) => string;
   getCategoryBadge: (category: ComplaintCategory) => string;
   formatDate: (date: Date) => string;
-  viewComplaintDetails: (complaint: Complaint) => void;
   handleStatusChange: (complaintId: string, newStatus: ComplaintStatus) => void;
   handleDeleteComplaint: (complaintId: string) => void;
 }
@@ -38,10 +38,11 @@ export function ComplaintTable({
   getCategoryLabel,
   getCategoryBadge,
   formatDate,
-  viewComplaintDetails,
   handleStatusChange,
   handleDeleteComplaint,
 }: ComplaintTableProps) {
+  const router = useRouter();
+
   return (
     <div className="rounded-md border overflow-x-auto">
       <Table>
@@ -66,7 +67,11 @@ export function ComplaintTable({
             </TableRow>
           ) : (
             complaints.map((complaint) => (
-              <TableRow key={complaint.id}>
+              <TableRow 
+                key={complaint.id}
+                className="cursor-pointer hover:bg-muted/50"
+                onClick={() => router.push(`/admin-dashboard/complaints/${complaint.id}`)}
+              >
                 <TableCell className="font-medium">
                   <div className="truncate max-w-62.5">{complaint.title}</div>
                 </TableCell>
@@ -101,7 +106,7 @@ export function ComplaintTable({
                     </span>
                   </div>
                 </TableCell>
-                <TableCell className="text-right">
+                <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="icon">
@@ -110,11 +115,6 @@ export function ComplaintTable({
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuItem onClick={() => viewComplaintDetails(complaint)}>
-                        <Eye className="h-4 w-4 mr-2" />
-                        View Details
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
                       <DropdownMenuLabel>Update Status</DropdownMenuLabel>
                       <DropdownMenuItem
                         onClick={() => handleStatusChange(complaint.id, "under_review")}

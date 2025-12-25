@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MapPin, ThumbsUp, MessageSquare } from "lucide-react";
+import { MapPin, ThumbsUp, MessageSquare, Sparkles } from "lucide-react";
 import type { Complaint, ComplaintStatus, ComplaintCategory } from "@/contexts/complaint-db-context";
 
 interface ComplaintDetailsDialogProps {
@@ -32,6 +32,7 @@ interface ComplaintDetailsDialogProps {
   adminComment: string;
   setAdminComment: (value: string) => void;
   handleAddAdminComment: () => void;
+  handleGenerateAIAnalysis: (complaintId: string) => void;
 }
 
 export function ComplaintDetailsDialog({
@@ -47,6 +48,7 @@ export function ComplaintDetailsDialog({
   adminComment,
   setAdminComment,
   handleAddAdminComment,
+  handleGenerateAIAnalysis,
 }: ComplaintDetailsDialogProps) {
   if (!complaint) return null;
 
@@ -251,28 +253,38 @@ export function ComplaintDetailsDialog({
           </TabsContent>
         </Tabs>
 
-        <div className="flex justify-end gap-2 pt-4 border-t">
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Close
-          </Button>
-          <Select
-            value={complaint.status}
-            onValueChange={(value) =>
-              handleStatusChange(complaint.id, value as ComplaintStatus)
-            }
+        <div className="flex justify-between items-center pt-4 border-t">
+          <Button
+            variant="default"
+            onClick={() => handleGenerateAIAnalysis(complaint.id)}
+            className="gap-2"
           >
-            <SelectTrigger className="w-45">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="submitted">Submitted</SelectItem>
-              <SelectItem value="under_review">Under Review</SelectItem>
-              <SelectItem value="scheduled">Scheduled</SelectItem>
-              <SelectItem value="in_progress">In Progress</SelectItem>
-              <SelectItem value="resolved">Resolved</SelectItem>
-              <SelectItem value="dismissed">Dismissed</SelectItem>
-            </SelectContent>
-          </Select>
+            <Sparkles className="h-4 w-4" />
+            Generate AI Analysis
+          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => onOpenChange(false)}>
+              Close
+            </Button>
+            <Select
+              value={complaint.status}
+              onValueChange={(value) =>
+                handleStatusChange(complaint.id, value as ComplaintStatus)
+              }
+            >
+              <SelectTrigger className="w-45">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="submitted">Submitted</SelectItem>
+                <SelectItem value="under_review">Under Review</SelectItem>
+                <SelectItem value="scheduled">Scheduled</SelectItem>
+                <SelectItem value="in_progress">In Progress</SelectItem>
+                <SelectItem value="resolved">Resolved</SelectItem>
+                <SelectItem value="dismissed">Dismissed</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </DialogContent>
     </Dialog>

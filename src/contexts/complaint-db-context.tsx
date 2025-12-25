@@ -157,6 +157,7 @@ interface ComplaintDbContextType {
     commentId: string,
     userId: string
   ) => boolean;
+  generateAIAnalysis: (complaintId: string) => Promise<ComplaintAiAnalysis>;
 }
 
 // Initial dummy data
@@ -662,6 +663,153 @@ export function ComplaintDbProvider({ children }: { children: ReactNode }) {
     return success;
   };
 
+  const generateAIAnalysis = async (complaintId: string): Promise<ComplaintAiAnalysis> => {
+    const complaint = complaints.find((c) => c.id === complaintId);
+    
+    if (!complaint) {
+      throw new Error("Complaint not found");
+    }
+
+    // Simulate AI analysis generation with delay
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    const getCategoryLabel = (category: ComplaintCategory) => {
+      const labels: Record<ComplaintCategory, string> = {
+        noise: "Noise",
+        sanitation: "Sanitation",
+        public_safety: "Public Safety",
+        traffic: "Traffic",
+        infrastructure: "Infrastructure",
+        water_electricity: "Water/Electricity",
+        domestic: "Domestic",
+        environment: "Environment",
+        others: "Others",
+      };
+      return labels[category];
+    };
+
+    // Analyze comments sentiment
+    const analyzeCommentsSentiment = (): { sentiment: 'supportive' | 'positive' | 'negative' | 'neutral'; summary: string } => {
+      const comments = complaint.comments || [];
+      if (comments.length === 0) {
+        return {
+          sentiment: 'neutral',
+          summary: 'No community comments yet on this complaint.'
+        };
+      }
+      
+      // Simple mock sentiment analysis
+      const totalLikes = comments.reduce((sum, c) => sum + (c.likes?.length || 0), 0);
+      const avgLikes = totalLikes / comments.length;
+      
+      let sentiment: 'supportive' | 'positive' | 'negative' | 'neutral';
+      if (avgLikes >= 3) sentiment = 'supportive';
+      else if (avgLikes >= 1) sentiment = 'positive';
+      else sentiment = 'neutral';
+      
+      return {
+        sentiment,
+        summary: `${comments.length} resident${comments.length > 1 ? 's have' : ' has'} commented on this issue. Community engagement is ${sentiment}.`
+      };
+    };
+
+    const commentAnalysis = analyzeCommentsSentiment();
+
+    // Generate structured AI analysis
+    const aiAnalysis: ComplaintAiAnalysis = {
+      summary: `This ${getCategoryLabel(complaint.category).toLowerCase()} complaint titled "${complaint.title}" requires ${complaint.priority === 'urgent' || complaint.priority === 'high' ? 'immediate' : 'standard'} attention. ${complaint.description.substring(0, 100)}...`,
+      
+      suggestedSolution: complaint.category === 'infrastructure' 
+        ? '1. Conduct site inspection\n2. Assess damage extent\n3. Prepare materials and equipment\n4. Execute repairs with proper safety measures\n5. Test and verify functionality\n6. Clean up site and document completion'
+        : complaint.category === 'sanitation'
+        ? '1. Deploy sanitation team immediately\n2. Clear and clean affected area\n3. Sanitize and disinfect the location\n4. Schedule regular maintenance\n5. Monitor for recurrence\n6. Educate residents on proper waste disposal'
+        : complaint.category === 'noise'
+        ? '1. Verify noise complaint with site visit\n2. Check permits and regulations\n3. Meet with complainant and source\n4. Establish acceptable noise hours\n5. Issue warnings if necessary\n6. Follow up to ensure compliance'
+        : '1. Investigate the reported issue\n2. Document findings and evidence\n3. Consult with relevant authorities\n4. Develop action plan\n5. Implement solution\n6. Follow up with complainant',
+      
+      requiredResources: complaint.category === 'infrastructure'
+        ? ['Tools and equipment', 'Replacement parts', 'Safety gear', 'Transport vehicle']
+        : complaint.category === 'sanitation'
+        ? ['Cleaning supplies', 'Disinfectants', 'Protective equipment', 'Garbage bags', 'Collection truck']
+        : complaint.category === 'water_electricity'
+        ? ['Technical tools', 'Replacement components', 'Testing equipment', 'Safety gear']
+        : ['Basic tools', 'Documentation materials', 'Communication devices'],
+      
+      estimatedManpower: complaint.priority === 'urgent'
+        ? '4-6 personnel (emergency response team)'
+        : complaint.priority === 'high'
+        ? '3-4 personnel (priority team)'
+        : '2-3 personnel (standard team)',
+      
+      estimatedTimeframe: complaint.priority === 'urgent'
+        ? '24-48 hours (immediate response required)'
+        : complaint.priority === 'high'
+        ? '3-5 days (expedited timeline)'
+        : complaint.priority === 'medium'
+        ? '1-2 weeks (standard processing)'
+        : '2-4 weeks (routine maintenance)',
+      
+      departmentRouting: complaint.category === 'infrastructure'
+        ? 'Public Works & Infrastructure Committee'
+        : complaint.category === 'sanitation'
+        ? 'Health & Sanitation Committee'
+        : complaint.category === 'public_safety'
+        ? 'Peace & Order Committee'
+        : complaint.category === 'traffic'
+        ? 'Traffic Management Committee'
+        : complaint.category === 'water_electricity'
+        ? 'Utilities & Services Committee'
+        : complaint.category === 'environment'
+        ? 'Environmental Protection Committee'
+        : 'General Services Committee',
+      
+      budgetEstimate: complaint.priority === 'urgent'
+        ? '₱15,000 - ₱50,000'
+        : complaint.priority === 'high'
+        ? '₱10,000 - ₱30,000'
+        : '₱5,000 - ₱20,000',
+      
+      publicSafetyRisk: complaint.category === 'public_safety'
+        ? 'High - Immediate safety concerns for residents'
+        : complaint.category === 'infrastructure'
+        ? 'Medium - Potential for accidents or injuries'
+        : complaint.category === 'water_electricity'
+        ? 'Medium - Risk of service disruption or hazards'
+        : complaint.priority === 'urgent'
+        ? 'Medium - Requires prompt attention'
+        : 'Low - No immediate safety threats',
+      
+      preventionAdvice: complaint.category === 'infrastructure'
+        ? 'Implement regular maintenance schedule and quarterly infrastructure inspections. Establish early warning system for deteriorating facilities.'
+        : complaint.category === 'sanitation'
+        ? 'Increase collection frequency in high-traffic areas. Conduct community education programs on proper waste disposal. Install additional bins where needed.'
+        : complaint.category === 'noise'
+        ? 'Enforce community noise ordinances. Establish clear guidelines for construction hours. Create community awareness programs.'
+        : complaint.category === 'public_safety'
+        ? 'Enhance barangay patrol schedules. Improve lighting in vulnerable areas. Establish community watch programs.'
+        : 'Conduct regular monitoring and preventive maintenance. Establish community feedback channels for early issue detection.',
+      
+      commentsSentiment: commentAnalysis.sentiment,
+      commentsSummary: commentAnalysis.summary
+    };
+
+    // Update the complaint with the generated AI analysis
+    setComplaints((prev) =>
+      prev.map((c) => {
+        if (c.id === complaintId) {
+          return {
+            ...c,
+            aiAnalysis,
+            updatedAt: new Date(),
+          };
+        }
+        return c;
+      })
+    );
+
+    return aiAnalysis;
+  };
+
   const value: ComplaintDbContextType = {
     complaints,
     getComplaints,
@@ -677,6 +825,7 @@ export function ComplaintDbProvider({ children }: { children: ReactNode }) {
     deleteComplaintComment,
     likeComplaintComment,
     dislikeComplaintComment,
+    generateAIAnalysis,
   };
 
   return (

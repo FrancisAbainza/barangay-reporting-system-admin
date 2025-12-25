@@ -1,16 +1,17 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { useComplaintDb } from "@/contexts/complaint-db-context";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import type { Complaint, ComplaintStatus, ComplaintCategory } from "@/contexts/complaint-db-context";
 import { ComplaintStats } from "./components/complaint-stats";
 import { ComplaintFilters } from "./components/complaint-filters";
 import { ComplaintTable } from "./components/complaint-table";
-import { ComplaintDetailsDialog } from "./components/complaint-details-dialog";
 import { ResolutionDialog } from "./components/resolution-dialog";
 
 export default function ComplaintsPage() {
+  const router = useRouter();
   const { complaints, updateComplaintStatus, deleteComplaint, updateComplaint, addComplaintComment } = useComplaintDb();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilters, setStatusFilters] = useState<ComplaintStatus[]>([]);
@@ -18,12 +19,10 @@ export default function ComplaintsPage() {
   const [priorityFilters, setPriorityFilters] = useState<string[]>([]);
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
-  const [selectedComplaint, setSelectedComplaint] = useState<Complaint | null>(null);
-  const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isResolutionDialogOpen, setIsResolutionDialogOpen] = useState(false);
   const [resolutionDescription, setResolutionDescription] = useState("");
   const [resolutionBudget, setResolutionBudget] = useState("");
-  const [adminComment, setAdminComment] = useState("");
+  const [complaintIdForResolution, setComplaintIdForResolution] = useState<string | null>(null);
 
   // Statistics
   const stats = useMemo(() => {
@@ -118,91 +117,50 @@ export default function ComplaintsPage() {
   };
 
   const handleStatusChange = (complaintId: string, newStatus: ComplaintStatus) => {
-    if (newStatus === "resolved" && selectedComplaint && !selectedComplaint.resolutionDetails) {
+    const complaint = complaints.find(c => c.id === complaintId);
+    if (newStatus === "resolved" && complaint && !complaint.resolutionDetails) {
       // Open resolution dialog
+      setComplaintIdForResolution(complaintId);
       setIsResolutionDialogOpen(true);
     } else {
       // If changing from resolved to another status, clear resolution details
-      if (selectedComplaint?.status === "resolved" && newStatus !== "resolved") {
+      if (complaint?.status === "resolved" && newStatus !== "resolved") {
         updateComplaint(complaintId, {
           resolutionDetails: undefined,
         });
       }
       updateComplaintStatus(complaintId, newStatus);
-      
-      // Refresh selected complaint
-      setTimeout(() => {
-        const updatedComplaint = complaints.find(c => c.id === complaintId);
-        if (updatedComplaint) {
-          setSelectedComplaint(updatedComplaint);
-        }
-      }, 100);
     }
   };
 
   const handleResolveComplaint = () => {
-    if (!selectedComplaint || !resolutionDescription.trim()) {
+    if (!complaintIdForResolution || !resolutionDescription.trim()) {
       alert("Please provide resolution details");
       return;
     }
 
     const budget = resolutionBudget ? parseFloat(resolutionBudget) : undefined;
     
-    updateComplaint(selectedComplaint.id, {
+    updateComplaint(complaintIdForResolution, {
       resolutionDetails: {
         description: resolutionDescription,
         budget,
       },
     });
 
-    updateComplaintStatus(selectedComplaint.id, "resolved");
+    updateComplaintStatus(complaintIdForResolution, "resolved");
     
     // Reset form
     setResolutionDescription("");
     setResolutionBudget("");
+    setComplaintIdForResolution(null);
     setIsResolutionDialogOpen(false);
-    
-    // Refresh selected complaint
-    const updatedComplaint = complaints.find(c => c.id === selectedComplaint.id);
-    if (updatedComplaint) {
-      setSelectedComplaint(updatedComplaint);
-    }
-  };
-
-  const handleAddAdminComment = () => {
-    if (!selectedComplaint || !adminComment.trim()) {
-      return;
-    }
-
-    addComplaintComment(
-      selectedComplaint.id,
-      "admin1",
-      "Admin Staff",
-      adminComment,
-      true
-    );
-
-    setAdminComment("");
-    
-    // Refresh selected complaint
-    setTimeout(() => {
-      const updatedComplaint = complaints.find(c => c.id === selectedComplaint.id);
-      if (updatedComplaint) {
-        setSelectedComplaint(updatedComplaint);
-      }
-    }, 100);
   };
 
   const handleDeleteComplaint = (complaintId: string) => {
     if (confirm("Are you sure you want to delete this complaint?")) {
       deleteComplaint(complaintId);
-      setIsDetailOpen(false);
     }
-  };
-
-  const viewComplaintDetails = (complaint: Complaint) => {
-    setSelectedComplaint(complaint);
-    setIsDetailOpen(true);
   };
 
   const formatDate = (date: Date) => {
@@ -265,28 +223,11 @@ export default function ComplaintsPage() {
             getCategoryLabel={getCategoryLabel}
             getCategoryBadge={getCategoryBadge}
             formatDate={formatDate}
-            viewComplaintDetails={viewComplaintDetails}
             handleStatusChange={handleStatusChange}
             handleDeleteComplaint={handleDeleteComplaint}
           />
         </CardContent>
       </Card>
-
-      {/* Complaint Details Dialog */}
-      <ComplaintDetailsDialog
-        isOpen={isDetailOpen}
-        onOpenChange={setIsDetailOpen}
-        complaint={selectedComplaint}
-        getStatusBadge={getStatusBadge}
-        getPriorityBadge={getPriorityBadge}
-        getCategoryLabel={getCategoryLabel}
-        getCategoryBadge={getCategoryBadge}
-        formatDate={formatDate}
-        handleStatusChange={handleStatusChange}
-        adminComment={adminComment}
-        setAdminComment={setAdminComment}
-        handleAddAdminComment={handleAddAdminComment}
-      />
 
       {/* Resolution Dialog */}
       <ResolutionDialog
