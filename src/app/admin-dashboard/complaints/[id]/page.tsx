@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { useComplaintDb } from "@/contexts/complaint-db-context";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Sparkles } from "lucide-react";
+import { Sparkles, FileText, MapPin, MessageSquare } from "lucide-react";
 import type { Complaint, ComplaintStatus, ComplaintCategory, ComplaintAiAnalysis } from "@/contexts/complaint-db-context";
 import { ResolutionDialog } from "../components/resolution-dialog";
 import { ComplaintHeader } from "./components/complaint-header";
@@ -236,12 +236,21 @@ export default function ComplaintDetailsPage() {
       <Card>
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="details">Details</TabsTrigger>
-            <TabsTrigger value="location">Location</TabsTrigger>
-            <TabsTrigger value="engagement">Engagement</TabsTrigger>
+            <TabsTrigger value="details" className="gap-2">
+              <FileText className="h-4 w-4" />
+              <span className="hidden sm:inline">Details</span>
+            </TabsTrigger>
+            <TabsTrigger value="location" className="gap-2">
+              <MapPin className="h-4 w-4" />
+              <span className="hidden sm:inline">Location</span>
+            </TabsTrigger>
+            <TabsTrigger value="engagement" className="gap-2">
+              <MessageSquare className="h-4 w-4" />
+              <span className="hidden sm:inline">Engagement</span>
+            </TabsTrigger>
             <TabsTrigger value="ai-analysis" className="gap-2">
               <Sparkles className="h-4 w-4" />
-              AI Analysis
+              <span className="hidden sm:inline">AI Analysis</span>
             </TabsTrigger>
           </TabsList>
 

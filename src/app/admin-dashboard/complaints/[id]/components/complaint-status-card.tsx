@@ -67,7 +67,7 @@ export function ComplaintStatusCard({
           </Badge>
         </div>
         <Select value={status} onValueChange={(value) => onStatusChange(value as ComplaintStatus)}>
-          <SelectTrigger className="w-45">
+          <SelectTrigger className="flex-1 max-w-100">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>

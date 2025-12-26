@@ -1,5 +1,7 @@
 import { TabsContent } from "@/components/ui/tabs";
-import { FileText, User, Calendar, CheckCircle, ImageIcon, Receipt } from "lucide-react";
+import { FileText, User, Calendar, CheckCircle, ImageIcon, Receipt, X } from "lucide-react";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { useState } from "react";
 import type { Complaint } from "@/contexts/complaint-db-context";
 
 interface ComplaintDetailsTabProps {
@@ -8,6 +10,8 @@ interface ComplaintDetailsTabProps {
 }
 
 export function ComplaintDetailsTab({ complaint, formatDate }: ComplaintDetailsTabProps) {
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
   return (
     <TabsContent value="details" className="space-y-4 p-6">
       <div className="space-y-4">
@@ -58,18 +62,20 @@ export function ComplaintDetailsTab({ complaint, formatDate }: ComplaintDetailsT
               <ImageIcon className="h-4 w-4" />
               Images
             </h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
               {complaint.images.map((img, idx) => (
-                <div
+                <button
                   key={idx}
-                  className="border rounded-lg overflow-hidden"
+                  onClick={() => setSelectedImage(img.uri)}
+                  className="group relative aspect-square border rounded-lg overflow-hidden cursor-pointer transition-all hover:shadow-lg hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary"
                 >
-                  <img 
-                    src={img.uri} 
+                  <img
+                    src={img.uri}
                     alt={`Complaint image ${idx + 1}`}
-                    className="w-full h-auto object-cover"
+                    className="w-full h-full object-cover transition-transform group-hover:scale-110"
                   />
-                </div>
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
+                </button>
               ))}
             </div>
           </div>
@@ -91,6 +97,28 @@ export function ComplaintDetailsTab({ complaint, formatDate }: ComplaintDetailsT
           </div>
         )}
       </div>
+
+      {/* Image Preview Dialog */}
+      <Dialog open={selectedImage !== null} onOpenChange={() => setSelectedImage(null)}>
+        <DialogContent className="sm:max-w-4xl w-full p-0 overflow-hidden border-0">
+          <DialogTitle className="sr-only">Complaint Details</DialogTitle>
+          <div className="relative">
+            <button
+              onClick={() => setSelectedImage(null)}
+              className="absolute top-2 right-2 z-10 p-2 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors focus:outline-none focus:ring-2 focus:ring-white"
+            >
+              <X className="h-5 w-5" />
+            </button>
+            {selectedImage && (
+              <img
+                src={selectedImage}
+                alt="Full size preview"
+                className="w-full h-auto max-h-[85vh] object-contain"
+              />
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </TabsContent>
   );
 }

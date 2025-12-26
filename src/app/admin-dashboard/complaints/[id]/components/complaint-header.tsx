@@ -19,10 +19,10 @@ export function ComplaintHeader({
   isGeneratingAI,
 }: ComplaintHeaderProps) {
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex flex-col justify-between items-start gap-4 xl:flex-row">
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" onClick={onBack}>
-          <ArrowLeft className="h-4 w-4" />
+          <ArrowLeft />
         </Button>
         <div>
           <h1 className="text-3xl font-bold tracking-tight">{title}</h1>
@@ -33,10 +33,9 @@ export function ComplaintHeader({
         <Button
           onClick={onGenerateAI}
           disabled={isGeneratingAI}
-          size="lg"
-          className="gap-2 font-semibold"
+          className="gap-2"
         >
-          <Sparkles className="h-5 w-5" />
+          <Sparkles />
           {isGeneratingAI ? "Generating Analysis..." : "Generate AI Analysis"}
         </Button>
         <Button
