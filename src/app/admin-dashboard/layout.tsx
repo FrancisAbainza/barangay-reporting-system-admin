@@ -15,12 +15,12 @@ export default function DashboardLayout({
           {/* Desktop Sidebar - hidden on mobile */}
           <DashboardSidebar className="hidden md:flex" />
 
-          <SidebarInset className="flex flex-1 flex-col overflow-hidden">
+          <SidebarInset className="flex flex-1 flex-col overflow-y-auto">
             {/* Mobile Header - visible only on mobile */}
             <MobileHeader className="md:hidden" />
 
             {/* Main Content */}
-            <main className="flex flex-1 justify-center overflow-y-auto bg-background">
+            <main className="flex flex-1 justify-center">
               {children}
             </main>
           </SidebarInset>

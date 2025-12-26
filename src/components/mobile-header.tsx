@@ -62,7 +62,7 @@ export function MobileHeader({ className }: { className?: string }) {
   };
 
   return (
-    <header className={cn("flex h-16 items-center justify-between bg-sidebar px-4", className)}>
+    <header className={cn("flex items-center justify-between bg-sidebar p-4", className)}>
       <Logo />
 
       <Sheet open={open} onOpenChange={setOpen}>
