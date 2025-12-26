@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { Spinner } from "@/components/ui/spinner";
 import { 
   Sparkles, 
   RefreshCw, 
@@ -43,7 +44,7 @@ export function ComplaintAIAnalysisTab({
     <TabsContent value="ai-analysis" className="space-y-4 p-6">
       {isGenerating ? (
         <div className="flex flex-col items-center justify-center py-12 space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          <Spinner size="lg" />
           <p className="text-sm text-muted-foreground">Generating AI analysis...</p>
         </div>
       ) : analysis ? (

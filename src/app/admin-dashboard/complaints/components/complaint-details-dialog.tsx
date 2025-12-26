@@ -255,7 +255,6 @@ export function ComplaintDetailsDialog({
 
         <div className="flex justify-between items-center pt-4 border-t">
           <Button
-            variant="default"
             onClick={() => handleGenerateAIAnalysis(complaint.id)}
             className="gap-2"
           >

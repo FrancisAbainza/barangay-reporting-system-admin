@@ -15,13 +15,21 @@ import {
   Users,
   Settings,
   LogOut,
-  ChevronLeft,
-  ChevronRight,
   ShieldCheck,
 } from "lucide-react";
-import { useState } from "react";
 import { useAuth } from "@/contexts/auth-context";
 import { Button } from "@/components/ui/button";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+  SidebarTrigger,
+  useSidebar,
+} from "@/components/ui/sidebar";
 
 const menuItems = [
   {
@@ -76,20 +84,16 @@ const menuItems = [
   },
 ];
 
-export function DashboardSidebar() {
+export function DashboardSidebar({ className }: { className?: string }) {
   const pathname = usePathname();
   const { user, logout } = useAuth();
-  const [collapsed, setCollapsed] = useState(false);
+  const { state } = useSidebar();
+  const collapsed = state === "collapsed";
 
   return (
-    <aside
-      className={cn(
-        "flex h-screen flex-col border-r bg-sidebar text-sidebar-foreground transition-all duration-300",
-        collapsed ? "w-16" : "w-64"
-      )}
-    >
+    <Sidebar collapsible="icon" className={className}>
       {/* Header */}
-      <div className="flex h-16 items-center justify-between border-b border-sidebar-border px-4">
+      <SidebarHeader className="flex flex-row items-center justify-between border-b border-sidebar-border py-4">
         {!collapsed && (
           <div className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-sidebar-primary">
@@ -98,50 +102,37 @@ export function DashboardSidebar() {
             <span className="font-semibold text-sm">BRTS Admin</span>
           </div>
         )}
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setCollapsed(!collapsed)}
-          className="h-8 w-8 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-        >
-          {collapsed ? (
-            <ChevronRight className="h-4 w-4" />
-          ) : (
-            <ChevronLeft className="h-4 w-4" />
-          )}
-        </Button>
-      </div>
+        <SidebarTrigger />
+      </SidebarHeader>
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto p-2">
-        <ul className="space-y-1">
+      <SidebarContent>
+        <SidebarMenu className="p-2">
           {menuItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
 
             return (
-              <li key={item.href}>
-                <Link
-                  href={item.href}
-                  className={cn(
-                    "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
-                    isActive
-                      ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                      : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground"
-                  )}
-                  title={collapsed ? item.title : undefined}
+              <SidebarMenuItem key={item.href}>
+                <SidebarMenuButton
+                  asChild
+                  isActive={isActive}
+                  tooltip={collapsed ? item.title : undefined}
+                  className="gap-3"
                 >
-                  <Icon className="h-5 w-5 shrink-0" />
-                  {!collapsed && <span>{item.title}</span>}
-                </Link>
-              </li>
+                  <Link href={item.href}>
+                    <Icon />
+                    <span>{item.title}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             );
           })}
-        </ul>
-      </nav>
+        </SidebarMenu>
+      </SidebarContent>
 
       {/* User Section */}
-      <div className="border-t border-sidebar-border p-4">
+      <SidebarFooter className="border-t border-sidebar-border">
         {!collapsed && user && (
           <div className="mb-3 rounded-lg bg-sidebar-primary/10 p-3">
             <p className="text-sm font-medium text-sidebar-foreground">
@@ -159,10 +150,10 @@ export function DashboardSidebar() {
           )}
           title={collapsed ? "Logout" : undefined}
         >
-          <LogOut className="h-5 w-5" />
+          <LogOut />
           {!collapsed && <span>Logout</span>}
         </Button>
-      </div>
-    </aside>
+      </SidebarFooter>
+    </Sidebar>
   );
 }
