@@ -58,14 +58,17 @@ export function ComplaintDetailsTab({ complaint, formatDate }: ComplaintDetailsT
               <ImageIcon className="h-4 w-4" />
               Images
             </h4>
-            <div className="space-y-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {complaint.images.map((img, idx) => (
                 <div
                   key={idx}
-                  className="border rounded-lg p-3 text-sm text-muted-foreground w-full flex items-center gap-2"
+                  className="border rounded-lg overflow-hidden"
                 >
-                  <ImageIcon className="h-4 w-4" />
-                  Image {idx + 1}
+                  <img 
+                    src={img.uri} 
+                    alt={`Complaint image ${idx + 1}`}
+                    className="w-full h-auto object-cover"
+                  />
                 </div>
               ))}
             </div>

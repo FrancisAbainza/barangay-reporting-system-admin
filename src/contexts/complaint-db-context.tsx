@@ -32,6 +32,18 @@ export type ComplaintStatus =
   | "resolved"
   | "dismissed";
 
+export interface Reply {
+  id: string;
+  userId: string;
+  userName: string;
+  content: string;
+  isAdmin?: boolean;
+  likes?: string[];
+  dislikes?: string[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface Comment {
   id: string;
   userId: string;
@@ -40,6 +52,7 @@ export interface Comment {
   isAdmin?: boolean;
   likes?: string[];
   dislikes?: string[];
+  replies?: Reply[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -157,6 +170,37 @@ interface ComplaintDbContextType {
     commentId: string,
     userId: string
   ) => boolean;
+  addReply: (
+    complaintId: string,
+    commentId: string,
+    userId: string,
+    userName: string,
+    content: string,
+    isAdmin?: boolean
+  ) => Reply | null;
+  updateReply: (
+    complaintId: string,
+    commentId: string,
+    replyId: string,
+    content: string
+  ) => Reply | null;
+  deleteReply: (
+    complaintId: string,
+    commentId: string,
+    replyId: string
+  ) => boolean;
+  likeReply: (
+    complaintId: string,
+    commentId: string,
+    replyId: string,
+    userId: string
+  ) => boolean;
+  dislikeReply: (
+    complaintId: string,
+    commentId: string,
+    replyId: string,
+    userId: string
+  ) => boolean;
   generateAIAnalysis: (complaintId: string) => Promise<ComplaintAiAnalysis>;
 }
 
@@ -176,7 +220,11 @@ const initialComplaints: Complaint[] = [
       latitude: 14.5995,
       longitude: 120.9842,
     },
-    images: [{ uri: "https://example.com/streetlight.jpg" }],
+    images: [
+      { uri: `https://picsum.photos/seed/${Math.random()}/1280/720` },
+      { uri: `https://picsum.photos/seed/${Math.random()}/1280/720` },
+      { uri: `https://picsum.photos/seed/${Math.random()}/1280/720` },
+    ],
     likes: ["user2", "user3"],
     dislikes: [],
     comments: [
@@ -187,6 +235,19 @@ const initialComplaints: Complaint[] = [
         content: "I noticed this too! It's really dark at night.",
         likes: ["user1"],
         dislikes: [],
+        replies: [
+          {
+            id: "reply1",
+            userId: "admin1",
+            userName: "Admin Staff",
+            content: "Thank you for your feedback. We've scheduled an inspection for this week.",
+            isAdmin: true,
+            likes: ["user1", "user2"],
+            dislikes: [],
+            createdAt: new Date("2025-12-20T14:15:00"),
+            updatedAt: new Date("2025-12-20T14:15:00"),
+          },
+        ],
         createdAt: new Date("2025-12-20T10:30:00"),
         updatedAt: new Date("2025-12-20T10:30:00"),
       },
@@ -208,7 +269,7 @@ const initialComplaints: Complaint[] = [
       latitude: 14.6091,
       longitude: 120.9896,
     },
-    images: [],
+    images: [{ uri: `https://picsum.photos/seed/${Math.random()}/400/250` }],
     likes: ["user1", "user4", "user5"],
     dislikes: [],
     comments: [],
@@ -230,8 +291,8 @@ const initialComplaints: Complaint[] = [
       longitude: 120.9793,
     },
     images: [
-      { uri: "https://example.com/garbage1.jpg" },
-      { uri: "https://example.com/garbage2.jpg" },
+      { uri: `https://picsum.photos/seed/${Math.random()}/1280/720` },
+      { uri: `https://picsum.photos/seed/${Math.random()}/1280/720` },
     ],
     likes: ["user1", "user2", "user4"],
     dislikes: ["user6"],
@@ -243,6 +304,29 @@ const initialComplaints: Complaint[] = [
         content: "This is a health hazard. Needs immediate attention!",
         likes: ["user1", "user2", "user3"],
         dislikes: [],
+        replies: [
+          {
+            id: "reply2",
+            userId: "admin1",
+            userName: "Admin Staff",
+            content: "We understand your concern. Our team is currently working on this issue.",
+            isAdmin: true,
+            likes: ["user4"],
+            dislikes: [],
+            createdAt: new Date("2025-12-21T09:00:00"),
+            updatedAt: new Date("2025-12-21T09:00:00"),
+          },
+          {
+            id: "reply3",
+            userId: "user6",
+            userName: "Rosa Cruz",
+            content: "How long will it take to resolve this?",
+            likes: [],
+            dislikes: [],
+            createdAt: new Date("2025-12-21T10:30:00"),
+            updatedAt: new Date("2025-12-21T10:30:00"),
+          },
+        ],
         createdAt: new Date("2025-12-20T15:45:00"),
         updatedAt: new Date("2025-12-20T15:45:00"),
       },
@@ -253,6 +337,7 @@ const initialComplaints: Complaint[] = [
         content: "The smell is unbearable.",
         likes: ["user3"],
         dislikes: [],
+        replies: [],
         createdAt: new Date("2025-12-21T08:20:00"),
         updatedAt: new Date("2025-12-21T08:20:00"),
       },
@@ -274,12 +359,12 @@ const initialComplaints: Complaint[] = [
       latitude: 14.5945,
       longitude: 120.9912,
     },
-    images: [{ uri: "https://example.com/waterleak.jpg" }],
+    images: [{ uri: `https://picsum.photos/seed/${Math.random()}/1280/720` }],
     resolutionDetails: {
       description:
         "Replaced the damaged section of the main water pipe. Repairs completed successfully.",
       budget: 15000,
-      images: [{ uri: "https://example.com/repair-complete.jpg" }],
+      images: [{ uri: `https://picsum.photos/seed/${Math.random()}/1280/720` }],
     },
     resolvedAt: new Date("2025-12-23T16:30:00"),
     likes: ["user1", "user2"],
@@ -293,6 +378,7 @@ const initialComplaints: Complaint[] = [
         isAdmin: true,
         likes: ["user4", "user1", "user2"],
         dislikes: [],
+        replies: [],
         createdAt: new Date("2025-12-23T16:00:00"),
         updatedAt: new Date("2025-12-23T16:00:00"),
       },
@@ -314,7 +400,7 @@ const initialComplaints: Complaint[] = [
       latitude: 14.6125,
       longitude: 120.9756,
     },
-    images: [{ uri: "https://example.com/pothole.jpg" }],
+    images: [{ uri: `https://picsum.photos/seed/${Math.random()}/1280/720` }],
     likes: ["user1", "user3", "user6"],
     dislikes: [],
     comments: [],
@@ -663,6 +749,253 @@ export function ComplaintDbProvider({ children }: { children: ReactNode }) {
     return success;
   };
 
+  const addReply = (
+    complaintId: string,
+    commentId: string,
+    userId: string,
+    userName: string,
+    content: string,
+    isAdmin?: boolean
+  ): Reply | null => {
+    let newReply: Reply | null = null;
+
+    setComplaints((prev) =>
+      prev.map((complaint) => {
+        if (complaint.id === complaintId) {
+          const updatedComments = (complaint.comments || []).map((comment) => {
+            if (comment.id === commentId) {
+              newReply = {
+                id: generateId("reply"),
+                userId,
+                userName,
+                content,
+                isAdmin,
+                likes: [],
+                dislikes: [],
+                createdAt: new Date(),
+                updatedAt: new Date(),
+              };
+
+              return {
+                ...comment,
+                replies: [...(comment.replies || []), newReply],
+                updatedAt: new Date(),
+              };
+            }
+            return comment;
+          });
+
+          return {
+            ...complaint,
+            comments: updatedComments,
+            updatedAt: new Date(),
+          };
+        }
+        return complaint;
+      })
+    );
+
+    return newReply;
+  };
+
+  const updateReply = (
+    complaintId: string,
+    commentId: string,
+    replyId: string,
+    content: string
+  ): Reply | null => {
+    let updatedReply: Reply | null = null;
+
+    setComplaints((prev) =>
+      prev.map((complaint) => {
+        if (complaint.id === complaintId) {
+          const updatedComments = (complaint.comments || []).map((comment) => {
+            if (comment.id === commentId) {
+              const updatedReplies = (comment.replies || []).map((reply) => {
+                if (reply.id === replyId) {
+                  updatedReply = {
+                    ...reply,
+                    content,
+                    updatedAt: new Date(),
+                  };
+                  return updatedReply;
+                }
+                return reply;
+              });
+
+              return {
+                ...comment,
+                replies: updatedReplies,
+                updatedAt: new Date(),
+              };
+            }
+            return comment;
+          });
+
+          return {
+            ...complaint,
+            comments: updatedComments,
+            updatedAt: new Date(),
+          };
+        }
+        return complaint;
+      })
+    );
+
+    return updatedReply;
+  };
+
+  const deleteReply = (
+    complaintId: string,
+    commentId: string,
+    replyId: string
+  ): boolean => {
+    let success = false;
+
+    setComplaints((prev) =>
+      prev.map((complaint) => {
+        if (complaint.id === complaintId) {
+          const updatedComments = (complaint.comments || []).map((comment) => {
+            if (comment.id === commentId) {
+              const filteredReplies = (comment.replies || []).filter(
+                (reply) => reply.id !== replyId
+              );
+              success = filteredReplies.length !== (comment.replies || []).length;
+
+              return {
+                ...comment,
+                replies: filteredReplies,
+                updatedAt: new Date(),
+              };
+            }
+            return comment;
+          });
+
+          return {
+            ...complaint,
+            comments: updatedComments,
+            updatedAt: new Date(),
+          };
+        }
+        return complaint;
+      })
+    );
+
+    return success;
+  };
+
+  const likeReply = (
+    complaintId: string,
+    commentId: string,
+    replyId: string,
+    userId: string
+  ): boolean => {
+    let success = false;
+
+    setComplaints((prev) =>
+      prev.map((complaint) => {
+        if (complaint.id === complaintId) {
+          const updatedComments = (complaint.comments || []).map((comment) => {
+            if (comment.id === commentId) {
+              const updatedReplies = (comment.replies || []).map((reply) => {
+                if (reply.id === replyId) {
+                  const likes = reply.likes || [];
+                  const dislikes = reply.dislikes || [];
+
+                  const newDislikes = dislikes.filter((id) => id !== userId);
+                  const newLikes = likes.includes(userId)
+                    ? likes.filter((id) => id !== userId)
+                    : [...likes, userId];
+
+                  success = true;
+                  return {
+                    ...reply,
+                    likes: newLikes,
+                    dislikes: newDislikes,
+                    updatedAt: new Date(),
+                  };
+                }
+                return reply;
+              });
+
+              return {
+                ...comment,
+                replies: updatedReplies,
+                updatedAt: new Date(),
+              };
+            }
+            return comment;
+          });
+
+          return {
+            ...complaint,
+            comments: updatedComments,
+            updatedAt: new Date(),
+          };
+        }
+        return complaint;
+      })
+    );
+
+    return success;
+  };
+
+  const dislikeReply = (
+    complaintId: string,
+    commentId: string,
+    replyId: string,
+    userId: string
+  ): boolean => {
+    let success = false;
+
+    setComplaints((prev) =>
+      prev.map((complaint) => {
+        if (complaint.id === complaintId) {
+          const updatedComments = (complaint.comments || []).map((comment) => {
+            if (comment.id === commentId) {
+              const updatedReplies = (comment.replies || []).map((reply) => {
+                if (reply.id === replyId) {
+                  const likes = reply.likes || [];
+                  const dislikes = reply.dislikes || [];
+
+                  const newLikes = likes.filter((id) => id !== userId);
+                  const newDislikes = dislikes.includes(userId)
+                    ? dislikes.filter((id) => id !== userId)
+                    : [...dislikes, userId];
+
+                  success = true;
+                  return {
+                    ...reply,
+                    likes: newLikes,
+                    dislikes: newDislikes,
+                    updatedAt: new Date(),
+                  };
+                }
+                return reply;
+              });
+
+              return {
+                ...comment,
+                replies: updatedReplies,
+                updatedAt: new Date(),
+              };
+            }
+            return comment;
+          });
+
+          return {
+            ...complaint,
+            comments: updatedComments,
+            updatedAt: new Date(),
+          };
+        }
+        return complaint;
+      })
+    );
+
+    return success;
+  };
+
   const generateAIAnalysis = async (complaintId: string): Promise<ComplaintAiAnalysis> => {
     const complaint = complaints.find((c) => c.id === complaintId);
     
@@ -825,6 +1158,11 @@ export function ComplaintDbProvider({ children }: { children: ReactNode }) {
     deleteComplaintComment,
     likeComplaintComment,
     dislikeComplaintComment,
+    addReply,
+    updateReply,
+    deleteReply,
+    likeReply,
+    dislikeReply,
     generateAIAnalysis,
   };
 

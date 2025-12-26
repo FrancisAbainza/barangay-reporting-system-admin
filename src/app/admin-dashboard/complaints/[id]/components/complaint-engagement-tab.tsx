@@ -1,8 +1,11 @@
+"use client";
+
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { TabsContent } from "@/components/ui/tabs";
-import { ThumbsUp, MessageSquare, Send } from "lucide-react";
+import { ThumbsUp, MessageSquare, Send, Reply as ReplyIcon } from "lucide-react";
 import type { Complaint } from "@/contexts/complaint-db-context";
 
 interface ComplaintEngagementTabProps {
@@ -10,6 +13,7 @@ interface ComplaintEngagementTabProps {
   adminComment: string;
   onAdminCommentChange: (value: string) => void;
   onAddComment: () => void;
+  onAddReply: (commentId: string, content: string) => void;
   formatDate: (date: Date) => string;
 }
 
@@ -18,8 +22,32 @@ export function ComplaintEngagementTab({
   adminComment,
   onAdminCommentChange,
   onAddComment,
+  onAddReply,
   formatDate,
 }: ComplaintEngagementTabProps) {
+  const [replyingTo, setReplyingTo] = useState<string | null>(null);
+  const [replyContent, setReplyContent] = useState<Record<string, string>>({});
+
+  const handleReplyClick = (commentId: string) => {
+    setReplyingTo(replyingTo === commentId ? null : commentId);
+    if (replyingTo !== commentId) {
+      setReplyContent((prev) => ({ ...prev, [commentId]: "" }));
+    }
+  };
+
+  const handleReplySubmit = (commentId: string) => {
+    const content = replyContent[commentId]?.trim();
+    if (content) {
+      onAddReply(commentId, content);
+      setReplyContent((prev) => ({ ...prev, [commentId]: "" }));
+      setReplyingTo(null);
+    }
+  };
+
+  const handleReplyChange = (commentId: string, value: string) => {
+    setReplyContent((prev) => ({ ...prev, [commentId]: value }));
+  };
+
   return (
     <TabsContent value="engagement" className="space-y-4 p-6">
       <div className="space-y-4">
@@ -60,32 +88,117 @@ export function ComplaintEngagementTab({
             </h4>
             <div className="space-y-3">
               {complaint.comments.map((comment) => (
-                <div
-                  key={comment.id}
-                  className={`border rounded-lg p-3 space-y-2 ${
-                    comment.isAdmin ? "bg-primary/5 border-primary/20" : ""
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium text-sm">{comment.userName}</span>
-                      {comment.isAdmin && (
-                        <Badge variant="secondary" className="text-xs">
-                          Admin
-                        </Badge>
+                <div key={comment.id} className="space-y-2">
+                  <div
+                    className={`border rounded-lg p-3 space-y-2 ${
+                      comment.isAdmin ? "bg-primary/5 border-primary/20" : ""
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-sm">{comment.userName}</span>
+                        {comment.isAdmin && (
+                          <Badge variant="secondary" className="text-xs">
+                            Admin
+                          </Badge>
+                        )}
+                      </div>
+                      <span className="text-xs text-muted-foreground">
+                        {formatDate(comment.createdAt)}
+                      </span>
+                    </div>
+                    <p className="text-sm">{comment.content}</p>
+                    <div className="flex gap-3 text-xs text-muted-foreground items-center">
+                      <span className="flex items-center gap-1">
+                        <ThumbsUp className="h-3 w-3" />
+                        {comment.likes?.length || 0}
+                      </span>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-6 px-2 gap-1 text-xs"
+                        onClick={() => handleReplyClick(comment.id)}
+                      >
+                        <ReplyIcon className="h-3 w-3" />
+                        Reply
+                      </Button>
+                      {comment.replies && comment.replies.length > 0 && (
+                        <span className="text-xs text-muted-foreground">
+                          {comment.replies.length} {comment.replies.length === 1 ? "reply" : "replies"}
+                        </span>
                       )}
                     </div>
-                    <span className="text-xs text-muted-foreground">
-                      {formatDate(comment.createdAt)}
-                    </span>
                   </div>
-                  <p className="text-sm">{comment.content}</p>
-                  <div className="flex gap-3 text-xs text-muted-foreground">
-                    <span className="flex items-center gap-1">
-                      <ThumbsUp className="h-3 w-3" />
-                      {comment.likes?.length || 0}
-                    </span>
-                  </div>
+
+                  {/* Reply Form */}
+                  {replyingTo === comment.id && (
+                    <div className="ml-8 border rounded-lg p-3 bg-muted/30 space-y-2">
+                      <div className="flex items-center gap-2 text-sm font-medium">
+                        <ReplyIcon className="h-3 w-3" />
+                        <span>Reply as Admin</span>
+                      </div>
+                      <Textarea
+                        placeholder="Type your reply..."
+                        value={replyContent[comment.id] || ""}
+                        onChange={(e) => handleReplyChange(comment.id, e.target.value)}
+                        rows={2}
+                        className="text-sm"
+                      />
+                      <div className="flex gap-2">
+                        <Button
+                          onClick={() => handleReplySubmit(comment.id)}
+                          disabled={!replyContent[comment.id]?.trim()}
+                          size="sm"
+                          className="gap-1"
+                        >
+                          <Send className="h-3 w-3" />
+                          Post Reply
+                        </Button>
+                        <Button
+                          onClick={() => setReplyingTo(null)}
+                          variant="outline"
+                          size="sm"
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Replies List */}
+                  {comment.replies && comment.replies.length > 0 && (
+                    <div className="ml-8 space-y-2">
+                      {comment.replies.map((reply) => (
+                        <div
+                          key={reply.id}
+                          className={`border rounded-lg p-3 space-y-2 ${
+                            reply.isAdmin ? "bg-primary/5 border-primary/20" : ""
+                          }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium text-sm">{reply.userName}</span>
+                              {reply.isAdmin && (
+                                <Badge variant="secondary" className="text-xs">
+                                  Admin
+                                </Badge>
+                              )}
+                            </div>
+                            <span className="text-xs text-muted-foreground">
+                              {formatDate(reply.createdAt)}
+                            </span>
+                          </div>
+                          <p className="text-sm">{reply.content}</p>
+                          <div className="flex gap-3 text-xs text-muted-foreground">
+                            <span className="flex items-center gap-1">
+                              <ThumbsUp className="h-3 w-3" />
+                              {reply.likes?.length || 0}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

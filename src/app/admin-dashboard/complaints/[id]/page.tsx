@@ -25,6 +25,7 @@ export default function ComplaintDetailsPage() {
     deleteComplaint, 
     updateComplaint, 
     addComplaintComment,
+    addReply,
     generateAIAnalysis 
   } = useComplaintDb();
   
@@ -170,6 +171,21 @@ export default function ComplaintDetailsPage() {
     setAdminComment("");
   };
 
+  const handleAddReply = (commentId: string, content: string) => {
+    if (!content.trim()) {
+      return;
+    }
+
+    addReply(
+      complaint.id,
+      commentId,
+      "admin1",
+      "Admin Staff",
+      content,
+      true
+    );
+  };
+
   const handleDeleteComplaint = () => {
     if (confirm("Are you sure you want to delete this complaint?")) {
       deleteComplaint(complaint.id);
@@ -236,6 +252,7 @@ export default function ComplaintDetailsPage() {
             adminComment={adminComment}
             onAdminCommentChange={setAdminComment}
             onAddComment={handleAddAdminComment}
+            onAddReply={handleAddReply}
             formatDate={formatDate}
           />
           <ComplaintAIAnalysisTab
