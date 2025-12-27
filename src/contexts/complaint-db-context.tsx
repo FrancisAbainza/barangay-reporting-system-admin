@@ -91,6 +91,7 @@ export interface Complaint {
   location: {
     latitude: number;
     longitude: number;
+    address: string;
   };
   images?: Image[];
   resolutionDetails?: ResolutionDetail;
@@ -110,6 +111,7 @@ export interface CreateComplaintInput {
   location: {
     latitude: number;
     longitude: number;
+    address: string;
   };
   images?: Image[];
 }
@@ -121,6 +123,7 @@ export interface UpdateComplaintInput {
   location?: {
     latitude: number;
     longitude: number;
+    address: string;
   };
   images?: Image[];
   resolutionDetails?: ResolutionDetail;
@@ -219,6 +222,7 @@ const initialComplaints: Complaint[] = [
     location: {
       latitude: 14.5995,
       longitude: 120.9842,
+      address: "Corner Main Road, Barangay San Isidro, Manila, Metro Manila",
     },
     images: [
       { uri: `https://picsum.photos/seed/${Math.random()}/1280/720` },
@@ -268,6 +272,7 @@ const initialComplaints: Complaint[] = [
     location: {
       latitude: 14.6091,
       longitude: 120.9896,
+      address: "Residential Area, Barangay Sta. Cruz, Manila, Metro Manila",
     },
     images: [{ uri: `https://picsum.photos/seed/${Math.random()}/400/250` }],
     likes: ["user1", "user4", "user5"],
@@ -289,6 +294,7 @@ const initialComplaints: Complaint[] = [
     location: {
       latitude: 14.5876,
       longitude: 120.9793,
+      address: "Corner Rizal Street, Barangay Tondo, Manila, Metro Manila",
     },
     images: [
       { uri: `https://picsum.photos/seed/${Math.random()}/1280/720` },
@@ -358,6 +364,7 @@ const initialComplaints: Complaint[] = [
     location: {
       latitude: 14.5945,
       longitude: 120.9912,
+      address: "Bonifacio Avenue, Barangay Ermita, Manila, Metro Manila",
     },
     images: [{ uri: `https://picsum.photos/seed/${Math.random()}/1280/720` }],
     resolutionDetails: {
@@ -399,6 +406,7 @@ const initialComplaints: Complaint[] = [
     location: {
       latitude: 14.6125,
       longitude: 120.9756,
+      address: "Highway Entrance, Barangay Sampaloc, Manila, Metro Manila",
     },
     images: [{ uri: `https://picsum.photos/seed/${Math.random()}/1280/720` }],
     likes: ["user1", "user3", "user6"],

@@ -1,6 +1,7 @@
 import { TabsContent } from "@/components/ui/tabs";
 import { FileText, User, Calendar, CheckCircle, ImageIcon, Receipt, X } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { InfoCard } from "@/components/ui/info-card";
 import { useState } from "react";
 import type { Complaint } from "@/contexts/complaint-db-context";
 
@@ -15,54 +16,30 @@ export function ComplaintDetailsTab({ complaint, formatDate }: ComplaintDetailsT
   return (
     <TabsContent value="details" className="space-y-4 p-6">
       <div className="space-y-4">
-        <div>
-          <h4 className="font-semibold mb-2 flex items-center gap-2">
-            <FileText className="h-4 w-4" />
-            Description
-          </h4>
+        <InfoCard icon={FileText} title="Description">
           <p className="text-sm text-muted-foreground">{complaint.description}</p>
-        </div>
+        </InfoCard>
 
         <div className="grid grid-cols-2 gap-4">
-          <div>
-            <h4 className="font-semibold mb-1 flex items-center gap-2">
-              <User className="h-4 w-4" />
-              Complainant
-            </h4>
+          <InfoCard icon={User} title="Complainant">
             <p className="text-sm">{complaint.complainantName}</p>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-1 flex items-center gap-2">
-              <Calendar className="h-4 w-4" />
-              Submitted
-            </h4>
+          </InfoCard>
+          <InfoCard icon={Calendar} title="Submitted">
             <p className="text-sm">{formatDate(complaint.createdAt)}</p>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-1 flex items-center gap-2">
-              <Calendar className="h-4 w-4" />
-              Last Updated
-            </h4>
+          </InfoCard>
+          <InfoCard icon={Calendar} title="Last Updated">
             <p className="text-sm">{formatDate(complaint.updatedAt)}</p>
-          </div>
+          </InfoCard>
           {complaint.resolvedAt && (
-            <div>
-              <h4 className="font-semibold mb-1 flex items-center gap-2">
-                <CheckCircle className="h-4 w-4" />
-                Resolved
-              </h4>
+            <InfoCard icon={CheckCircle} title="Resolved">
               <p className="text-sm">{formatDate(complaint.resolvedAt)}</p>
-            </div>
+            </InfoCard>
           )}
         </div>
 
         {complaint.images && complaint.images.length > 0 && (
-          <div>
-            <h4 className="font-semibold mb-2 flex items-center gap-2">
-              <ImageIcon className="h-4 w-4" />
-              Images
-            </h4>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+          <InfoCard icon={ImageIcon} title="Images">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
               {complaint.images.map((img, idx) => (
                 <button
                   key={idx}
@@ -78,15 +55,11 @@ export function ComplaintDetailsTab({ complaint, formatDate }: ComplaintDetailsT
                 </button>
               ))}
             </div>
-          </div>
+          </InfoCard>
         )}
 
         {complaint.resolutionDetails && (
-          <div className="border-t pt-4">
-            <h4 className="font-semibold mb-2 flex items-center gap-2">
-              <CheckCircle className="h-4 w-4" />
-              Resolution Details
-            </h4>
+          <InfoCard icon={CheckCircle} title="Resolution Details" className="border-t pt-4">
             <p className="text-sm mb-2">{complaint.resolutionDetails.description}</p>
             {complaint.resolutionDetails.budget && (
               <p className="text-sm text-muted-foreground flex items-center gap-2">
@@ -94,7 +67,7 @@ export function ComplaintDetailsTab({ complaint, formatDate }: ComplaintDetailsT
                 Budget: ₱{complaint.resolutionDetails.budget.toLocaleString()}
               </p>
             )}
-          </div>
+          </InfoCard>
         )}
       </div>
 

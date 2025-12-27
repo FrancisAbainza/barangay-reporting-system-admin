@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/ui/spinner";
+import { InfoCard } from "@/components/ui/info-card";
 import { 
   Sparkles, 
   RefreshCw, 
@@ -61,106 +62,66 @@ export function ComplaintAIAnalysisTab({
       </div>
 
       {/* Summary */}
-      <div className="border rounded-lg p-4">
-        <h4 className="font-semibold mb-2 flex items-center gap-2">
-          <FileText className="h-4 w-4" />
-          Summary
-        </h4>
+      <InfoCard icon={FileText} title="Summary">
         <p className="text-sm text-muted-foreground">{analysis.summary}</p>
-      </div>
+      </InfoCard>
 
       {/* Key Details Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Department Routing */}
-        <div className="border rounded-lg p-4">
-          <h4 className="font-semibold mb-2 flex items-center gap-2">
-            <Building2 className="h-4 w-4 text-primary" />
-            Department Routing
-          </h4>
+        <InfoCard icon={Building2} iconClassName="text-primary" title="Department Routing">
           <p className="text-sm">{analysis.departmentRouting}</p>
-        </div>
+        </InfoCard>
 
         {/* Budget Estimate */}
         {analysis.budgetEstimate && (
-          <div className="border rounded-lg p-4">
-            <h4 className="font-semibold mb-2 flex items-center gap-2">
-              <Receipt className="h-4 w-4 text-primary" />
-              Budget Estimate
-            </h4>
+          <InfoCard icon={Receipt} iconClassName="text-primary" title="Budget Estimate">
             <p className="text-sm">{analysis.budgetEstimate}</p>
-          </div>
+          </InfoCard>
         )}
 
         {/* Manpower */}
-        <div className="border rounded-lg p-4">
-          <h4 className="font-semibold mb-2 flex items-center gap-2">
-            <Users className="h-4 w-4 text-primary" />
-            Estimated Manpower
-          </h4>
+        <InfoCard icon={Users} iconClassName="text-primary" title="Estimated Manpower">
           <p className="text-sm">{analysis.estimatedManpower}</p>
-        </div>
+        </InfoCard>
 
         {/* Timeframe */}
-        <div className="border rounded-lg p-4">
-          <h4 className="font-semibold mb-2 flex items-center gap-2">
-            <Clock className="h-4 w-4 text-primary" />
-            Estimated Timeframe
-          </h4>
+        <InfoCard icon={Clock} iconClassName="text-primary" title="Estimated Timeframe">
           <p className="text-sm">{analysis.estimatedTimeframe}</p>
-        </div>
+        </InfoCard>
       </div>
 
       {/* Suggested Solution */}
-      <div className="border rounded-lg p-4">
-        <h4 className="font-semibold mb-3 flex items-center gap-2">
-          <Lightbulb className="h-4 w-4 text-primary" />
-          Suggested Solution
-        </h4>
+      <InfoCard icon={Lightbulb} iconClassName="text-primary" title="Suggested Solution">
         <div className="text-sm text-muted-foreground whitespace-pre-line">
           {analysis.suggestedSolution}
         </div>
-      </div>
+      </InfoCard>
 
       {/* Required Resources */}
-      <div className="border rounded-lg p-4">
-        <h4 className="font-semibold mb-3 flex items-center gap-2">
-          <Wrench className="h-4 w-4 text-primary" />
-          Required Resources
-        </h4>
+      <InfoCard icon={Wrench} iconClassName="text-primary" title="Required Resources">
         <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
           {analysis.requiredResources.map((resource, idx) => (
             <li key={idx}>{resource}</li>
           ))}
         </ul>
-      </div>
+      </InfoCard>
 
       {/* Risk & Prevention */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Public Safety Risk */}
-        <div className="border rounded-lg p-4">
-          <h4 className="font-semibold mb-2 flex items-center gap-2">
-            <AlertTriangle className="h-4 w-4 text-orange-500" />
-            Public Safety Risk
-          </h4>
+        <InfoCard icon={AlertTriangle} iconClassName="text-orange-500" title="Public Safety Risk">
           <p className="text-sm text-muted-foreground">{analysis.publicSafetyRisk}</p>
-        </div>
+        </InfoCard>
 
         {/* Prevention Advice */}
-        <div className="border rounded-lg p-4">
-          <h4 className="font-semibold mb-2 flex items-center gap-2">
-            <Shield className="h-4 w-4 text-green-500" />
-            Prevention Advice
-          </h4>
+        <InfoCard icon={Shield} iconClassName="text-green-500" title="Prevention Advice">
           <p className="text-sm text-muted-foreground">{analysis.preventionAdvice}</p>
-        </div>
+        </InfoCard>
       </div>
 
       {/* Community Sentiment */}
-      <div className="border rounded-lg p-4">
-        <h4 className="font-semibold mb-3 flex items-center gap-2">
-          <MessageSquare className="h-4 w-4 text-primary" />
-          Community Sentiment
-        </h4>
+      <InfoCard icon={MessageSquare} iconClassName="text-primary" title="Community Sentiment">
         <div className="space-y-2">
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground">Sentiment:</span>
@@ -171,7 +132,7 @@ export function ComplaintAIAnalysisTab({
           </div>
           <p className="text-sm text-muted-foreground">{analysis.commentsSummary}</p>
         </div>
-      </div>
+      </InfoCard>
 
       {/* Regenerate Button */}
       <div className="pt-4 border-t">
