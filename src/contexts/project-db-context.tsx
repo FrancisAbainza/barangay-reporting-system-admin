@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
 import type {
   Image,
+  Reply,
   Comment,
   ProjectCategory,
   ProjectStatus,
@@ -16,6 +17,7 @@ import type {
 // Re-export types for backward compatibility
 export type {
   Image,
+  Reply,
   Comment,
   ProjectCategory,
   ProjectStatus,
@@ -81,8 +83,8 @@ const initialProjects: Project[] = [
       address: "123 Health Street, Barangay Central",
     },
     images: [
-      { uri: "https://example.com/healthcenter1.jpg" },
-      { uri: "https://example.com/healthcenter2.jpg" },
+      { uri: `https://picsum.photos/seed/${Math.random()}/1280/720` },
+      { uri: `https://picsum.photos/seed/${Math.random()}/1280/720` },
     ],
     progressPercentage: 65,
     progressUpdates: [
@@ -107,6 +109,19 @@ const initialProjects: Project[] = [
         content: "Great initiative! Looking forward to the completion.",
         likes: ["user2", "user3"],
         dislikes: [],
+        replies: [
+          {
+            id: "preply1",
+            userId: "admin1",
+            userName: "Barangay Admin",
+            content: "Thank you for your support! We're working hard to complete this on schedule.",
+            isAdmin: true,
+            likes: ["user1"],
+            dislikes: [],
+            createdAt: new Date("2025-11-05T14:30:00"),
+            updatedAt: new Date("2025-11-05T14:30:00"),
+          },
+        ],
         createdAt: new Date("2025-11-05T10:00:00"),
         updatedAt: new Date("2025-11-05T10:00:00"),
       },
@@ -131,7 +146,9 @@ const initialProjects: Project[] = [
       longitude: 120.9842,
       address: "Various locations across the barangay",
     },
-    images: [],
+    images: [
+      { uri: `https://picsum.photos/seed/${Math.random()}/1280/720` },
+    ],
     progressPercentage: 0,
     likes: ["user1", "user2", "user5"],
     dislikes: [],
@@ -156,7 +173,11 @@ const initialProjects: Project[] = [
       longitude: 120.9801,
       address: "Barangay-wide implementation",
     },
-    images: [{ uri: "https://example.com/recycling.jpg" }],
+    images: [
+      { uri: `https://picsum.photos/seed/${Math.random()}/1280/720` },
+      { uri: `https://picsum.photos/seed/${Math.random()}/1280/720` },
+      { uri: `https://picsum.photos/seed/${Math.random()}/1280/720` },
+    ],
     progressPercentage: 40,
     progressUpdates: [
       {
@@ -208,7 +229,13 @@ const initialProjects: Project[] = [
       longitude: 120.9778,
       address: "Corner of Sports Ave and Recreation St.",
     },
-    images: [{ uri: "https://example.com/sports-plan.jpg" }],
+    images: [
+      { uri: `https://picsum.photos/seed/${Math.random()}/1280/720` },
+      { uri: `https://picsum.photos/seed/${Math.random()}/1280/720` },
+      { uri: `https://picsum.photos/seed/${Math.random()}/1280/720` },
+      { uri: `https://picsum.photos/seed/${Math.random()}/1280/720` },
+      { uri: `https://picsum.photos/seed/${Math.random()}/1280/720` },
+    ],
     progressPercentage: 0,
     likes: ["user1", "user3", "user5"],
     dislikes: [],
@@ -227,7 +254,9 @@ const initialProjects: Project[] = [
     expectedCompletionDate: new Date("2026-05-31"),
     budget: 1200000,
     sourceOfFunds: "Barangay Development Fund",
-    images: [],
+    images: [
+      { uri: `https://picsum.photos/seed/${Math.random()}/1280/720` },
+    ],
     progressPercentage: 80,
     progressUpdates: [
       {
@@ -272,9 +301,7 @@ const initialProjects: Project[] = [
       address: "Low-lying areas, Zone 3 and 4",
     },
     images: [
-      { uri: "https://example.com/drainage1.jpg" },
-      { uri: "https://example.com/drainage2.jpg" },
-      { uri: "https://example.com/drainage3.jpg" },
+      { uri: `https://picsum.photos/seed/${Math.random()}/1280/720` },
     ],
     progressPercentage: 100,
     progressUpdates: [
