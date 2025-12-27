@@ -79,12 +79,20 @@ export default function ComplaintsPage() {
       setComplaintIdForScheduled(complaintId);
       setIsScheduledDialogOpen(true);
     } else {
-      // If changing from resolved to another status, clear resolution details
+      // Remove resolutionDetails when changing away from resolved status
       if (complaint?.status === "resolved" && newStatus !== "resolved") {
         updateComplaint(complaintId, {
           resolutionDetails: undefined,
         });
       }
+      
+      // Remove scheduledAt when changing to under_review or submitted
+      if (newStatus === "under_review" || newStatus === "submitted") {
+        updateComplaint(complaintId, {
+          scheduledAt: undefined,
+        });
+      }
+      
       updateComplaintStatus(complaintId, newStatus);
     }
   };
