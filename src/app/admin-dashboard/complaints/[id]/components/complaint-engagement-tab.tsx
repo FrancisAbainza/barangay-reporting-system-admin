@@ -9,28 +9,24 @@ import { InfoCard } from "@/components/ui/info-card";
 import { Spinner } from "@/components/ui/spinner";
 import { ThumbsUp, ThumbsDown, MessageSquare, Send, Reply as ReplyIcon, TrendingUp, Sparkles } from "lucide-react";
 import type { Complaint } from "@/types/complaint";
+import { formatDate } from "@/lib/date-formatter";
 
 interface ComplaintEngagementTabProps {
   complaint: Complaint;
-  adminComment: string;
-  onAdminCommentChange: (value: string) => void;
-  onAddComment: () => void;
+  onAddComment: (content: string) => void;
   onAddReply: (commentId: string, content: string) => void;
   onGenerateCommunitySentiment: () => void;
   isGeneratingSentiment: boolean;
-  formatDate: (date: Date) => string;
 }
 
 export function ComplaintEngagementTab({
   complaint,
-  adminComment,
-  onAdminCommentChange,
   onAddComment,
   onAddReply,
   onGenerateCommunitySentiment,
   isGeneratingSentiment,
-  formatDate,
 }: ComplaintEngagementTabProps) {
+  const [adminComment, setAdminComment] = useState("");
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [replyContent, setReplyContent] = useState<Record<string, string>>({});
 
@@ -62,6 +58,14 @@ export function ComplaintEngagementTab({
 
   const handleReplyChange = (commentId: string, value: string) => {
     setReplyContent((prev) => ({ ...prev, [commentId]: value }));
+  };
+
+  const handleAddAdminComment = () => {
+    const content = adminComment.trim();
+    if (content) {
+      onAddComment(content);
+      setAdminComment("");
+    }
   };
 
   const renderGeneratingSentiment = () => (
@@ -142,10 +146,10 @@ export function ComplaintEngagementTab({
       <Textarea
         placeholder="Type your comment as admin..."
         value={adminComment}
-        onChange={(e) => onAdminCommentChange(e.target.value)}
+        onChange={(e) => setAdminComment(e.target.value)}
         rows={3}
       />
-      <Button onClick={onAddComment} disabled={!adminComment.trim()} size="sm" className="gap-2">
+      <Button onClick={handleAddAdminComment} disabled={!adminComment.trim()} size="sm" className="gap-2">
         <Send className="h-4 w-4" />
         Post Comment
       </Button>

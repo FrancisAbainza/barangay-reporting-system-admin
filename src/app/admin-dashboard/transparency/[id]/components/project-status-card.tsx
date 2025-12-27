@@ -1,33 +1,19 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { CheckCircle2, Clock, Pause, XCircle } from "lucide-react";
 import type { ProjectStatus, ProjectCategory } from "@/types/project";
+import { getStatusBadge, getCategoryLabel, getCategoryBadge } from "@/lib/project-helpers";
 
 interface ProjectStatusCardProps {
   status: ProjectStatus;
   category: ProjectCategory;
   progressPercentage: number;
-  getStatusBadge: (status: ProjectStatus) => { className: string; label: string };
-  getCategoryLabel: (category: ProjectCategory) => string;
-  getCategoryBadge: (category: ProjectCategory) => string;
-  onStatusChange: (value: ProjectStatus) => void;
 }
 
 export function ProjectStatusCard({
   status,
   category,
   progressPercentage,
-  getStatusBadge,
-  getCategoryLabel,
-  getCategoryBadge,
-  onStatusChange,
 }: ProjectStatusCardProps) {
   const getStatusIcon = (status: ProjectStatus) => {
     switch (status) {
@@ -58,19 +44,6 @@ export function ProjectStatusCard({
           <Badge className={getCategoryBadge(category)}>
             {getCategoryLabel(category)}
           </Badge>
-          <Select value={status} onValueChange={(value) => onStatusChange(value as ProjectStatus)}>
-            <SelectTrigger className="flex-1 max-w-[200px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="planned">Planned</SelectItem>
-              <SelectItem value="approved">Approved</SelectItem>
-              <SelectItem value="ongoing">Ongoing</SelectItem>
-              <SelectItem value="on_hold">On Hold</SelectItem>
-              <SelectItem value="completed">Completed</SelectItem>
-              <SelectItem value="cancelled">Cancelled</SelectItem>
-            </SelectContent>
-          </Select>
         </div>
 
         {/* Progress Bar */}

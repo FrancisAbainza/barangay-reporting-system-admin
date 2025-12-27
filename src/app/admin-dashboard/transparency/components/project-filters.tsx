@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,37 +11,50 @@ import {
 } from "@/components/ui/popover";
 import { Search, Filter, ChevronDown, CalendarIcon, Tag } from "lucide-react";
 import type { ProjectStatus, ProjectCategory } from "@/types/project";
+import { getStatusBadge, getCategoryLabel } from "@/lib/project-helpers";
 
 interface ProjectFiltersProps {
-  searchQuery: string;
-  setSearchQuery: (value: string) => void;
-  statusFilters: ProjectStatus[];
-  setStatusFilters: (value: ProjectStatus[]) => void;
-  categoryFilters: ProjectCategory[];
-  setCategoryFilters: (value: ProjectCategory[]) => void;
-  dateFrom: string;
-  setDateFrom: (value: string) => void;
-  dateTo: string;
-  setDateTo: (value: string) => void;
-  getStatusBadge: (status: ProjectStatus) => { className: string; label: string };
-  getCategoryLabel: (category: ProjectCategory) => string;
+  onFilterChange: (filters: {
+    searchQuery: string;
+    statusFilters: ProjectStatus[];
+    categoryFilters: ProjectCategory[];
+    dateFrom: string;
+    dateTo: string;
+  }) => void;
 }
 
-export function ProjectFilters({
-  searchQuery,
-  setSearchQuery,
-  statusFilters,
-  setStatusFilters,
-  categoryFilters,
-  setCategoryFilters,
-  dateFrom,
-  setDateFrom,
-  dateTo,
-  setDateTo,
-  getStatusBadge,
-  getCategoryLabel,
-}: ProjectFiltersProps) {
+export function ProjectFilters({ onFilterChange }: ProjectFiltersProps) {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilters, setStatusFilters] = useState<ProjectStatus[]>([]);
+  const [categoryFilters, setCategoryFilters] = useState<ProjectCategory[]>([]);
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
+
   const hasActiveFilters = searchQuery || statusFilters.length > 0 || categoryFilters.length > 0 || dateFrom || dateTo;
+
+  const updateFilters = (updates: Partial<{
+    searchQuery: string;
+    statusFilters: ProjectStatus[];
+    categoryFilters: ProjectCategory[];
+    dateFrom: string;
+    dateTo: string;
+  }>) => {
+    const newFilters = {
+      searchQuery: updates.searchQuery ?? searchQuery,
+      statusFilters: updates.statusFilters ?? statusFilters,
+      categoryFilters: updates.categoryFilters ?? categoryFilters,
+      dateFrom: updates.dateFrom ?? dateFrom,
+      dateTo: updates.dateTo ?? dateTo,
+    };
+
+    if (updates.searchQuery !== undefined) setSearchQuery(updates.searchQuery);
+    if (updates.statusFilters !== undefined) setStatusFilters(updates.statusFilters);
+    if (updates.categoryFilters !== undefined) setCategoryFilters(updates.categoryFilters);
+    if (updates.dateFrom !== undefined) setDateFrom(updates.dateFrom);
+    if (updates.dateTo !== undefined) setDateTo(updates.dateTo);
+
+    onFilterChange(newFilters);
+  };
 
   const clearAllFilters = () => {
     setSearchQuery("");
@@ -48,6 +62,13 @@ export function ProjectFilters({
     setCategoryFilters([]);
     setDateFrom("");
     setDateTo("");
+    onFilterChange({
+      searchQuery: "",
+      statusFilters: [],
+      categoryFilters: [],
+      dateFrom: "",
+      dateTo: "",
+    });
   };
 
   return (
@@ -60,7 +81,7 @@ export function ProjectFilters({
             placeholder="Search projects..."
             className="pl-8"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => updateFilters({ searchQuery: e.target.value })}
           />
         </div>
       </div>
@@ -99,11 +120,10 @@ export function ProjectFilters({
                         id={`status-${status.value}`}
                         checked={statusFilters.includes(status.value)}
                         onCheckedChange={(checked: boolean) => {
-                          if (checked) {
-                            setStatusFilters([...statusFilters, status.value]);
-                          } else {
-                            setStatusFilters(statusFilters.filter((s) => s !== status.value));
-                          }
+                          const newFilters = checked
+                            ? [...statusFilters, status.value]
+                            : statusFilters.filter((s) => s !== status.value);
+                          updateFilters({ statusFilters: newFilters });
                         }}
                       />
                       <Label
@@ -153,11 +173,10 @@ export function ProjectFilters({
                         id={`category-${category.value}`}
                         checked={categoryFilters.includes(category.value)}
                         onCheckedChange={(checked: boolean) => {
-                          if (checked) {
-                            setCategoryFilters([...categoryFilters, category.value]);
-                          } else {
-                            setCategoryFilters(categoryFilters.filter((c) => c !== category.value));
-                          }
+                          const newFilters = checked
+                            ? [...categoryFilters, category.value]
+                            : categoryFilters.filter((c) => c !== category.value);
+                          updateFilters({ categoryFilters: newFilters });
                         }}
                       />
                       <Label
@@ -195,7 +214,7 @@ export function ProjectFilters({
                       id="date-from"
                       type="date"
                       value={dateFrom}
-                      onChange={(e) => setDateFrom(e.target.value)}
+                      onChange={(e) => updateFilters({ dateFrom: e.target.value })}
                     />
                   </div>
                   <div className="space-y-2">
@@ -204,7 +223,7 @@ export function ProjectFilters({
                       id="date-to"
                       type="date"
                       value={dateTo}
-                      onChange={(e) => setDateTo(e.target.value)}
+                      onChange={(e) => updateFilters({ dateTo: e.target.value })}
                     />
                   </div>
                 </div>
@@ -231,7 +250,7 @@ export function ProjectFilters({
               <Badge key={status} variant="secondary" className="gap-1">
                 Status: {getStatusBadge(status).label}
                 <button
-                  onClick={() => setStatusFilters(statusFilters.filter((s) => s !== status))}
+                  onClick={() => updateFilters({ statusFilters: statusFilters.filter((s) => s !== status) })}
                   className="ml-1 hover:bg-secondary-foreground/20 rounded-full p-0.5"
                 >
                   ×
@@ -242,7 +261,7 @@ export function ProjectFilters({
               <Badge key={category} variant="secondary" className="gap-1">
                 {getCategoryLabel(category)}
                 <button
-                  onClick={() => setCategoryFilters(categoryFilters.filter((c) => c !== category))}
+                  onClick={() => updateFilters({ categoryFilters: categoryFilters.filter((c) => c !== category) })}
                   className="ml-1 hover:bg-secondary-foreground/20 rounded-full p-0.5"
                 >
                   ×
@@ -253,10 +272,7 @@ export function ProjectFilters({
               <Badge variant="secondary" className="gap-1">
                 {dateFrom && dateTo ? `${dateFrom} to ${dateTo}` : dateFrom ? `From ${dateFrom}` : `Until ${dateTo}`}
                 <button
-                  onClick={() => {
-                    setDateFrom("");
-                    setDateTo("");
-                  }}
+                  onClick={() => updateFilters({ dateFrom: "", dateTo: "" })}
                   className="ml-1 hover:bg-secondary-foreground/20 rounded-full p-0.5"
                 >
                   ×

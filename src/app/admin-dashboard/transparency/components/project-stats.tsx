@@ -1,19 +1,26 @@
+"use client";
+
+import { useMemo } from "react";
+import type { Project } from "@/types/project";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart3, CheckCircle2, Clock, FolderKanban } from "lucide-react";
 
 interface ProjectStatsProps {
-  stats: {
-    total: number;
-    planned: number;
-    approved: number;
-    ongoing: number;
-    onHold: number;
-    completed: number;
-    cancelled: number;
-  };
+  projects: Project[];
 }
 
-export function ProjectStats({ stats }: ProjectStatsProps) {
+export function ProjectStats({ projects }: ProjectStatsProps) {
+  const stats = useMemo(() => {
+    return {
+      total: projects.length,
+      planned: projects.filter((p) => p.status === "planned").length,
+      approved: projects.filter((p) => p.status === "approved").length,
+      ongoing: projects.filter((p) => p.status === "ongoing").length,
+      onHold: projects.filter((p) => p.status === "on_hold").length,
+      completed: projects.filter((p) => p.status === "completed").length,
+      cancelled: projects.filter((p) => p.status === "cancelled").length,
+    };
+  }, [projects]);
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       <Card>

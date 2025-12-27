@@ -18,26 +18,18 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreVertical, ThumbsUp, MessageSquare, Trash2 } from "lucide-react";
-import type { Complaint, ComplaintStatus, ComplaintCategory } from "@/types/complaint";
+import type { Complaint, ComplaintStatus } from "@/types/complaint";
+import { getStatusBadge, getPriorityBadge, getCategoryLabel, getCategoryBadge } from "@/lib/complaint-helpers";
+import { formatDate } from "@/lib/date-formatter";
 
 interface ComplaintTableProps {
   complaints: Complaint[];
-  getStatusBadge: (status: ComplaintStatus) => { className: string; label: string };
-  getPriorityBadge: (priority: string) => string;
-  getCategoryLabel: (category: ComplaintCategory) => string;
-  getCategoryBadge: (category: ComplaintCategory) => string;
-  formatDate: (date: Date) => string;
   handleStatusChange: (complaintId: string, newStatus: ComplaintStatus) => void;
   handleDeleteComplaint: (complaintId: string) => void;
 }
 
 export function ComplaintTable({
   complaints,
-  getStatusBadge,
-  getPriorityBadge,
-  getCategoryLabel,
-  getCategoryBadge,
-  formatDate,
   handleStatusChange,
   handleDeleteComplaint,
 }: ComplaintTableProps) {

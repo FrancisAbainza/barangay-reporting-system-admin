@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useProjectDb } from "@/contexts/project-db-context";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
@@ -8,31 +9,57 @@ import { TabsContent } from "@/components/ui/tabs";
 import { InfoCard } from "@/components/ui/info-card";
 import { Spinner } from "@/components/ui/spinner";
 import { ThumbsUp, ThumbsDown, MessageSquare, Send, Reply as ReplyIcon, TrendingUp, Sparkles } from "lucide-react";
+import { formatDate } from "@/lib/date-formatter";
 import type { Project } from "@/types/project";
 
 interface ProjectEngagementTabProps {
   project: Project;
-  adminComment: string;
-  onAdminCommentChange: (value: string) => void;
-  onAddComment: () => void;
-  onAddReply: (commentId: string, content: string) => void;
-  onGenerateCommunitySentiment: () => void;
-  isGeneratingSentiment: boolean;
-  formatDate: (date: Date) => string;
 }
 
-export function ProjectEngagementTab({
-  project,
-  adminComment,
-  onAdminCommentChange,
-  onAddComment,
-  onAddReply,
-  onGenerateCommunitySentiment,
-  isGeneratingSentiment,
-  formatDate,
-}: ProjectEngagementTabProps) {
+export function ProjectEngagementTab({ project }: ProjectEngagementTabProps) {
+  const { addProjectComment, addReply, generateCommunitySentiment } = useProjectDb();
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [replyContent, setReplyContent] = useState<Record<string, string>>({});
+  const [adminComment, setAdminComment] = useState("");
+  const [isGeneratingSentiment, setIsGeneratingSentiment] = useState(false);
+
+  const handleAddAdminComment = () => {
+    const content = adminComment.trim();
+    if (content) {
+      addProjectComment(
+        project.id,
+        "admin1",
+        "Admin Staff",
+        content,
+        true
+      );
+      setAdminComment("");
+    }
+  };
+
+  const handleAddReply = (commentId: string, content: string) => {
+    addReply(
+      project.id,
+      commentId,
+      "admin1",
+      "Admin Staff",
+      content,
+      true
+    );
+  };
+
+  const handleGenerateCommunitySentiment = async () => {
+    setIsGeneratingSentiment(true);
+
+    try {
+      await generateCommunitySentiment(project.id);
+    } catch (error) {
+      console.error("Error generating community sentiment:", error);
+      alert("Failed to generate community sentiment. Please try again.");
+    } finally {
+      setIsGeneratingSentiment(false);
+    }
+  };
 
   const getSentimentBadge = (sentiment: string) => {
     const colors: Record<string, string> = {
@@ -54,7 +81,7 @@ export function ProjectEngagementTab({
   const handleReplySubmit = (commentId: string) => {
     const content = replyContent[commentId]?.trim();
     if (content) {
-      onAddReply(commentId, content);
+      handleAddReply(commentId, content);
       setReplyContent((prev) => ({ ...prev, [commentId]: "" }));
       setReplyingTo(null);
     }
@@ -85,7 +112,7 @@ export function ProjectEngagementTab({
         </div>
         <p className="text-sm text-muted-foreground">{project.communitySentiment!.summary}</p>
         <Button 
-          onClick={onGenerateCommunitySentiment} 
+          onClick={handleGenerateCommunitySentiment} 
           variant="outline" 
           size="sm"
           className="gap-2"
@@ -104,7 +131,7 @@ export function ProjectEngagementTab({
           Generate AI-powered sentiment analysis based on community comments.
         </p>
         <Button 
-          onClick={onGenerateCommunitySentiment} 
+          onClick={handleGenerateCommunitySentiment} 
           size="sm"
           className="gap-2"
           disabled={!project.comments || project.comments.length === 0}
@@ -142,10 +169,10 @@ export function ProjectEngagementTab({
       <Textarea
         placeholder="Type your comment as admin..."
         value={adminComment}
-        onChange={(e) => onAdminCommentChange(e.target.value)}
+        onChange={(e) => setAdminComment(e.target.value)}
         rows={3}
       />
-      <Button onClick={onAddComment} disabled={!adminComment.trim()} size="sm" className="gap-2">
+      <Button onClick={handleAddAdminComment} disabled={!adminComment.trim()} size="sm" className="gap-2">
         <Send className="h-4 w-4" />
         Post Comment
       </Button>

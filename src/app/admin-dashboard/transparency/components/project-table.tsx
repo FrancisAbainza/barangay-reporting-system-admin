@@ -1,3 +1,5 @@
+"use client";
+
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -16,32 +18,31 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreVertical, ThumbsUp, MessageSquare, Trash2, Pencil, RefreshCw } from "lucide-react";
-import type { Project, ProjectStatus, ProjectCategory } from "@/types/project";
-import { formatBudget } from "@/lib/project-helpers";
+import { MoreVertical, ThumbsUp, MessageSquare, Trash2 } from "lucide-react";
+import type { Project } from "@/types/project";
+import { formatBudget, getStatusBadge, getCategoryLabel, getCategoryBadge } from "@/lib/project-helpers";
+import { formatDate } from "@/lib/date-formatter";
+import { EditProjectMenuItem } from "./edit-project-menu-item";
+import { UpdateProgressMenuItem } from "./update-progress-menu-item";
+import { useProjectDb } from "@/contexts/project-db-context";
 
 interface ProjectTableProps {
   projects: Project[];
-  getStatusBadge: (status: ProjectStatus) => { className: string; label: string };
-  getCategoryLabel: (category: ProjectCategory) => string;
-  getCategoryBadge: (category: ProjectCategory) => string;
-  formatDate: (date: Date) => string;
-  handleDeleteProject: (projectId: string) => void;
-  handleEditProject: (project: Project) => void;
-  handleUpdateStatus: (project: Project) => void;
 }
+
+
 
 export function ProjectTable({
   projects,
-  getStatusBadge,
-  getCategoryLabel,
-  getCategoryBadge,
-  formatDate,
-  handleDeleteProject,
-  handleEditProject,
-  handleUpdateStatus,
 }: ProjectTableProps) {
   const router = useRouter();
+  const { deleteProject } = useProjectDb();
+
+  const handleDeleteProject = (projectId: string) => {
+    if (confirm("Are you sure you want to delete this project?")) {
+      deleteProject(projectId);
+    }
+  };
 
   return (
     <div className="rounded-md border overflow-x-auto">
@@ -122,14 +123,8 @@ export function ProjectTable({
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => handleUpdateStatus(project)}>
-                        <RefreshCw className="h-4 w-4 mr-2" />
-                        Update Status
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleEditProject(project)}>
-                        <Pencil className="h-4 w-4 mr-2" />
-                        Edit Project
-                      </DropdownMenuItem>
+                      <UpdateProgressMenuItem project={project} />
+                      <EditProjectMenuItem project={project} />
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
                         className="text-destructive"

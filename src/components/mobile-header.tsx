@@ -31,15 +31,15 @@ import {
 
 const menuItems = [
   { title: "Overview", href: "/admin-dashboard", icon: LayoutDashboard },
-  { title: "AI Insights / Analysis", href: "/admin-dashboard/ai-insights", icon: Brain },
+  /* { title: "AI Insights / Analysis", href: "/admin-dashboard/ai-insights", icon: Brain }, */
   { title: "Complaint Management", href: "/admin-dashboard/complaints", icon: MessageSquareWarning },
   { title: "Transparency Management", href: "/admin-dashboard/transparency", icon: Eye },
   { title: "Map Intelligence", href: "/admin-dashboard/map-intelligence", icon: Map },
-  { title: "Engagement & Sentiment", href: "/admin-dashboard/engagement", icon: MessageCircle },
+  /* { title: "Engagement & Sentiment", href: "/admin-dashboard/engagement", icon: MessageCircle },
   { title: "Barangay Performance", href: "/admin-dashboard/performance", icon: TrendingUp },
-  { title: "Reports & Exports", href: "/admin-dashboard/reports", icon: FileText },
+  { title: "Reports & Exports", href: "/admin-dashboard/reports", icon: FileText }, */
   { title: "User Management", href: "/admin-dashboard/users", icon: Users },
-  { title: "Settings & Rules", href: "/admin-dashboard/settings", icon: Settings },
+  /* { title: "Settings & Rules", href: "/admin-dashboard/settings", icon: Settings }, */
 ];
 
 const Logo = () => (

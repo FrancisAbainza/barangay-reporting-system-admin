@@ -9,15 +9,12 @@ import {
 } from "@/components/ui/select";
 import { AlertCircle, CheckCircle2, Clock, XCircle } from "lucide-react";
 import type { ComplaintStatus, ComplaintCategory } from "@/types/complaint";
+import { getStatusBadge, getPriorityBadge, getCategoryLabel, getCategoryBadge } from "@/lib/complaint-helpers";
 
 interface ComplaintStatusCardProps {
   status: ComplaintStatus;
   priority: string;
   category: ComplaintCategory;
-  getStatusBadge: (status: ComplaintStatus) => { className: string; label: string };
-  getPriorityBadge: (priority: string) => string;
-  getCategoryLabel: (category: ComplaintCategory) => string;
-  getCategoryBadge: (category: ComplaintCategory) => string;
   onStatusChange: (value: ComplaintStatus) => void;
 }
 
@@ -25,10 +22,6 @@ export function ComplaintStatusCard({
   status,
   priority,
   category,
-  getStatusBadge,
-  getPriorityBadge,
-  getCategoryLabel,
-  getCategoryBadge,
   onStatusChange,
 }: ComplaintStatusCardProps) {
   const getStatusIcon = (status: ComplaintStatus) => {

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,41 +11,55 @@ import {
 } from "@/components/ui/popover";
 import { Search, Filter, ChevronDown, CalendarIcon, Tag, Flag } from "lucide-react";
 import type { ComplaintStatus, ComplaintCategory } from "@/types/complaint";
+import { getStatusBadge, getCategoryLabel } from "@/lib/complaint-helpers";
 
 interface ComplaintFiltersProps {
-  searchQuery: string;
-  setSearchQuery: (query: string) => void;
-  statusFilters: ComplaintStatus[];
-  setStatusFilters: (filters: ComplaintStatus[]) => void;
-  categoryFilters: ComplaintCategory[];
-  setCategoryFilters: (filters: ComplaintCategory[]) => void;
-  priorityFilters: string[];
-  setPriorityFilters: (filters: string[]) => void;
-  dateFrom: string;
-  setDateFrom: (date: string) => void;
-  dateTo: string;
-  setDateTo: (date: string) => void;
-  getStatusBadge: (status: ComplaintStatus) => { className: string; label: string };
-  getCategoryLabel: (category: ComplaintCategory) => string;
+  onFilterChange: (filters: {
+    searchQuery: string;
+    statusFilters: ComplaintStatus[];
+    categoryFilters: ComplaintCategory[];
+    priorityFilters: string[];
+    dateFrom: string;
+    dateTo: string;
+  }) => void;
 }
 
-export function ComplaintFilters({
-  searchQuery,
-  setSearchQuery,
-  statusFilters,
-  setStatusFilters,
-  categoryFilters,
-  setCategoryFilters,
-  priorityFilters,
-  setPriorityFilters,
-  dateFrom,
-  setDateFrom,
-  dateTo,
-  setDateTo,
-  getStatusBadge,
-  getCategoryLabel,
-}: ComplaintFiltersProps) {
+export function ComplaintFilters({ onFilterChange }: ComplaintFiltersProps) {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilters, setStatusFilters] = useState<ComplaintStatus[]>([]);
+  const [categoryFilters, setCategoryFilters] = useState<ComplaintCategory[]>([]);
+  const [priorityFilters, setPriorityFilters] = useState<string[]>([]);
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
+
   const hasActiveFilters = searchQuery || statusFilters.length > 0 || categoryFilters.length > 0 || priorityFilters.length > 0 || dateFrom || dateTo;
+
+  const updateFilters = (updates: Partial<{
+    searchQuery: string;
+    statusFilters: ComplaintStatus[];
+    categoryFilters: ComplaintCategory[];
+    priorityFilters: string[];
+    dateFrom: string;
+    dateTo: string;
+  }>) => {
+    const newFilters = {
+      searchQuery: updates.searchQuery ?? searchQuery,
+      statusFilters: updates.statusFilters ?? statusFilters,
+      categoryFilters: updates.categoryFilters ?? categoryFilters,
+      priorityFilters: updates.priorityFilters ?? priorityFilters,
+      dateFrom: updates.dateFrom ?? dateFrom,
+      dateTo: updates.dateTo ?? dateTo,
+    };
+
+    if (updates.searchQuery !== undefined) setSearchQuery(updates.searchQuery);
+    if (updates.statusFilters !== undefined) setStatusFilters(updates.statusFilters);
+    if (updates.categoryFilters !== undefined) setCategoryFilters(updates.categoryFilters);
+    if (updates.priorityFilters !== undefined) setPriorityFilters(updates.priorityFilters);
+    if (updates.dateFrom !== undefined) setDateFrom(updates.dateFrom);
+    if (updates.dateTo !== undefined) setDateTo(updates.dateTo);
+
+    onFilterChange(newFilters);
+  };
 
   const clearAllFilters = () => {
     setSearchQuery("");
@@ -53,6 +68,14 @@ export function ComplaintFilters({
     setPriorityFilters([]);
     setDateFrom("");
     setDateTo("");
+    onFilterChange({
+      searchQuery: "",
+      statusFilters: [],
+      categoryFilters: [],
+      priorityFilters: [],
+      dateFrom: "",
+      dateTo: "",
+    });
   };
 
   return (
@@ -65,7 +88,7 @@ export function ComplaintFilters({
             placeholder="Search complaints..."
             className="pl-8"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => updateFilters({ searchQuery: e.target.value })}
           />
         </div>
       </div>
@@ -104,11 +127,10 @@ export function ComplaintFilters({
                         id={`status-${status.value}`}
                         checked={statusFilters.includes(status.value)}
                         onCheckedChange={(checked: boolean) => {
-                          if (checked) {
-                            setStatusFilters([...statusFilters, status.value]);
-                          } else {
-                            setStatusFilters(statusFilters.filter((s) => s !== status.value));
-                          }
+                          const newFilters = checked
+                            ? [...statusFilters, status.value]
+                            : statusFilters.filter((s) => s !== status.value);
+                          updateFilters({ statusFilters: newFilters });
                         }}
                       />
                       <Label
@@ -158,11 +180,10 @@ export function ComplaintFilters({
                         id={`category-${category.value}`}
                         checked={categoryFilters.includes(category.value)}
                         onCheckedChange={(checked: boolean) => {
-                          if (checked) {
-                            setCategoryFilters([...categoryFilters, category.value]);
-                          } else {
-                            setCategoryFilters(categoryFilters.filter((c) => c !== category.value));
-                          }
+                          const newFilters = checked
+                            ? [...categoryFilters, category.value]
+                            : categoryFilters.filter((c) => c !== category.value);
+                          updateFilters({ categoryFilters: newFilters });
                         }}
                       />
                       <Label
@@ -207,11 +228,10 @@ export function ComplaintFilters({
                         id={`priority-${priority.value}`}
                         checked={priorityFilters.includes(priority.value)}
                         onCheckedChange={(checked: boolean) => {
-                          if (checked) {
-                            setPriorityFilters([...priorityFilters, priority.value]);
-                          } else {
-                            setPriorityFilters(priorityFilters.filter((p) => p !== priority.value));
-                          }
+                          const newFilters = checked
+                            ? [...priorityFilters, priority.value]
+                            : priorityFilters.filter((p) => p !== priority.value);
+                          updateFilters({ priorityFilters: newFilters });
                         }}
                       />
                       <Label
@@ -249,7 +269,7 @@ export function ComplaintFilters({
                       id="date-from"
                       type="date"
                       value={dateFrom}
-                      onChange={(e) => setDateFrom(e.target.value)}
+                      onChange={(e) => updateFilters({ dateFrom: e.target.value })}
                     />
                   </div>
                   <div className="space-y-2">
@@ -258,7 +278,7 @@ export function ComplaintFilters({
                       id="date-to"
                       type="date"
                       value={dateTo}
-                      onChange={(e) => setDateTo(e.target.value)}
+                      onChange={(e) => updateFilters({ dateTo: e.target.value })}
                     />
                   </div>
                 </div>
@@ -285,7 +305,7 @@ export function ComplaintFilters({
               <Badge key={status} variant="secondary" className="gap-1">
                 Status: {getStatusBadge(status).label}
                 <button
-                  onClick={() => setStatusFilters(statusFilters.filter((s) => s !== status))}
+                  onClick={() => updateFilters({ statusFilters: statusFilters.filter((s) => s !== status) })}
                   className="ml-1 hover:bg-secondary-foreground/20 rounded-full p-0.5"
                 >
                   ×
@@ -296,7 +316,7 @@ export function ComplaintFilters({
               <Badge key={category} variant="secondary" className="gap-1">
                 {getCategoryLabel(category)}
                 <button
-                  onClick={() => setCategoryFilters(categoryFilters.filter((c) => c !== category))}
+                  onClick={() => updateFilters({ categoryFilters: categoryFilters.filter((c) => c !== category) })}
                   className="ml-1 hover:bg-secondary-foreground/20 rounded-full p-0.5"
                 >
                   ×
@@ -307,7 +327,7 @@ export function ComplaintFilters({
               <Badge key={priority} variant="secondary" className="gap-1">
                 Priority: {priority.charAt(0).toUpperCase() + priority.slice(1)}
                 <button
-                  onClick={() => setPriorityFilters(priorityFilters.filter((p) => p !== priority))}
+                  onClick={() => updateFilters({ priorityFilters: priorityFilters.filter((p) => p !== priority) })}
                   className="ml-1 hover:bg-secondary-foreground/20 rounded-full p-0.5"
                 >
                   ×
@@ -318,10 +338,7 @@ export function ComplaintFilters({
               <Badge variant="secondary" className="gap-1">
                 {dateFrom && dateTo ? `${dateFrom} to ${dateTo}` : dateFrom ? `From ${dateFrom}` : `Until ${dateTo}`}
                 <button
-                  onClick={() => {
-                    setDateFrom("");
-                    setDateTo("");
-                  }}
+                  onClick={() => updateFilters({ dateFrom: "", dateTo: "" })}
                   className="ml-1 hover:bg-secondary-foreground/20 rounded-full p-0.5"
                 >
                   ×

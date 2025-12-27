@@ -4,13 +4,13 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { InfoCard } from "@/components/ui/info-card";
 import { useState } from "react";
 import type { Complaint } from "@/types/complaint";
+import { formatDate } from "@/lib/date-formatter";
 
 interface ComplaintDetailsTabProps {
   complaint: Complaint;
-  formatDate: (date: Date) => string;
 }
 
-export function ComplaintDetailsTab({ complaint, formatDate }: ComplaintDetailsTabProps) {
+export function ComplaintDetailsTab({ complaint }: ComplaintDetailsTabProps) {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   const renderBasicInfo = () => (

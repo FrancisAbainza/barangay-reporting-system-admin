@@ -39,7 +39,6 @@ interface ProjectFormDialogProps {
   onOpenChange: (open: boolean) => void;
   onSubmit: (data: CreateProjectInput) => void;
   project?: Project | null;
-  mode: "create" | "edit";
 }
 
 const projectFormSchema = z.object({
@@ -117,11 +116,23 @@ export function ProjectFormDialog({
   onOpenChange,
   onSubmit,
   project,
-  mode,
 }: ProjectFormDialogProps) {
   const form = useForm<ProjectFormValues>({
     resolver: zodResolver(projectFormSchema),
-    defaultValues: {
+    defaultValues: project ? {
+      title: project.title,
+      description: project.description,
+      category: project.category,
+      status: project.status,
+      startDate: formatDateForInput(project.startDate),
+      expectedCompletionDate: formatDateForInput(project.expectedCompletionDate),
+      actualCompletionDate: formatDateForInput(project.actualCompletionDate),
+      budget: project.budget?.toString() || "",
+      contractor: project.contractor || "",
+      sourceOfFunds: project.sourceOfFunds || "",
+      progressPercentage: project.progressPercentage.toString(),
+      images: project.images?.map((img) => img.uri) || [],
+    } : {
       title: "",
       description: "",
       category: "infrastructure",
@@ -137,10 +148,10 @@ export function ProjectFormDialog({
     },
   });
 
-  // Update form when project changes or dialog opens
+  // Reset form when dialog opens/closes
   useEffect(() => {
     if (open) {
-      if (project && mode === "edit") {
+      if (project) {
         form.reset({
           title: project.title,
           description: project.description,
@@ -155,7 +166,7 @@ export function ProjectFormDialog({
           progressPercentage: project.progressPercentage.toString(),
           images: project.images?.map((img) => img.uri) || [],
         });
-      } else if (mode === "create") {
+      } else {
         form.reset({
           title: "",
           description: "",
@@ -172,7 +183,7 @@ export function ProjectFormDialog({
         });
       }
     }
-  }, [project, mode, open, form]);
+  }, [project, open, form]);
 
   const handleSubmit = (values: ProjectFormValues) => {
     const formData: CreateProjectInput = {
@@ -207,12 +218,12 @@ export function ProjectFormDialog({
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
-            {mode === "create" ? "Create New Project" : "Edit Project"}
+            {project ? "Edit Project" : "Create New Project"}
           </DialogTitle>
           <DialogDescription>
-            {mode === "create"
-              ? "Add a new project to the transparency portal"
-              : "Update the project details"}
+            {project
+              ? "Update the project details"
+              : "Add a new project to the transparency portal"}
           </DialogDescription>
         </DialogHeader>
 
@@ -455,7 +466,7 @@ export function ProjectFormDialog({
                 Cancel
               </Button>
               <Button type="submit">
-                {mode === "create" ? "Create Project" : "Save Changes"}
+                {project ? "Save Changes" : "Create Project"}
               </Button>
             </DialogFooter>
           </form>

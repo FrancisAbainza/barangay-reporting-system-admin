@@ -37,11 +37,11 @@ const menuItems = [
     href: "/admin-dashboard",
     icon: LayoutDashboard,
   },
-  {
+  /* {
     title: "AI Insights / Analysis",
     href: "/admin-dashboard/ai-insights",
     icon: Brain,
-  },
+  }, */
   {
     title: "Complaint Management",
     href: "/admin-dashboard/complaints",
@@ -57,7 +57,7 @@ const menuItems = [
     href: "/admin-dashboard/map-intelligence",
     icon: Map,
   },
-  {
+  /* {
     title: "Engagement & Sentiment",
     href: "/admin-dashboard/engagement",
     icon: MessageCircle,
@@ -71,17 +71,17 @@ const menuItems = [
     title: "Reports & Exports",
     href: "/admin-dashboard/reports",
     icon: FileText,
-  },
+  }, */
   {
     title: "User Management",
     href: "/admin-dashboard/users",
     icon: Users,
   },
-  {
+ /*  {
     title: "Settings & Rules",
     href: "/admin-dashboard/settings",
     icon: Settings,
-  },
+  }, */
 ];
 
 export function DashboardSidebar({ className }: { className?: string }) {
