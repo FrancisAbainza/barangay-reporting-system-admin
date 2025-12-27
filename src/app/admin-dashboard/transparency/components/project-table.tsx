@@ -13,11 +13,10 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreVertical, ThumbsUp, MessageSquare, Trash2 } from "lucide-react";
+import { MoreVertical, ThumbsUp, MessageSquare, Trash2, Pencil, RefreshCw } from "lucide-react";
 import type { Project, ProjectStatus, ProjectCategory } from "@/types/project";
 import { formatBudget } from "@/lib/project-helpers";
 
@@ -27,8 +26,9 @@ interface ProjectTableProps {
   getCategoryLabel: (category: ProjectCategory) => string;
   getCategoryBadge: (category: ProjectCategory) => string;
   formatDate: (date: Date) => string;
-  handleStatusChange: (projectId: string, newStatus: ProjectStatus) => void;
   handleDeleteProject: (projectId: string) => void;
+  handleEditProject: (project: Project) => void;
+  handleUpdateStatus: (project: Project) => void;
 }
 
 export function ProjectTable({
@@ -37,8 +37,9 @@ export function ProjectTable({
   getCategoryLabel,
   getCategoryBadge,
   formatDate,
-  handleStatusChange,
   handleDeleteProject,
+  handleEditProject,
+  handleUpdateStatus,
 }: ProjectTableProps) {
   const router = useRouter();
 
@@ -66,7 +67,7 @@ export function ProjectTable({
             </TableRow>
           ) : (
             projects.map((project) => (
-              <TableRow 
+              <TableRow
                 key={project.id}
                 className="cursor-pointer hover:bg-muted/50"
                 onClick={() => router.push(`/admin-dashboard/transparency/${project.id}`)}
@@ -121,36 +122,13 @@ export function ProjectTable({
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Update Status</DropdownMenuLabel>
-                      <DropdownMenuItem
-                        onClick={() => handleStatusChange(project.id, "planned")}
-                      >
-                        Planned
+                      <DropdownMenuItem onClick={() => handleUpdateStatus(project)}>
+                        <RefreshCw className="h-4 w-4 mr-2" />
+                        Update Status
                       </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => handleStatusChange(project.id, "approved")}
-                      >
-                        Approved
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => handleStatusChange(project.id, "ongoing")}
-                      >
-                        Ongoing
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => handleStatusChange(project.id, "on_hold")}
-                      >
-                        On Hold
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => handleStatusChange(project.id, "completed")}
-                      >
-                        Completed
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => handleStatusChange(project.id, "cancelled")}
-                      >
-                        Cancelled
+                      <DropdownMenuItem onClick={() => handleEditProject(project)}>
+                        <Pencil className="h-4 w-4 mr-2" />
+                        Edit Project
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem

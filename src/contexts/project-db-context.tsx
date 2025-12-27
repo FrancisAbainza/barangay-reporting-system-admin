@@ -101,12 +101,12 @@ const initialProjects: Project[] = [
     progressUpdates: [
       {
         description: "Foundation work completed. Starting wall construction.",
-        image: { uri: "https://example.com/progress1.jpg" },
+        image: { uri: `https://picsum.photos/seed/${Math.random()}/1280/720` },
         createdAt: new Date("2025-11-15T10:00:00"),
       },
       {
         description: "Electrical and plumbing installations in progress.",
-        image: { uri: "https://example.com/progress2.jpg" },
+        image: { uri: `https://picsum.photos/seed/${Math.random()}/1280/720` },
         createdAt: new Date("2025-12-10T14:30:00"),
       },
     ],
@@ -193,7 +193,7 @@ const initialProjects: Project[] = [
     progressUpdates: [
       {
         description: "Distributed color-coded bins to Zone 1 and Zone 2.",
-        image: { uri: "https://example.com/bins-distribution.jpg" },
+        image: { uri: `https://picsum.photos/seed/${Math.random()}/1280/720` },
         createdAt: new Date("2025-10-20T09:00:00"),
       },
     ],
@@ -319,18 +319,18 @@ const initialProjects: Project[] = [
       {
         description:
           "Excavation and drainage pipe installation in Zone 3 completed.",
-        image: { uri: "https://example.com/zone3-progress.jpg" },
+        image: { uri: `https://picsum.photos/seed/${Math.random()}/1280/720` },
         createdAt: new Date("2025-05-15T13:00:00"),
       },
       {
         description:
           "Zone 4 flood control infrastructure completed. Final testing in progress.",
-        image: { uri: "https://example.com/zone4-progress.jpg" },
+        image: { uri: `https://picsum.photos/seed/${Math.random()}/1280/720` },
         createdAt: new Date("2025-09-20T10:30:00"),
       },
       {
         description: "All work completed successfully. System operational.",
-        image: { uri: "https://example.com/completed-system.jpg" },
+        image: { uri: `https://picsum.photos/seed/${Math.random()}/1280/720` },
         createdAt: new Date("2025-10-28T16:00:00"),
       },
     ],

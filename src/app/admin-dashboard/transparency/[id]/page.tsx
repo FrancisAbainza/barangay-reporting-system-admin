@@ -4,14 +4,17 @@ import { useParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useProjectDb } from "@/contexts/project-db-context";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { FileText, MapPin, MessageSquare } from "lucide-react";
-import type { Project, ProjectStatus } from "@/types/project";
+import { FileText, MapPin, MessageSquare, RefreshCw, Pencil } from "lucide-react";
+import type { Project, ProjectStatus, CreateProjectInput } from "@/types/project";
 import { ProjectHeader } from "./components/project-header";
 import { ProjectStatusCard } from "./components/project-status-card";
 import { ProjectDetailsTab } from "./components/project-details-tab";
 import { ProjectLocationTab } from "./components/project-location-tab";
 import { ProjectEngagementTab } from "./components/project-engagement-tab";
+import { UpdateStatusDialog, type UpdateStatusFormValues } from "../components/update-status-dialog";
+import { ProjectFormDialog } from "../components/project-form-dialog";
 import { getStatusBadge, getCategoryLabel, getCategoryBadge } from "@/lib/project-helpers";
 import { formatDate } from "@/lib/date-formatter";
 
@@ -32,6 +35,8 @@ export default function ProjectDetailsPage() {
   const [adminComment, setAdminComment] = useState("");
   const [isGeneratingSentiment, setIsGeneratingSentiment] = useState(false);
   const [activeTab, setActiveTab] = useState("details");
+  const [isUpdateStatusDialogOpen, setIsUpdateStatusDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
   useEffect(() => {
     const foundProject = projects.find((p) => p.id === projectId);
@@ -107,6 +112,44 @@ export default function ProjectDetailsPage() {
     }
   };
 
+  const handleUpdateStatus = (data: UpdateStatusFormValues) => {
+    const updateData: any = {
+      status: data.status,
+      progressPercentage: data.progressPercentage,
+    };
+
+    // Handle actualCompletionDate based on status
+    if (data.status === "completed" && project?.status !== "completed") {
+      // Set actualCompletionDate to today when status changes to completed
+      updateData.actualCompletionDate = new Date();
+    } else if (data.status !== "completed" && project?.status === "completed") {
+      // Clear actualCompletionDate when status changes away from completed
+      updateData.actualCompletionDate = undefined;
+    }
+
+    if (data.progressUpdateDescription) {
+      const newProgressUpdate: any = {
+        description: data.progressUpdateDescription,
+        createdAt: new Date(),
+      };
+      
+      if (data.progressUpdateImage) {
+        newProgressUpdate.image = data.progressUpdateImage;
+      }
+      
+      updateData.progressUpdates = [
+        ...(project?.progressUpdates || []),
+        newProgressUpdate,
+      ];
+    }
+
+    updateProject(project!.id, updateData);
+  };
+
+  const handleEditProject = (data: CreateProjectInput) => {
+    updateProject(project!.id, data);
+  };
+
   return (
     <div className="container p-6 space-y-6">
       {/* Header with Back Button */}
@@ -116,6 +159,18 @@ export default function ProjectDetailsPage() {
         onBack={() => router.back()}
         onDelete={handleDeleteProject}
       />
+
+      {/* Action Buttons */}
+      <div className="flex gap-3">
+        <Button onClick={() => setIsUpdateStatusDialogOpen(true)} variant="default">
+          <RefreshCw className="mr-2 h-4 w-4" />
+          Update Progress
+        </Button>
+        <Button onClick={() => setIsEditDialogOpen(true)} variant="outline">
+          <Pencil className="mr-2 h-4 w-4" />
+          Edit Project
+        </Button>
+      </div>
 
       {/* Status Update Section */}
       <ProjectStatusCard
@@ -160,6 +215,22 @@ export default function ProjectDetailsPage() {
           />
         </Tabs>
       </Card>
+
+      {/* Dialogs */}
+      <UpdateStatusDialog
+        open={isUpdateStatusDialogOpen}
+        onOpenChange={setIsUpdateStatusDialogOpen}
+        onSubmit={handleUpdateStatus}
+        project={project}
+      />
+
+      <ProjectFormDialog
+        open={isEditDialogOpen}
+        onOpenChange={setIsEditDialogOpen}
+        onSubmit={handleEditProject}
+        project={project}
+        mode="edit"
+      />
     </div>
   );
 }

@@ -3,20 +3,28 @@
 import { useState, useMemo } from "react";
 import { useProjectDb } from "@/contexts/project-db-context";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import type { ProjectStatus, ProjectCategory } from "@/types/project";
+import { Button } from "@/components/ui/button";
+import type { ProjectStatus, ProjectCategory, CreateProjectInput, Project } from "@/types/project";
 import { ProjectStats } from "./components/project-stats";
 import { ProjectFilters } from "./components/project-filters";
 import { ProjectTable } from "./components/project-table";
+import { ProjectFormDialog } from "./components/project-form-dialog";
+import { UpdateStatusDialog, type UpdateStatusFormValues } from "./components/update-status-dialog";
 import { getStatusBadge, getCategoryLabel, getCategoryBadge } from "@/lib/project-helpers";
 import { formatDate } from "@/lib/date-formatter";
+import { Plus } from "lucide-react";
 
 export default function TransparencyPage() {
-  const { projects, updateProject, deleteProject } = useProjectDb();
+  const { projects, createProject, updateProject, deleteProject } = useProjectDb();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilters, setStatusFilters] = useState<ProjectStatus[]>([]);
   const [categoryFilters, setCategoryFilters] = useState<ProjectCategory[]>([]);
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [isUpdateStatusDialogOpen, setIsUpdateStatusDialogOpen] = useState(false);
 
   // Statistics
   const stats = useMemo(() => {
@@ -55,13 +63,70 @@ export default function TransparencyPage() {
     });
   }, [projects, searchQuery, statusFilters, categoryFilters, dateFrom, dateTo]);
 
-  const handleStatusChange = (projectId: string, newStatus: ProjectStatus) => {
-    updateProject(projectId, { status: newStatus });
-  };
-
   const handleDeleteProject = (projectId: string) => {
     if (confirm("Are you sure you want to delete this project?")) {
       deleteProject(projectId);
+    }
+  };
+
+  const handleCreateProject = () => {
+    setDialogMode("create");
+    setSelectedProject(null);
+    setIsDialogOpen(true);
+  };
+
+  const handleEditProject = (project: Project) => {
+    setDialogMode("edit");
+    setSelectedProject(project);
+    setIsDialogOpen(true);
+  };
+
+  const handleUpdateStatus = (project: Project) => {
+    setSelectedProject(project);
+    setIsUpdateStatusDialogOpen(true);
+  };
+
+  const handleUpdateStatusSubmit = (data: UpdateStatusFormValues) => {
+    if (!selectedProject) return;
+
+    const updateData: any = {
+      status: data.status,
+      progressPercentage: data.progressPercentage,
+    };
+
+    // Handle actualCompletionDate based on status
+    if (data.status === "completed" && selectedProject.status !== "completed") {
+      // Set actualCompletionDate to today when status changes to completed
+      updateData.actualCompletionDate = new Date();
+    } else if (data.status !== "completed" && selectedProject.status === "completed") {
+      // Clear actualCompletionDate when status changes away from completed
+      updateData.actualCompletionDate = undefined;
+    }
+
+    if (data.progressUpdateDescription) {
+      const newProgressUpdate: any = {
+        description: data.progressUpdateDescription,
+        createdAt: new Date(),
+      };
+      
+      if (data.progressUpdateImage) {
+        newProgressUpdate.image = data.progressUpdateImage;
+      }
+      
+      updateData.progressUpdates = [
+        ...(selectedProject.progressUpdates || []),
+        newProgressUpdate,
+      ];
+    }
+
+    updateProject(selectedProject.id, updateData);
+  };
+
+  const handleFormSubmit = (data: CreateProjectInput) => {
+    if (dialogMode === "create") {
+      createProject(data);
+    } else if (selectedProject) {
+      updateProject(selectedProject.id, data);
     }
   };
 
@@ -81,8 +146,16 @@ export default function TransparencyPage() {
       {/* Filters and Search */}
       <Card>
         <CardHeader>
-          <CardTitle>Projects Overview</CardTitle>
-          <CardDescription>View and manage all barangay projects</CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>Projects Overview</CardTitle>
+              <CardDescription>View and manage all barangay projects</CardDescription>
+            </div>
+            <Button onClick={handleCreateProject}>
+              <Plus className="mr-2 h-4 w-4" />
+              Create Project
+            </Button>
+          </div>
         </CardHeader>
         <CardContent className="space-y-4">
           <ProjectFilters
@@ -112,11 +185,29 @@ export default function TransparencyPage() {
             getCategoryLabel={getCategoryLabel}
             getCategoryBadge={getCategoryBadge}
             formatDate={formatDate}
-            handleStatusChange={handleStatusChange}
             handleDeleteProject={handleDeleteProject}
+            handleEditProject={handleEditProject}
+            handleUpdateStatus={handleUpdateStatus}
           />
         </CardContent>
       </Card>
+
+      {/* Project Form Dialog */}
+      <ProjectFormDialog
+        open={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        onSubmit={handleFormSubmit}
+        project={selectedProject}
+        mode={dialogMode}
+      />
+
+      {/* Update Status Dialog */}
+      <UpdateStatusDialog
+        open={isUpdateStatusDialogOpen}
+        onOpenChange={setIsUpdateStatusDialogOpen}
+        onSubmit={handleUpdateStatusSubmit}
+        project={selectedProject}
+      />
     </div>
   );
 }
