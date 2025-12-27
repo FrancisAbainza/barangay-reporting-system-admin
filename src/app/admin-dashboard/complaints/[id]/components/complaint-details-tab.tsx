@@ -3,7 +3,7 @@ import { FileText, User, Calendar, CheckCircle, ImageIcon, Receipt, X } from "lu
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { InfoCard } from "@/components/ui/info-card";
 import { useState } from "react";
-import type { Complaint } from "@/contexts/complaint-db-context";
+import type { Complaint } from "@/types/complaint";
 
 interface ComplaintDetailsTabProps {
   complaint: Complaint;
@@ -48,7 +48,7 @@ export function ComplaintDetailsTab({ complaint, formatDate }: ComplaintDetailsT
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
         {complaint.images!.map((img, idx) => (
           <button
-            key={idx}
+            key={img.uri}
             onClick={() => setSelectedImage(img.uri)}
             className="group relative aspect-square border rounded-lg overflow-hidden cursor-pointer transition-all hover:shadow-lg hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary"
           >

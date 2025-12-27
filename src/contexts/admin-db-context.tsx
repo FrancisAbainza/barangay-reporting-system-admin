@@ -1,17 +1,10 @@
 "use client";
 
 import React, { createContext, useContext, useState, ReactNode } from "react";
+import type { AdminRole, Admin } from "@/types/admin";
 
-// Types
-export type AdminRole = "super_admin" | "regular_admin";
-
-export interface Admin {
-  id: string;
-  name: string;
-  role: AdminRole;
-  createdAt: Date;
-  updatedAt: Date;
-}
+// Re-export types for backward compatibility
+export type { AdminRole, Admin };
 
 // Context types
 interface AdminDbContextType {

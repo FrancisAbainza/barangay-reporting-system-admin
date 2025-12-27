@@ -9,7 +9,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Search, Filter, ChevronDown, CalendarIcon, Tag, Flag } from "lucide-react";
-import type { ComplaintStatus, ComplaintCategory } from "@/contexts/complaint-db-context";
+import type { ComplaintStatus, ComplaintCategory } from "@/types/complaint";
 
 interface ComplaintFiltersProps {
   searchQuery: string;

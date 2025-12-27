@@ -16,7 +16,7 @@ import {
   Shield,
   FileText
 } from "lucide-react";
-import type { ComplaintAiAnalysis } from "@/contexts/complaint-db-context";
+import type { ComplaintAiAnalysis } from "@/types/complaint";
 
 interface ComplaintAIAnalysisTabProps {
   isGenerating: boolean;
@@ -89,8 +89,8 @@ export function ComplaintAIAnalysisTab({
       {/* Required Resources */}
       <InfoCard icon={Wrench} iconClassName="text-primary" title="Required Resources">
         <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
-          {analysis.requiredResources.map((resource, idx) => (
-            <li key={idx}>{resource}</li>
+          {analysis.requiredResources.map((resource) => (
+            <li key={resource}>{resource}</li>
           ))}
         </ul>
       </InfoCard>

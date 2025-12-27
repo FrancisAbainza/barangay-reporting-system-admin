@@ -5,7 +5,7 @@ import { TabsContent } from "@/components/ui/tabs";
 import { InfoCard } from "@/components/ui/info-card";
 import { MapPin, ExternalLink, Navigation } from "lucide-react";
 import { APIProvider, Map, AdvancedMarker } from "@vis.gl/react-google-maps";
-import type { Complaint } from "@/contexts/complaint-db-context";
+import type { Complaint } from "@/types/complaint";
 
 interface ComplaintLocationTabProps {
   complaint: Complaint;

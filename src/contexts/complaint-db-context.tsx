@@ -1,138 +1,34 @@
 "use client";
 
 import React, { createContext, useContext, useState, ReactNode } from "react";
+import type {
+  Image,
+  ResolutionDetail,
+  ComplaintCategory,
+  ComplaintStatus,
+  Reply,
+  Comment,
+  ComplaintAiAnalysis,
+  CommunitySentiment,
+  Complaint,
+  CreateComplaintInput,
+  UpdateComplaintInput,
+} from "@/types/complaint";
 
-// Types
-export interface Image {
-  uri: string;
-}
-
-export interface ResolutionDetail {
-  description: string;
-  budget?: number;
-  images?: Image[];
-}
-
-export type ComplaintCategory =
-  | "noise"
-  | "sanitation"
-  | "public_safety"
-  | "traffic"
-  | "infrastructure"
-  | "water_electricity"
-  | "domestic"
-  | "environment"
-  | "others";
-
-export type ComplaintStatus =
-  | "submitted"
-  | "under_review"
-  | "scheduled"
-  | "in_progress"
-  | "resolved"
-  | "dismissed";
-
-export interface Reply {
-  id: string;
-  userId: string;
-  userName: string;
-  content: string;
-  isAdmin?: boolean;
-  likes?: string[];
-  dislikes?: string[];
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface Comment {
-  id: string;
-  userId: string;
-  userName: string;
-  content: string;
-  isAdmin?: boolean;
-  likes?: string[];
-  dislikes?: string[];
-  replies?: Reply[];
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface ComplaintAiAnalysis {
-  // --- Existing Logic ---
-  summary: string;
-
-  // --- Solution & Action Plan ---
-  suggestedSolution: string;        // Step-by-step fix for the problem
-  requiredResources: string[];     // Tools or materials needed (e.g., "Cere-mix", "Backhoe")
-  estimatedManpower: string;       // e.g., "2 maintenance staff", "Barangay Tanods"
-  estimatedTimeframe: string;      // AI's guess on how long the fix takes
-
-  // --- Barangay Context & Governance ---
-  departmentRouting: string;       // Which committee handles this (e.g., "Health & Sanitation")
-  budgetEstimate?: string;         // e.g., "₱1,000 - ₱5,000"
-
-  // --- Risk & Prevention ---
-  publicSafetyRisk: string;        // Immediate dangers (e.g., "Risk of electrocution")
-  preventionAdvice: string;        // How the Barangay can prevent this from happening again
-}
-
-export interface CommunitySentiment {
-  sentiment: 'supportive' | 'positive' | 'negative' | 'neutral';
-  summary: string; // e.g., "Most residents are concerned about the smell, while others are asking for a specific pickup schedule."
-}
-
-export interface Complaint {
-  id: string;
-  title: string;
-  description: string;
-  category: ComplaintCategory;
-  status: ComplaintStatus;
-  priority: "low" | "medium" | "high" | "urgent";
-  complainantName: string;
-  complainantId: string;
-  location: {
-    latitude: number;
-    longitude: number;
-    address: string;
-  };
-  images?: Image[];
-  resolutionDetails?: ResolutionDetail;
-  resolvedAt?: Date;
-  scheduledAt?: Date;
-  likes?: string[];
-  dislikes?: string[];
-  comments?: Comment[];
-  aiAnalysis?: ComplaintAiAnalysis;
-  communitySentiment?: CommunitySentiment;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface CreateComplaintInput {
-  title: string;
-  description: string;
-  category: ComplaintCategory;
-  location: {
-    latitude: number;
-    longitude: number;
-    address: string;
-  };
-  images?: Image[];
-}
-
-export interface UpdateComplaintInput {
-  title?: string;
-  description?: string;
-  category?: ComplaintCategory;
-  location?: {
-    latitude: number;
-    longitude: number;
-    address: string;
-  };
-  images?: Image[];
-  resolutionDetails?: ResolutionDetail;
-  scheduledAt?: Date;
-}
+// Re-export types for backward compatibility
+export type {
+  Image,
+  ResolutionDetail,
+  ComplaintCategory,
+  ComplaintStatus,
+  Reply,
+  Comment,
+  ComplaintAiAnalysis,
+  CommunitySentiment,
+  Complaint,
+  CreateComplaintInput,
+  UpdateComplaintInput,
+};
 
 // Context types
 interface ComplaintDbContextType {

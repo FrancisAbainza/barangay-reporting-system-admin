@@ -1,18 +1,19 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { useRouter } from "next/navigation";
 import { useComplaintDb } from "@/contexts/complaint-db-context";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import type { ComplaintStatus, ComplaintCategory } from "@/contexts/complaint-db-context";
+import type { ComplaintStatus, ComplaintCategory } from "@/types/complaint";
 import { ComplaintStats } from "./components/complaint-stats";
 import { ComplaintFilters } from "./components/complaint-filters";
 import { ComplaintTable } from "./components/complaint-table";
 import { ResolutionDialog } from "./components/resolution-dialog";
 import { ScheduledDialog } from "./components/scheduled-dialog";
+import { getStatusBadge, getPriorityBadge, getCategoryLabel, getCategoryBadge } from "@/lib/complaint-helpers";
+import { formatDate } from "@/lib/date-formatter";
 
 export default function ComplaintsPage() {
-  const { complaints, updateComplaintStatus, deleteComplaint, updateComplaint, addComplaintComment } = useComplaintDb();
+  const { complaints, updateComplaintStatus, deleteComplaint, updateComplaint } = useComplaintDb();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilters, setStatusFilters] = useState<ComplaintStatus[]>([]);
   const [categoryFilters, setCategoryFilters] = useState<ComplaintCategory[]>([]);
@@ -66,59 +67,6 @@ export default function ComplaintsPage() {
       return matchesSearch && matchesStatus && matchesCategory && matchesPriority && matchesDateFrom && matchesDateTo;
     });
   }, [complaints, searchQuery, statusFilters, categoryFilters, priorityFilters, dateFrom, dateTo]);
-
-  // Helper functions
-  const getStatusBadge = (status: ComplaintStatus) => {
-    const variants: Record<ComplaintStatus, { className: string, label: string }> = {
-      submitted: { className: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200", label: "Submitted" },
-      under_review: { className: "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200", label: "Under Review" },
-      scheduled: { className: "bg-cyan-100 text-cyan-800 dark:bg-cyan-900 dark:text-cyan-200", label: "Scheduled" },
-      in_progress: { className: "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200", label: "In Progress" },
-      resolved: { className: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200", label: "Resolved" },
-      dismissed: { className: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200", label: "Dismissed" },
-    };
-    return variants[status];
-  };
-
-  const getPriorityBadge = (priority: string) => {
-    const colors: Record<string, string> = {
-      low: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
-      medium: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
-      high: "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200",
-      urgent: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
-    };
-    return colors[priority] || colors.medium;
-  };
-
-  const getCategoryLabel = (category: ComplaintCategory) => {
-    const labels: Record<ComplaintCategory, string> = {
-      noise: "Noise",
-      sanitation: "Sanitation",
-      public_safety: "Public Safety",
-      traffic: "Traffic",
-      infrastructure: "Infrastructure",
-      water_electricity: "Water/Electricity",
-      domestic: "Domestic",
-      environment: "Environment",
-      others: "Others",
-    };
-    return labels[category];
-  };
-
-  const getCategoryBadge = (category: ComplaintCategory) => {
-    const colors: Record<ComplaintCategory, string> = {
-      noise: "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
-      sanitation: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200",
-      public_safety: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
-      traffic: "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200",
-      infrastructure: "bg-slate-100 text-slate-800 dark:bg-slate-900 dark:text-slate-200",
-      water_electricity: "bg-cyan-100 text-cyan-800 dark:bg-cyan-900 dark:text-cyan-200",
-      domestic: "bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200",
-      environment: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
-      others: "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200",
-    };
-    return colors[category];
-  };
 
   const handleStatusChange = (complaintId: string, newStatus: ComplaintStatus) => {
     const complaint = complaints.find(c => c.id === complaintId);
@@ -187,16 +135,6 @@ export default function ComplaintsPage() {
     if (confirm("Are you sure you want to delete this complaint?")) {
       deleteComplaint(complaintId);
     }
-  };
-
-  const formatDate = (date: Date) => {
-    return new Date(date).toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
   };
 
   return (

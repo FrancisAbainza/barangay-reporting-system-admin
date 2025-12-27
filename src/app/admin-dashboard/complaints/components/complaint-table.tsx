@@ -18,7 +18,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreVertical, ThumbsUp, MessageSquare, Trash2 } from "lucide-react";
-import type { Complaint, ComplaintStatus, ComplaintCategory } from "@/contexts/complaint-db-context";
+import type { Complaint, ComplaintStatus, ComplaintCategory } from "@/types/complaint";
 
 interface ComplaintTableProps {
   complaints: Complaint[];

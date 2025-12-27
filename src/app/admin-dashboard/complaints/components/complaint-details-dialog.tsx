@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MapPin, ThumbsUp, MessageSquare, Sparkles } from "lucide-react";
-import type { Complaint, ComplaintStatus, ComplaintCategory } from "@/contexts/complaint-db-context";
+import type { Complaint, ComplaintStatus, ComplaintCategory } from "@/types/complaint";
 
 interface ComplaintDetailsDialogProps {
   isOpen: boolean;
@@ -115,12 +115,12 @@ export function ComplaintDetailsDialog({
                 <div>
                   <h4 className="font-semibold mb-2">Images</h4>
                   <div className="space-y-2">
-                    {complaint.images.map((img, idx) => (
+                    {complaint.images.map((img) => (
                       <div
-                        key={idx}
+                        key={img.uri}
                         className="border rounded-lg p-3 text-sm text-muted-foreground w-full"
                       >
-                        Image {idx + 1}
+                        {img.uri}
                       </div>
                     ))}
                   </div>

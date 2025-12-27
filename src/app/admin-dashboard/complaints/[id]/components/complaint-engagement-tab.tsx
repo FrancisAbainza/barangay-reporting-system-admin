@@ -8,7 +8,7 @@ import { TabsContent } from "@/components/ui/tabs";
 import { InfoCard } from "@/components/ui/info-card";
 import { Spinner } from "@/components/ui/spinner";
 import { ThumbsUp, ThumbsDown, MessageSquare, Send, Reply as ReplyIcon, TrendingUp, Sparkles } from "lucide-react";
-import type { Complaint } from "@/contexts/complaint-db-context";
+import type { Complaint } from "@/types/complaint";
 
 interface ComplaintEngagementTabProps {
   complaint: Complaint;

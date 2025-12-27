@@ -8,7 +8,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { AlertCircle, CheckCircle2, Clock, XCircle } from "lucide-react";
-import type { ComplaintStatus, ComplaintCategory } from "@/contexts/complaint-db-context";
+import type { ComplaintStatus, ComplaintCategory } from "@/types/complaint";
 
 interface ComplaintStatusCardProps {
   status: ComplaintStatus;
