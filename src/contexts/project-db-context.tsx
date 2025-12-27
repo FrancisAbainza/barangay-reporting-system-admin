@@ -9,6 +9,7 @@ import type {
   ProjectStatus,
   ProjectLocation,
   ProgressUpdate,
+  CommunitySentiment,
   Project,
   CreateProjectInput,
   UpdateProjectInput,
@@ -23,6 +24,7 @@ export type {
   ProjectStatus,
   ProjectLocation,
   ProgressUpdate,
+  CommunitySentiment,
   Project,
   CreateProjectInput,
   UpdateProjectInput,
@@ -61,6 +63,15 @@ interface ProjectDbContextType {
     commentId: string,
     userId: string
   ) => boolean;
+  addReply: (
+    projectId: string,
+    commentId: string,
+    userId: string,
+    userName: string,
+    content: string,
+    isAdmin?: boolean
+  ) => Reply | null;
+  generateCommunitySentiment: (projectId: string) => Promise<CommunitySentiment>;
 }
 
 // Initial dummy data
@@ -654,6 +665,114 @@ export function ProjectDbProvider({ children }: { children: ReactNode }) {
     return success;
   };
 
+  const addReply = (
+    projectId: string,
+    commentId: string,
+    userId: string,
+    userName: string,
+    content: string,
+    isAdmin?: boolean
+  ): Reply | null => {
+    let newReply: Reply | null = null;
+
+    setProjects((prev) =>
+      prev.map((project) => {
+        if (project.id === projectId) {
+          const updatedComments = (project.comments || []).map((comment) => {
+            if (comment.id === commentId) {
+              newReply = {
+                id: generateId("reply"),
+                userId,
+                userName,
+                content,
+                isAdmin,
+                likes: [],
+                dislikes: [],
+                createdAt: new Date(),
+                updatedAt: new Date(),
+              };
+
+              return {
+                ...comment,
+                replies: [...(comment.replies || []), newReply],
+                updatedAt: new Date(),
+              };
+            }
+            return comment;
+          });
+
+          return {
+            ...project,
+            comments: updatedComments,
+            updatedAt: new Date(),
+          };
+        }
+        return project;
+      })
+    );
+
+    return newReply;
+  };
+
+  const generateCommunitySentiment = async (projectId: string): Promise<CommunitySentiment> => {
+    const project = projects.find((p) => p.id === projectId);
+    
+    if (!project) {
+      throw new Error("Project not found");
+    }
+
+    // Simulate AI sentiment analysis generation with delay
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    const comments = project.comments || [];
+    let sentiment: 'supportive' | 'positive' | 'negative' | 'neutral';
+    let summary: string;
+
+    if (comments.length === 0) {
+      sentiment = 'neutral';
+      summary = 'No community comments yet on this project.';
+    } else {
+      // Analyze sentiment based on likes and dislikes
+      const totalLikes = comments.reduce((sum, c) => sum + (c.likes?.length || 0), 0);
+      const totalDislikes = comments.reduce((sum, c) => sum + (c.dislikes?.length || 0), 0);
+      const avgLikes = totalLikes / comments.length;
+      const avgDislikes = totalDislikes / comments.length;
+      
+      if (avgLikes >= 3 && avgDislikes < 1) {
+        sentiment = 'supportive';
+      } else if (avgLikes >= 1 && avgDislikes < avgLikes) {
+        sentiment = 'positive';
+      } else if (avgDislikes > avgLikes) {
+        sentiment = 'negative';
+      } else {
+        sentiment = 'neutral';
+      }
+      
+      summary = `${comments.length} resident${comments.length > 1 ? 's have' : ' has'} commented on this project. Community engagement is ${sentiment}.`;
+    }
+
+    const communitySentiment: CommunitySentiment = {
+      sentiment,
+      summary
+    };
+
+    // Update the project with the generated community sentiment
+    setProjects((prev) =>
+      prev.map((p) => {
+        if (p.id === projectId) {
+          return {
+            ...p,
+            communitySentiment,
+            updatedAt: new Date(),
+          };
+        }
+        return p;
+      })
+    );
+
+    return communitySentiment;
+  };
+
   const value: ProjectDbContextType = {
     projects,
     getProjects,
@@ -668,6 +787,8 @@ export function ProjectDbProvider({ children }: { children: ReactNode }) {
     deleteProjectComment,
     likeProjectComment,
     dislikeProjectComment,
+    addReply,
+    generateCommunitySentiment,
   };
 
   return (

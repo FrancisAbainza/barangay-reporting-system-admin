@@ -58,6 +58,11 @@ export interface ProgressUpdate {
   createdAt: Date;
 }
 
+export interface CommunitySentiment {
+  sentiment: 'supportive' | 'positive' | 'negative' | 'neutral';
+  summary: string;
+}
+
 export interface Project {
   id: string;
   title: string;
@@ -77,6 +82,7 @@ export interface Project {
   likes?: string[];
   dislikes?: string[];
   comments?: Comment[];
+  communitySentiment?: CommunitySentiment;
   createdAt: Date;
   updatedAt: Date;
 }
