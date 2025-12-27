@@ -14,8 +14,6 @@ import {
   Receipt, 
   AlertTriangle, 
   Shield,
-  MessageSquare,
-  TrendingUp,
   FileText
 } from "lucide-react";
 import type { ComplaintAiAnalysis } from "@/contexts/complaint-db-context";
@@ -31,16 +29,6 @@ export function ComplaintAIAnalysisTab({
   analysis,
   onGenerate,
 }: ComplaintAIAnalysisTabProps) {
-  const getSentimentBadge = (sentiment: string) => {
-    const colors: Record<string, string> = {
-      supportive: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
-      positive: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
-      negative: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
-      neutral: "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200",
-    };
-    return colors[sentiment] || colors.neutral;
-  };
-
   const renderGeneratingState = () => (
     <div className="flex flex-col items-center justify-center py-12 space-y-4">
       <Spinner size="lg" />
@@ -120,20 +108,6 @@ export function ComplaintAIAnalysisTab({
         </InfoCard>
       </div>
 
-      {/* Community Sentiment */}
-      <InfoCard icon={MessageSquare} iconClassName="text-primary" title="Community Sentiment">
-        <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Sentiment:</span>
-            <Badge className={getSentimentBadge(analysis.commentsSentiment)}>
-              <TrendingUp className="h-3 w-3 mr-1" />
-              {analysis.commentsSentiment.charAt(0).toUpperCase() + analysis.commentsSentiment.slice(1)}
-            </Badge>
-          </div>
-          <p className="text-sm text-muted-foreground">{analysis.commentsSummary}</p>
-        </div>
-      </InfoCard>
-
       {/* Regenerate Button */}
       <div className="pt-4 border-t">
         <Button onClick={onGenerate} variant="outline" className="gap-2">
@@ -150,7 +124,7 @@ export function ComplaintAIAnalysisTab({
         <Sparkles className="h-8 w-8 text-primary" />
       </div>
       <div className="space-y-2">
-        <h3 className="text-lg font-semibold">No AI Analysis Yet</h3>
+        <h3 className="text-lg font-semibold">Generate AI Analysis</h3>
         <p className="text-sm text-muted-foreground max-w-md">
           Click the &quot;Generate AI Analysis&quot; button above to get AI-powered insights,
           recommendations, and analysis for this complaint.

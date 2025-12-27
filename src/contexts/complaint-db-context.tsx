@@ -74,9 +74,11 @@ export interface ComplaintAiAnalysis {
   // --- Risk & Prevention ---
   publicSafetyRisk: string;        // Immediate dangers (e.g., "Risk of electrocution")
   preventionAdvice: string;        // How the Barangay can prevent this from happening again
+}
 
-  commentsSentiment: 'supportive' | 'positive' | 'negative' | 'neutral'
-  commentsSummary: string; // e.g., "Most residents are concerned about the smell, while others are asking for a specific pickup schedule."
+export interface CommunitySentiment {
+  sentiment: 'supportive' | 'positive' | 'negative' | 'neutral';
+  summary: string; // e.g., "Most residents are concerned about the smell, while others are asking for a specific pickup schedule."
 }
 
 export interface Complaint {
@@ -96,10 +98,12 @@ export interface Complaint {
   images?: Image[];
   resolutionDetails?: ResolutionDetail;
   resolvedAt?: Date;
+  scheduledAt?: Date;
   likes?: string[];
   dislikes?: string[];
   comments?: Comment[];
   aiAnalysis?: ComplaintAiAnalysis;
+  communitySentiment?: CommunitySentiment;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -127,6 +131,7 @@ export interface UpdateComplaintInput {
   };
   images?: Image[];
   resolutionDetails?: ResolutionDetail;
+  scheduledAt?: Date;
 }
 
 // Context types
@@ -205,6 +210,7 @@ interface ComplaintDbContextType {
     userId: string
   ) => boolean;
   generateAIAnalysis: (complaintId: string) => Promise<ComplaintAiAnalysis>;
+  generateCommunitySentiment: (complaintId: string) => Promise<CommunitySentiment>;
 }
 
 // Initial dummy data
@@ -495,17 +501,26 @@ export function ComplaintDbProvider({ children }: { children: ReactNode }) {
     id: string,
     status: ComplaintStatus
   ): Complaint | null => {
-    const updateData: UpdateComplaintInput & { status: ComplaintStatus; resolvedAt?: Date | null } = { status };
+    const complaint = complaints.find(c => c.id === id);
+    if (!complaint) return null;
+
+    const updateData: any = { status };
     
     // Set resolvedAt timestamp when marking as resolved
     if (status === "resolved") {
       updateData.resolvedAt = new Date();
-    } else {
+    } else if (complaint.status === "resolved") {
       // Clear resolvedAt if changing from resolved to another status
-      const complaint = complaints.find(c => c.id === id);
-      if (complaint?.status === "resolved") {
-        updateData.resolvedAt = null;
-      }
+      updateData.resolvedAt = undefined;
+    }
+    
+    // Set scheduledAt timestamp when marking as scheduled
+    if (status === "scheduled") {
+      updateData.scheduledAt = new Date();
+    } else if (complaint.status === "scheduled" && 
+               (status === "submitted" || status === "under_review" || status === "dismissed")) {
+      // Clear scheduledAt only when changing to submitted, under_review, or dismissed
+      updateData.scheduledAt = undefined;
     }
     
     return updateComplaint(id, updateData);
@@ -1029,33 +1044,6 @@ export function ComplaintDbProvider({ children }: { children: ReactNode }) {
       return labels[category];
     };
 
-    // Analyze comments sentiment
-    const analyzeCommentsSentiment = (): { sentiment: 'supportive' | 'positive' | 'negative' | 'neutral'; summary: string } => {
-      const comments = complaint.comments || [];
-      if (comments.length === 0) {
-        return {
-          sentiment: 'neutral',
-          summary: 'No community comments yet on this complaint.'
-        };
-      }
-      
-      // Simple mock sentiment analysis
-      const totalLikes = comments.reduce((sum, c) => sum + (c.likes?.length || 0), 0);
-      const avgLikes = totalLikes / comments.length;
-      
-      let sentiment: 'supportive' | 'positive' | 'negative' | 'neutral';
-      if (avgLikes >= 3) sentiment = 'supportive';
-      else if (avgLikes >= 1) sentiment = 'positive';
-      else sentiment = 'neutral';
-      
-      return {
-        sentiment,
-        summary: `${comments.length} resident${comments.length > 1 ? 's have' : ' has'} commented on this issue. Community engagement is ${sentiment}.`
-      };
-    };
-
-    const commentAnalysis = analyzeCommentsSentiment();
-
     // Generate structured AI analysis
     const aiAnalysis: ComplaintAiAnalysis = {
       summary: `This ${getCategoryLabel(complaint.category).toLowerCase()} complaint titled "${complaint.title}" requires ${complaint.priority === 'urgent' || complaint.priority === 'high' ? 'immediate' : 'standard'} attention. ${complaint.description.substring(0, 100)}...`,
@@ -1129,9 +1117,6 @@ export function ComplaintDbProvider({ children }: { children: ReactNode }) {
         : complaint.category === 'public_safety'
         ? 'Enhance barangay patrol schedules. Improve lighting in vulnerable areas. Establish community watch programs.'
         : 'Conduct regular monitoring and preventive maintenance. Establish community feedback channels for early issue detection.',
-      
-      commentsSentiment: commentAnalysis.sentiment,
-      commentsSummary: commentAnalysis.summary
     };
 
     // Update the complaint with the generated AI analysis
@@ -1149,6 +1134,65 @@ export function ComplaintDbProvider({ children }: { children: ReactNode }) {
     );
 
     return aiAnalysis;
+  };
+
+  const generateCommunitySentiment = async (complaintId: string): Promise<CommunitySentiment> => {
+    const complaint = complaints.find((c) => c.id === complaintId);
+    
+    if (!complaint) {
+      throw new Error("Complaint not found");
+    }
+
+    // Simulate AI sentiment analysis generation with delay
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    const comments = complaint.comments || [];
+    let sentiment: 'supportive' | 'positive' | 'negative' | 'neutral';
+    let summary: string;
+
+    if (comments.length === 0) {
+      sentiment = 'neutral';
+      summary = 'No community comments yet on this complaint.';
+    } else {
+      // Analyze sentiment based on likes and dislikes
+      const totalLikes = comments.reduce((sum, c) => sum + (c.likes?.length || 0), 0);
+      const totalDislikes = comments.reduce((sum, c) => sum + (c.dislikes?.length || 0), 0);
+      const avgLikes = totalLikes / comments.length;
+      const avgDislikes = totalDislikes / comments.length;
+      
+      if (avgLikes >= 3 && avgDislikes < 1) {
+        sentiment = 'supportive';
+      } else if (avgLikes >= 1 && avgDislikes < avgLikes) {
+        sentiment = 'positive';
+      } else if (avgDislikes > avgLikes) {
+        sentiment = 'negative';
+      } else {
+        sentiment = 'neutral';
+      }
+      
+      summary = `${comments.length} resident${comments.length > 1 ? 's have' : ' has'} commented on this issue. Community engagement is ${sentiment}.`;
+    }
+
+    const communitySentiment: CommunitySentiment = {
+      sentiment,
+      summary
+    };
+
+    // Update the complaint with the generated community sentiment
+    setComplaints((prev) =>
+      prev.map((c) => {
+        if (c.id === complaintId) {
+          return {
+            ...c,
+            communitySentiment,
+            updatedAt: new Date(),
+          };
+        }
+        return c;
+      })
+    );
+
+    return communitySentiment;
   };
 
   const value: ComplaintDbContextType = {
@@ -1172,6 +1216,7 @@ export function ComplaintDbProvider({ children }: { children: ReactNode }) {
     likeReply,
     dislikeReply,
     generateAIAnalysis,
+    generateCommunitySentiment,
   };
 
   return (

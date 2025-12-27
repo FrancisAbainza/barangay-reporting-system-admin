@@ -114,7 +114,6 @@ export function ComplaintTable({
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
                       <DropdownMenuLabel>Update Status</DropdownMenuLabel>
                       <DropdownMenuItem
                         onClick={() => handleStatusChange(complaint.id, "under_review")}

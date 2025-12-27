@@ -8,6 +8,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Sparkles, FileText, MapPin, MessageSquare } from "lucide-react";
 import type { Complaint, ComplaintStatus, ComplaintCategory, ComplaintAiAnalysis } from "@/contexts/complaint-db-context";
 import { ResolutionDialog } from "../components/resolution-dialog";
+import { ScheduledDialog } from "../components/scheduled-dialog";
 import { ComplaintHeader } from "./components/complaint-header";
 import { ComplaintStatusCard } from "./components/complaint-status-card";
 import { ComplaintDetailsTab } from "./components/complaint-details-tab";
@@ -26,7 +27,8 @@ export default function ComplaintDetailsPage() {
     updateComplaint, 
     addComplaintComment,
     addReply,
-    generateAIAnalysis 
+    generateAIAnalysis,
+    generateCommunitySentiment
   } = useComplaintDb();
   
   const [complaint, setComplaint] = useState<Complaint | null>(null);
@@ -34,7 +36,10 @@ export default function ComplaintDetailsPage() {
   const [isResolutionDialogOpen, setIsResolutionDialogOpen] = useState(false);
   const [resolutionDescription, setResolutionDescription] = useState("");
   const [resolutionBudget, setResolutionBudget] = useState("");
+  const [isScheduledDialogOpen, setIsScheduledDialogOpen] = useState(false);
+  const [scheduledDate, setScheduledDate] = useState("");
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);
+  const [isGeneratingSentiment, setIsGeneratingSentiment] = useState(false);
   const [activeTab, setActiveTab] = useState("details");
 
   useEffect(() => {
@@ -123,12 +128,23 @@ export default function ComplaintDetailsPage() {
   const handleStatusChange = (newStatus: ComplaintStatus) => {
     if (newStatus === "resolved" && !complaint.resolutionDetails) {
       setIsResolutionDialogOpen(true);
+    } else if (newStatus === "scheduled" && !complaint.scheduledAt) {
+      setIsScheduledDialogOpen(true);
     } else {
+      // Remove resolutionDetails when changing away from resolved status
       if (complaint.status === "resolved" && newStatus !== "resolved") {
         updateComplaint(complaint.id, {
           resolutionDetails: undefined,
         });
       }
+      
+      // Remove scheduledAt when changing to under_review or submitted
+      if (newStatus === "under_review" || newStatus === "submitted") {
+        updateComplaint(complaint.id, {
+          scheduledAt: undefined,
+        });
+      }
+      
       updateComplaintStatus(complaint.id, newStatus);
     }
   };
@@ -153,6 +169,22 @@ export default function ComplaintDetailsPage() {
     setResolutionDescription("");
     setResolutionBudget("");
     setIsResolutionDialogOpen(false);
+  };
+
+  const handleScheduleComplaint = () => {
+    if (!scheduledDate) {
+      alert("Please select a scheduled date");
+      return;
+    }
+
+    updateComplaint(complaint.id, {
+      scheduledAt: new Date(scheduledDate),
+    });
+
+    updateComplaintStatus(complaint.id, "scheduled");
+    
+    setScheduledDate("");
+    setIsScheduledDialogOpen(false);
   };
 
   const handleAddAdminComment = () => {
@@ -205,6 +237,20 @@ export default function ComplaintDetailsPage() {
       alert("Failed to generate AI analysis. Please try again.");
     } finally {
       setIsGeneratingAI(false);
+    }
+  };
+
+  const handleGenerateCommunitySentiment = async () => {
+    setIsGeneratingSentiment(true);
+    
+    try {
+      await generateCommunitySentiment(complaint.id);
+      // The complaint will be updated in the context, and useEffect will refresh it
+    } catch (error) {
+      console.error("Error generating community sentiment:", error);
+      alert("Failed to generate community sentiment. Please try again.");
+    } finally {
+      setIsGeneratingSentiment(false);
     }
   };
 
@@ -262,6 +308,8 @@ export default function ComplaintDetailsPage() {
             onAdminCommentChange={setAdminComment}
             onAddComment={handleAddAdminComment}
             onAddReply={handleAddReply}
+            onGenerateCommunitySentiment={handleGenerateCommunitySentiment}
+            isGeneratingSentiment={isGeneratingSentiment}
             formatDate={formatDate}
           />
           <ComplaintAIAnalysisTab
@@ -281,6 +329,15 @@ export default function ComplaintDetailsPage() {
         resolutionBudget={resolutionBudget}
         setResolutionBudget={setResolutionBudget}
         onSubmit={handleResolveComplaint}
+      />
+
+      {/* Scheduled Dialog */}
+      <ScheduledDialog
+        isOpen={isScheduledDialogOpen}
+        onOpenChange={setIsScheduledDialogOpen}
+        scheduledDate={scheduledDate}
+        setScheduledDate={setScheduledDate}
+        onSubmit={handleScheduleComplaint}
       />
     </div>
   );

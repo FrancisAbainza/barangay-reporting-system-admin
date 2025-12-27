@@ -6,6 +6,7 @@ interface ComplaintStatsProps {
     total: number;
     submitted: number;
     underReview: number;
+    scheduled: number;
     inProgress: number;
     resolved: number;
     urgent: number;
@@ -43,7 +44,7 @@ export function ComplaintStats({ stats }: ComplaintStatsProps) {
           <AlertTriangle className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{stats.inProgress}</div>
+          <div className="text-2xl font-bold">{stats.scheduled + stats.inProgress}</div>
           <p className="text-xs text-muted-foreground">Being resolved</p>
         </CardContent>
       </Card>

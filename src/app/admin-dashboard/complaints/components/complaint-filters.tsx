@@ -8,7 +8,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Search, Filter, ChevronDown, CalendarIcon } from "lucide-react";
+import { Search, Filter, ChevronDown, CalendarIcon, Tag, Flag } from "lucide-react";
 import type { ComplaintStatus, ComplaintCategory } from "@/contexts/complaint-db-context";
 
 interface ComplaintFiltersProps {
@@ -128,6 +128,7 @@ export function ComplaintFilters({
           <Popover>
             <PopoverTrigger asChild>
               <Button variant="outline" className="w-full sm:w-auto">
+                <Tag className="h-4 w-4 mr-2" />
                 Category
                 {categoryFilters.length > 0 && (
                   <Badge variant="secondary" className="ml-2">
@@ -181,6 +182,7 @@ export function ComplaintFilters({
           <Popover>
             <PopoverTrigger asChild>
               <Button variant="outline" className="w-full sm:w-auto">
+                <Flag className="h-4 w-4 mr-2" />
                 Priority
                 {priorityFilters.length > 0 && (
                   <Badge variant="secondary" className="ml-2">

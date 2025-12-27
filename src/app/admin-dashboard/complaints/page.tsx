@@ -4,14 +4,14 @@ import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useComplaintDb } from "@/contexts/complaint-db-context";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import type { Complaint, ComplaintStatus, ComplaintCategory } from "@/contexts/complaint-db-context";
+import type { ComplaintStatus, ComplaintCategory } from "@/contexts/complaint-db-context";
 import { ComplaintStats } from "./components/complaint-stats";
 import { ComplaintFilters } from "./components/complaint-filters";
 import { ComplaintTable } from "./components/complaint-table";
 import { ResolutionDialog } from "./components/resolution-dialog";
+import { ScheduledDialog } from "./components/scheduled-dialog";
 
 export default function ComplaintsPage() {
-  const router = useRouter();
   const { complaints, updateComplaintStatus, deleteComplaint, updateComplaint, addComplaintComment } = useComplaintDb();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilters, setStatusFilters] = useState<ComplaintStatus[]>([]);
@@ -23,6 +23,9 @@ export default function ComplaintsPage() {
   const [resolutionDescription, setResolutionDescription] = useState("");
   const [resolutionBudget, setResolutionBudget] = useState("");
   const [complaintIdForResolution, setComplaintIdForResolution] = useState<string | null>(null);
+  const [isScheduledDialogOpen, setIsScheduledDialogOpen] = useState(false);
+  const [scheduledDate, setScheduledDate] = useState("");
+  const [complaintIdForScheduled, setComplaintIdForScheduled] = useState<string | null>(null);
 
   // Statistics
   const stats = useMemo(() => {
@@ -30,6 +33,7 @@ export default function ComplaintsPage() {
       total: complaints.length,
       submitted: complaints.filter((c) => c.status === "submitted").length,
       underReview: complaints.filter((c) => c.status === "under_review").length,
+      scheduled: complaints.filter((c) => c.status === "scheduled").length,
       inProgress: complaints.filter((c) => c.status === "in_progress").length,
       resolved: complaints.filter((c) => c.status === "resolved").length,
       urgent: complaints.filter((c) => c.priority === "urgent").length,
@@ -122,6 +126,10 @@ export default function ComplaintsPage() {
       // Open resolution dialog
       setComplaintIdForResolution(complaintId);
       setIsResolutionDialogOpen(true);
+    } else if (newStatus === "scheduled" && complaint && !complaint.scheduledAt) {
+      // Open scheduled dialog
+      setComplaintIdForScheduled(complaintId);
+      setIsScheduledDialogOpen(true);
     } else {
       // If changing from resolved to another status, clear resolution details
       if (complaint?.status === "resolved" && newStatus !== "resolved") {
@@ -155,6 +163,24 @@ export default function ComplaintsPage() {
     setResolutionBudget("");
     setComplaintIdForResolution(null);
     setIsResolutionDialogOpen(false);
+  };
+
+  const handleScheduleComplaint = () => {
+    if (!complaintIdForScheduled || !scheduledDate) {
+      alert("Please select a scheduled date");
+      return;
+    }
+
+    updateComplaint(complaintIdForScheduled, {
+      scheduledAt: new Date(scheduledDate),
+    });
+
+    updateComplaintStatus(complaintIdForScheduled, "scheduled");
+    
+    // Reset form
+    setScheduledDate("");
+    setComplaintIdForScheduled(null);
+    setIsScheduledDialogOpen(false);
   };
 
   const handleDeleteComplaint = (complaintId: string) => {
@@ -238,6 +264,15 @@ export default function ComplaintsPage() {
         resolutionBudget={resolutionBudget}
         setResolutionBudget={setResolutionBudget}
         onSubmit={handleResolveComplaint}
+      />
+
+      {/* Scheduled Dialog */}
+      <ScheduledDialog
+        isOpen={isScheduledDialogOpen}
+        onOpenChange={setIsScheduledDialogOpen}
+        scheduledDate={scheduledDate}
+        setScheduledDate={setScheduledDate}
+        onSubmit={handleScheduleComplaint}
       />
     </div>
   );
