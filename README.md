@@ -2,16 +2,16 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-First, run the development server:
+This project uses **pnpm** as the package manager. First, install dependencies:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
+```
+
+Then, run the development server:
+
+```bash
 pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
@@ -19,6 +19,34 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+
+## Code Standards
+
+This project follows strict code standards for consistency and maintainability:
+
+- **TypeScript First**: All code is written in TypeScript with strict mode
+- **Package Manager**: Uses pnpm exclusively for package management
+- **Forms**: All forms use Shadcn Form (react-hook-form) with Zod validation
+- **Styling**: Uses CSS variables from globals.css (no hardcoded colors)
+- **No Barrel Files**: Direct imports from specific files only
+- **Type Organization**: All types are in the `types/` folder
+
+For detailed guidelines, see [CODE_STANDARDS.md](docs/CODE_STANDARDS.md)
+
+## Project Structure
+
+```
+src/
+├── app/              # Next.js App Router pages
+├── components/       # Shared React components
+├── contexts/         # React Context providers
+├── hooks/           # Custom React hooks
+├── lib/             # Utility functions and helpers
+├── providers/       # Provider components
+└── types/           # TypeScript type definitions
+```
+
+For detailed architecture information, see [ARCHITECTURE.md](docs/ARCHITECTURE.md)
 
 ## Learn More
 

@@ -18,8 +18,8 @@ import {
 } from "@/components/ui/dialog";
 import { Complaint, ComplaintStatus } from "@/types/complaint";
 import { useComplaintDb } from "@/contexts/complaint-db-context";
-import { ScheduledForm, type ScheduledFormValues } from "../../../transparency/components/scheduled-form";
-import { ResolutionForm, type ResolutionFormValues } from "../../../transparency/components/resolution-form";
+import { ScheduledForm, type ScheduledFormValues } from "../../components/scheduled-form";
+import { ResolutionForm, type ResolutionFormValues } from "../../components/resolution-form";
 import { toast } from "sonner";
 
 interface ComplaintStatusSelectProps {

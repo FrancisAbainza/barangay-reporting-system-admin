@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogTitle, DialogClose, DialogHeader, DialogDescription } from "@/components/ui/dialog";
 import { useComplaintDb } from "@/contexts/complaint-db-context";
-import { ScheduledForm, type ScheduledFormValues } from "../../transparency/components/scheduled-form";
+import { ScheduledForm, type ScheduledFormValues } from "./scheduled-form";
 import type { Complaint } from "@/types/complaint";
 import { toast } from "sonner";
 

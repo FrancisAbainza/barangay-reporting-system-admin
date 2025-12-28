@@ -361,7 +361,7 @@ export function ProjectFormDialog({
                 name="expectedCompletionDate"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Expected Completion Date (Optional)</FormLabel>
+                    <FormLabel>Expected Completion Date</FormLabel>
                     <FormControl>
                       <Input type="date" {...field} />
                     </FormControl>
@@ -378,7 +378,7 @@ export function ProjectFormDialog({
                 name="budget"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Budget (₱) (Optional)</FormLabel>
+                    <FormLabel>Budget (₱)</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
@@ -416,7 +416,7 @@ export function ProjectFormDialog({
               name="contractor"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Contractor (Optional)</FormLabel>
+                  <FormLabel>Contractor</FormLabel>
                   <FormControl>
                     <Input placeholder="Enter contractor name" {...field} />
                   </FormControl>
@@ -431,7 +431,7 @@ export function ProjectFormDialog({
               name="sourceOfFunds"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Source of Funds (Optional)</FormLabel>
+                  <FormLabel>Source of Funds</FormLabel>
                   <FormControl>
                     <Input placeholder="Enter source of funds" {...field} />
                   </FormControl>
@@ -447,7 +447,7 @@ export function ProjectFormDialog({
                 name="actualCompletionDate"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Actual Completion Date (Optional)</FormLabel>
+                    <FormLabel>Actual Completion Date</FormLabel>
                     <FormControl>
                       <Input type="date" {...field} />
                     </FormControl>
@@ -463,7 +463,7 @@ export function ProjectFormDialog({
               name="location"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Project Location (Optional)</FormLabel>
+                  <FormLabel>Project Location</FormLabel>
                   <FormControl>
                     <MapLocationPicker
                       value={field.value}
@@ -481,7 +481,7 @@ export function ProjectFormDialog({
               name="images"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Project Images (Optional)</FormLabel>
+                  <FormLabel>Project Images</FormLabel>
                   <FormControl>
                     <MultiImageUploader
                       images={field.value as FileUpload[] || []}

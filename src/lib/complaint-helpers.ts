@@ -2,22 +2,22 @@ import type { ComplaintStatus, ComplaintCategory } from "@/types/complaint";
 
 export function getStatusBadge(status: ComplaintStatus) {
   const variants: Record<ComplaintStatus, { className: string; label: string }> = {
-    submitted: { className: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200", label: "Submitted" },
-    under_review: { className: "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200", label: "Under Review" },
-    scheduled: { className: "bg-cyan-100 text-cyan-800 dark:bg-cyan-900 dark:text-cyan-200", label: "Scheduled" },
-    in_progress: { className: "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200", label: "In Progress" },
-    resolved: { className: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200", label: "Resolved" },
-    dismissed: { className: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200", label: "Dismissed" },
+    submitted: { className: "bg-primary/10 text-primary", label: "Submitted" },
+    under_review: { className: "bg-secondary/10 text-secondary", label: "Under Review" },
+    scheduled: { className: "bg-accent text-accent-foreground", label: "Scheduled" },
+    in_progress: { className: "bg-chart-4/20 text-chart-4", label: "In Progress" },
+    resolved: { className: "bg-chart-3/20 text-chart-3", label: "Resolved" },
+    dismissed: { className: "bg-destructive/10 text-destructive", label: "Dismissed" },
   };
   return variants[status];
 }
 
 export function getPriorityBadge(priority: string) {
   const colors: Record<string, string> = {
-    low: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
-    medium: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
-    high: "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200",
-    urgent: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
+    low: "bg-primary/10 text-primary",
+    medium: "bg-chart-4/20 text-chart-4",
+    high: "bg-chart-5/20 text-chart-5",
+    urgent: "bg-destructive/10 text-destructive",
   };
   return colors[priority] || colors.medium;
 }
@@ -39,15 +39,15 @@ export function getCategoryLabel(category: ComplaintCategory) {
 
 export function getCategoryBadge(category: ComplaintCategory) {
   const colors: Record<ComplaintCategory, string> = {
-    noise: "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
-    sanitation: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200",
-    public_safety: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
-    traffic: "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200",
-    infrastructure: "bg-slate-100 text-slate-800 dark:bg-slate-900 dark:text-slate-200",
-    water_electricity: "bg-cyan-100 text-cyan-800 dark:bg-cyan-900 dark:text-cyan-200",
-    domestic: "bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200",
-    environment: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
-    others: "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200",
+    noise: "bg-secondary/10 text-secondary",
+    sanitation: "bg-chart-3/20 text-chart-3",
+    public_safety: "bg-destructive/10 text-destructive",
+    traffic: "bg-chart-5/20 text-chart-5",
+    infrastructure: "bg-muted text-muted-foreground",
+    water_electricity: "bg-primary/10 text-primary",
+    domestic: "bg-accent text-accent-foreground",
+    environment: "bg-chart-3/20 text-chart-3",
+    others: "bg-muted text-muted-foreground",
   };
   return colors[category];
 }
