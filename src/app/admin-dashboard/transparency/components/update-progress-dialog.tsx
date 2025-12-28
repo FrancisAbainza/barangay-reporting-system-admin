@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { Trash2, ImageIcon } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -31,13 +32,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { MultiImageUploader } from "@/components/multi-image-uploader";
-import type { Project, ProjectStatus } from "@/types/project";
+import type { Project, ProjectStatus, ProgressUpdate } from "@/types/project";
 import type { FileUpload } from "@/types/files";
+import { formatDate } from "@/lib/date-formatter";
 
 interface UpdateStatusDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (data: UpdateStatusFormValues) => void;
+  onSubmit: (data: UpdateStatusFormValues & { deletedProgressUpdateIndices?: number[] }) => void;
   project: Project | null;
 }
 
@@ -77,6 +79,7 @@ export function UpdateStatusDialog({
   project,
 }: UpdateStatusDialogProps) {
   const [progressImages, setProgressImages] = useState<FileUpload[]>([]);
+  const [deletedProgressUpdateIndices, setDeletedProgressUpdateIndices] = useState<number[]>([]);
   
   const form = useForm<UpdateStatusFormValues>({
     resolver: zodResolver(updateStatusSchema),
@@ -98,6 +101,7 @@ export function UpdateStatusDialog({
         progressUpdateImage: undefined,
       });
       setProgressImages([]);
+      setDeletedProgressUpdateIndices([]);
     }
   }, [project, open, form]);
 
@@ -127,9 +131,18 @@ export function UpdateStatusDialog({
         progressImages.length > 0
           ? { uri: progressImages[0] instanceof File ? URL.createObjectURL(progressImages[0]) : progressImages[0] }
           : undefined,
+      deletedProgressUpdateIndices: deletedProgressUpdateIndices.length > 0 ? deletedProgressUpdateIndices : undefined,
     };
     onSubmit(submitData);
     onOpenChange(false);
+  };
+
+  const handleDeleteProgressUpdate = (index: number) => {
+    setDeletedProgressUpdateIndices((prev) => [...prev, index]);
+  };
+
+  const isProgressUpdateDeleted = (index: number) => {
+    return deletedProgressUpdateIndices.includes(index);
   };
 
   const handleImageUpload = (images: FileUpload[]) => {
@@ -154,6 +167,53 @@ export function UpdateStatusDialog({
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+            {/* Existing Progress Updates */}
+            {project?.progressUpdates && project.progressUpdates.length > 0 && (
+              <div className="space-y-2">
+                <FormLabel>Existing Progress Updates</FormLabel>
+                <div className="space-y-3 max-h-60 overflow-y-auto border border-border rounded-lg p-3 bg-muted/30">
+                  {project.progressUpdates.map((update, index) => (
+                    <div
+                      key={index}
+                      className={`flex gap-3 p-3 border border-border rounded-lg bg-background transition-opacity ${
+                        isProgressUpdateDeleted(index) ? "opacity-40 line-through" : ""
+                      }`}
+                    >
+                      <div className="flex-1 space-y-1">
+                        <p className="text-sm text-muted-foreground">
+                          {formatDate(update.createdAt)}
+                        </p>
+                        {update.description && (
+                          <p className="text-sm">{update.description}</p>
+                        )}
+                        {update.image && (
+                          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                            <ImageIcon className="h-3 w-3" />
+                            <span>Image attached</span>
+                          </div>
+                        )}
+                      </div>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+                        onClick={() => handleDeleteProgressUpdate(index)}
+                        disabled={isProgressUpdateDeleted(index)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+                {deletedProgressUpdateIndices.length > 0 && (
+                  <p className="text-xs text-muted-foreground">
+                    {deletedProgressUpdateIndices.length} update(s) marked for deletion
+                  </p>
+                )}
+              </div>
+            )}
+
             {/* Status */}
             <FormField
               control={form.control}

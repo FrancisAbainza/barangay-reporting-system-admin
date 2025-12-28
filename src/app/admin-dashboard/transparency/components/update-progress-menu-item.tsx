@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useProjectDb } from "@/contexts/project-db-context";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
-import { UpdateStatusDialog, type UpdateStatusFormValues } from "./update-status-dialog";
+import { UpdateStatusDialog, type UpdateStatusFormValues } from "./update-progress-dialog";
 import { RefreshCw } from "lucide-react";
 import type { Project } from "@/types/project";
 

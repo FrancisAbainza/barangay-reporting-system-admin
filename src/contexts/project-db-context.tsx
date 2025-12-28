@@ -31,6 +31,7 @@ export type {
 // Context types
 interface ProjectDbContextType {
   projects: Project[];
+  createProject: (input: CreateProjectInput) => Project;
   updateProject: (id: string, input: UpdateProjectInput) => Project | null;
   deleteProject: (id: string) => boolean;
   addProjectComment: (
@@ -344,6 +345,23 @@ export function ProjectDbProvider({ children }: { children: ReactNode }) {
     return `${prefix}${Date.now()}${Math.random().toString(36).substr(2, 9)}`;
   };
 
+  const createProject = (input: CreateProjectInput): Project => {
+    const newProject: Project = {
+      ...input,
+      id: generateId("p"),
+      progressPercentage: 0,
+      progressUpdates: [],
+      likes: [],
+      dislikes: [],
+      comments: [],
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    setProjects((prev) => [...prev, newProject]);
+    return newProject;
+  };
+
   const updateProject = (
     id: string,
     input: UpdateProjectInput
@@ -503,6 +521,7 @@ export function ProjectDbProvider({ children }: { children: ReactNode }) {
 
   const value: ProjectDbContextType = {
     projects,
+    createProject,
     updateProject,
     deleteProject,
     addProjectComment,

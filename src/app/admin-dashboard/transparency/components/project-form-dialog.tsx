@@ -31,7 +31,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { MultiImageUploader } from "@/components/multi-image-uploader";
-import type { Project, ProjectCategory, ProjectStatus, CreateProjectInput } from "@/types/project";
+import { MapLocationPicker } from "@/components/map-location-picker";
+import type { Project, ProjectCategory, ProjectStatus, CreateProjectInput, ProjectLocation } from "@/types/project";
 import type { FileUpload } from "@/types/files";
 
 interface ProjectFormDialogProps {
@@ -79,6 +80,14 @@ const projectFormSchema = z.object({
       },
       { message: "Progress percentage must be between 0 and 100" }
     ),
+  location: z
+    .object({
+      latitude: z.number(),
+      longitude: z.number(),
+      address: z.string().min(1, "Address is required"),
+    })
+    .optional()
+    .nullable(),
   images: z.array(z.any()).optional(),
 });
 
@@ -131,6 +140,7 @@ export function ProjectFormDialog({
       contractor: project.contractor || "",
       sourceOfFunds: project.sourceOfFunds || "",
       progressPercentage: project.progressPercentage.toString(),
+      location: project.location || null,
       images: project.images?.map((img) => img.uri) || [],
     } : {
       title: "",
@@ -144,6 +154,7 @@ export function ProjectFormDialog({
       contractor: "",
       sourceOfFunds: "",
       progressPercentage: "0",
+      location: null,
       images: [],
     },
   });
@@ -164,6 +175,7 @@ export function ProjectFormDialog({
           contractor: project.contractor || "",
           sourceOfFunds: project.sourceOfFunds || "",
           progressPercentage: project.progressPercentage.toString(),
+          location: project.location || null,
           images: project.images?.map((img) => img.uri) || [],
         });
       } else {
@@ -179,6 +191,7 @@ export function ProjectFormDialog({
           contractor: "",
           sourceOfFunds: "",
           progressPercentage: "0",
+          location: null,
           images: [],
         });
       }
@@ -202,6 +215,7 @@ export function ProjectFormDialog({
       contractor: values.contractor || undefined,
       sourceOfFunds: values.sourceOfFunds || undefined,
       progressPercentage: parseInt(values.progressPercentage),
+      location: values.location || undefined,
       images: values.images?.map((img) => ({
         uri: typeof img === "string" ? img : URL.createObjectURL(img),
       })),
@@ -347,7 +361,7 @@ export function ProjectFormDialog({
                 name="expectedCompletionDate"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Expected Completion Date</FormLabel>
+                    <FormLabel>Expected Completion Date (Optional)</FormLabel>
                     <FormControl>
                       <Input type="date" {...field} />
                     </FormControl>
@@ -364,7 +378,7 @@ export function ProjectFormDialog({
                 name="budget"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Budget (₱)</FormLabel>
+                    <FormLabel>Budget (₱) (Optional)</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
@@ -402,7 +416,7 @@ export function ProjectFormDialog({
               name="contractor"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Contractor</FormLabel>
+                  <FormLabel>Contractor (Optional)</FormLabel>
                   <FormControl>
                     <Input placeholder="Enter contractor name" {...field} />
                   </FormControl>
@@ -417,7 +431,7 @@ export function ProjectFormDialog({
               name="sourceOfFunds"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Source of Funds</FormLabel>
+                  <FormLabel>Source of Funds (Optional)</FormLabel>
                   <FormControl>
                     <Input placeholder="Enter source of funds" {...field} />
                   </FormControl>
@@ -433,7 +447,7 @@ export function ProjectFormDialog({
                 name="actualCompletionDate"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Actual Completion Date</FormLabel>
+                    <FormLabel>Actual Completion Date (Optional)</FormLabel>
                     <FormControl>
                       <Input type="date" {...field} />
                     </FormControl>
@@ -443,13 +457,31 @@ export function ProjectFormDialog({
               />
             )}
 
+            {/* Location */}
+            <FormField
+              control={form.control}
+              name="location"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Project Location (Optional)</FormLabel>
+                  <FormControl>
+                    <MapLocationPicker
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             {/* Images */}
             <FormField
               control={form.control}
               name="images"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Project Images</FormLabel>
+                  <FormLabel>Project Images (Optional)</FormLabel>
                   <FormControl>
                     <MultiImageUploader
                       images={field.value as FileUpload[] || []}

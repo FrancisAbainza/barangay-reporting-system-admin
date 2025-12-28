@@ -45,7 +45,7 @@ export function MultiImageUploader({ onImagesChange, images }: Props) {
           <div key={index} className="flex items-center gap-3 border-1 rounded-md shadow-xs overflow-hidden mt-3 pr-3">
             <div className="relative size-16">
               <Image
-                src={image instanceof File ? URL.createObjectURL(image) : `/api/files/${image}`}
+                src={image instanceof File ? URL.createObjectURL(image) : image}
                 alt="post image"
                 fill
                 sizes="100%"
