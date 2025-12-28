@@ -1,19 +1,17 @@
 "use client";
 
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, ReactNode } from "react";
 import type {
-  Image,
   ResolutionDetail,
   ComplaintCategory,
   ComplaintStatus,
-  Reply,
-  Comment,
   ComplaintAiAnalysis,
-  CommunitySentiment,
   Complaint,
   CreateComplaintInput,
   UpdateComplaintInput,
 } from "@/types/complaint";
+
+import type { Image, Reply, Comment, CommunitySentiment } from "@/types/shared";
 
 // Re-export types for backward compatibility
 export type {
@@ -33,17 +31,6 @@ export type {
 // Context types
 interface ComplaintDbContextType {
   complaints: Complaint[];
-  getComplaints: () => Complaint[];
-  getComplaintById: (id: string) => Complaint | undefined;
-  createComplaint: (
-    input: CreateComplaintInput,
-    complainantName: string,
-    complainantId: string
-  ) => Complaint;
-  updateComplaint: (
-    id: string,
-    input: UpdateComplaintInput
-  ) => Complaint | null;
   deleteComplaint: (id: string) => boolean;
   updateComplaintStatus: (
     id: string,
@@ -51,8 +38,6 @@ interface ComplaintDbContextType {
     scheduledAt?: Date,
     resolutionDetails?: ResolutionDetail
   ) => Complaint | null;
-  likeComplaint: (complaintId: string, userId: string) => boolean;
-  dislikeComplaint: (complaintId: string, userId: string) => boolean;
   addComplaintComment: (
     complaintId: string,
     userId: string,
@@ -60,22 +45,6 @@ interface ComplaintDbContextType {
     content: string,
     isAdmin?: boolean
   ) => Comment | null;
-  updateComplaintComment: (
-    complaintId: string,
-    commentId: string,
-    content: string
-  ) => Comment | null;
-  deleteComplaintComment: (complaintId: string, commentId: string) => boolean;
-  likeComplaintComment: (
-    complaintId: string,
-    commentId: string,
-    userId: string
-  ) => boolean;
-  dislikeComplaintComment: (
-    complaintId: string,
-    commentId: string,
-    userId: string
-  ) => boolean;
   addReply: (
     complaintId: string,
     commentId: string,
@@ -84,31 +53,8 @@ interface ComplaintDbContextType {
     content: string,
     isAdmin?: boolean
   ) => Reply | null;
-  updateReply: (
-    complaintId: string,
-    commentId: string,
-    replyId: string,
-    content: string
-  ) => Reply | null;
-  deleteReply: (
-    complaintId: string,
-    commentId: string,
-    replyId: string
-  ) => boolean;
-  likeReply: (
-    complaintId: string,
-    commentId: string,
-    replyId: string,
-    userId: string
-  ) => boolean;
-  dislikeReply: (
-    complaintId: string,
-    commentId: string,
-    replyId: string,
-    userId: string
-  ) => boolean;
   generateAIAnalysis: (complaintId: string) => Promise<ComplaintAiAnalysis>;
-  generateCommunitySentiment: (complaintId: string) => Promise<CommunitySentiment>;
+  generateCommunitySentiment: (complaintId: string) => Promise<void>;
 }
 
 // Initial dummy data
@@ -335,60 +281,6 @@ export function ComplaintDbProvider({ children }: { children: ReactNode }) {
     return `${prefix}${Date.now()}${Math.random().toString(36).substr(2, 9)}`;
   };
 
-  const getComplaints = (): Complaint[] => {
-    return complaints;
-  };
-
-  const getComplaintById = (id: string): Complaint | undefined => {
-    return complaints.find((complaint) => complaint.id === id);
-  };
-
-  const createComplaint = (
-    input: CreateComplaintInput,
-    complainantName: string,
-    complainantId: string
-  ): Complaint => {
-    const newComplaint: Complaint = {
-      id: generateId("c"),
-      ...input,
-      complainantName,
-      complainantId,
-      status: "submitted",
-      priority: "medium",
-      likes: [],
-      dislikes: [],
-      comments: [],
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-
-    setComplaints((prev) => [...prev, newComplaint]);
-    return newComplaint;
-  };
-
-  const updateComplaint = (
-    id: string,
-    input: UpdateComplaintInput
-  ): Complaint | null => {
-    let updatedComplaint: Complaint | null = null;
-
-    setComplaints((prev) =>
-      prev.map((complaint) => {
-        if (complaint.id === id) {
-          updatedComplaint = {
-            ...complaint,
-            ...input,
-            updatedAt: new Date(),
-          };
-          return updatedComplaint;
-        }
-        return complaint;
-      })
-    );
-
-    return updatedComplaint;
-  };
-
   const deleteComplaint = (id: string): boolean => {
     const initialLength = complaints.length;
     setComplaints((prev) => prev.filter((complaint) => complaint.id !== id));
@@ -401,90 +293,46 @@ export function ComplaintDbProvider({ children }: { children: ReactNode }) {
     scheduledAt?: Date,
     resolutionDetails?: ResolutionDetail
   ): Complaint | null => {
-    const complaint = complaints.find(c => c.id === id);
-    if (!complaint) return null;
-
-    const updateData: UpdateComplaintInput = { status };
-
-    // Set resolvedAt timestamp and resolutionDetails when marking as resolved
-    if (status === "resolved") {
-      updateData.resolvedAt = new Date();
-      if (resolutionDetails) {
-        updateData.resolutionDetails = resolutionDetails;
-      }
-    } else if (complaint.status === "resolved") {
-      // Clear resolvedAt if changing from resolved to another status
-      updateData.resolvedAt = undefined;
-    }
-
-    // Set scheduledAt timestamp when marking as scheduled
-    if (status === "scheduled") {
-      updateData.scheduledAt = scheduledAt || new Date();
-    } else if (complaint.status === "scheduled" &&
-      (status === "submitted" || status === "under_review" || status === "dismissed")) {
-      // Clear scheduledAt only when changing to submitted, under_review, or dismissed
-      updateData.scheduledAt = undefined;
-    }
-
-    return updateComplaint(id, updateData);
-  };
-
-  const likeComplaint = (complaintId: string, userId: string): boolean => {
-    let success = false;
+    let updatedComplaint: Complaint | null = null;
 
     setComplaints((prev) =>
       prev.map((complaint) => {
-        if (complaint.id === complaintId) {
-          const likes = complaint.likes || [];
-          const dislikes = complaint.dislikes || [];
+        if (complaint.id === id) {
+          const updateData: any = { status };
 
-          const newDislikes = dislikes.filter((id) => id !== userId);
-          const newLikes = likes.includes(userId)
-            ? likes.filter((id) => id !== userId)
-            : [...likes, userId];
+          // Set resolvedAt timestamp and resolutionDetails when marking as resolved
+          if (status === "resolved") {
+            updateData.resolvedAt = new Date();
+            if (resolutionDetails) {
+              updateData.resolutionDetails = resolutionDetails;
+            }
+          } else if (complaint.status === "resolved") {
+            // Clear resolvedAt if changing from resolved to another status
+            updateData.resolvedAt = undefined;
+          }
 
-          success = true;
-          return {
+          // Set scheduledAt timestamp when marking as scheduled
+          if (status === "scheduled") {
+            updateData.scheduledAt = scheduledAt || new Date();
+          } else if (complaint.status === "scheduled" &&
+            (status === "submitted" || status === "under_review" || status === "dismissed")) {
+            // Clear scheduledAt only when changing to submitted, under_review, or dismissed
+            updateData.scheduledAt = undefined;
+          }
+
+          const updated = {
             ...complaint,
-            likes: newLikes,
-            dislikes: newDislikes,
+            ...updateData,
             updatedAt: new Date(),
           };
+          updatedComplaint = updated;
+          return updated;
         }
         return complaint;
       })
     );
 
-    return success;
-  };
-
-  const dislikeComplaint = (complaintId: string, userId: string): boolean => {
-    let success = false;
-
-    setComplaints((prev) =>
-      prev.map((complaint) => {
-        if (complaint.id === complaintId) {
-          const likes = complaint.likes || [];
-          const dislikes = complaint.dislikes || [];
-
-          const newLikes = likes.filter((id) => id !== userId);
-          const newDislikes = dislikes.includes(userId)
-            ? dislikes.filter((id) => id !== userId)
-            : [...dislikes, userId];
-
-          success = true;
-          return {
-            ...complaint,
-            likes: newLikes,
-            dislikes: newDislikes,
-            updatedAt: new Date(),
-          };
-        }
-        return complaint;
-      })
-    );
-
-    return success;
+    return updatedComplaint;
   };
 
   const addComplaintComment = (
@@ -522,157 +370,6 @@ export function ComplaintDbProvider({ children }: { children: ReactNode }) {
     );
 
     return newComment;
-  };
-
-  const updateComplaintComment = (
-    complaintId: string,
-    commentId: string,
-    content: string
-  ): Comment | null => {
-    let updatedComment: Comment | null = null;
-
-    setComplaints((prev) =>
-      prev.map((complaint) => {
-        if (complaint.id === complaintId) {
-          const updatedComments = (complaint.comments || []).map((comment) => {
-            if (comment.id === commentId) {
-              updatedComment = {
-                ...comment,
-                content,
-                updatedAt: new Date(),
-              };
-              return updatedComment;
-            }
-            return comment;
-          });
-
-          return {
-            ...complaint,
-            comments: updatedComments,
-            updatedAt: new Date(),
-          };
-        }
-        return complaint;
-      })
-    );
-
-    return updatedComment;
-  };
-
-  const deleteComplaintComment = (
-    complaintId: string,
-    commentId: string
-  ): boolean => {
-    let success = false;
-
-    setComplaints((prev) =>
-      prev.map((complaint) => {
-        if (complaint.id === complaintId) {
-          const filteredComments = (complaint.comments || []).filter(
-            (comment) => comment.id !== commentId
-          );
-          success =
-            filteredComments.length !== (complaint.comments || []).length;
-
-          return {
-            ...complaint,
-            comments: filteredComments,
-            updatedAt: new Date(),
-          };
-        }
-        return complaint;
-      })
-    );
-
-    return success;
-  };
-
-  const likeComplaintComment = (
-    complaintId: string,
-    commentId: string,
-    userId: string
-  ): boolean => {
-    let success = false;
-
-    setComplaints((prev) =>
-      prev.map((complaint) => {
-        if (complaint.id === complaintId) {
-          const updatedComments = (complaint.comments || []).map((comment) => {
-            if (comment.id === commentId) {
-              const likes = comment.likes || [];
-              const dislikes = comment.dislikes || [];
-
-              const newDislikes = dislikes.filter((id) => id !== userId);
-              const newLikes = likes.includes(userId)
-                ? likes.filter((id) => id !== userId)
-                : [...likes, userId];
-
-              success = true;
-              return {
-                ...comment,
-                likes: newLikes,
-                dislikes: newDislikes,
-                updatedAt: new Date(),
-              };
-            }
-            return comment;
-          });
-
-          return {
-            ...complaint,
-            comments: updatedComments,
-            updatedAt: new Date(),
-          };
-        }
-        return complaint;
-      })
-    );
-
-    return success;
-  };
-
-  const dislikeComplaintComment = (
-    complaintId: string,
-    commentId: string,
-    userId: string
-  ): boolean => {
-    let success = false;
-
-    setComplaints((prev) =>
-      prev.map((complaint) => {
-        if (complaint.id === complaintId) {
-          const updatedComments = (complaint.comments || []).map((comment) => {
-            if (comment.id === commentId) {
-              const likes = comment.likes || [];
-              const dislikes = comment.dislikes || [];
-
-              const newLikes = likes.filter((id) => id !== userId);
-              const newDislikes = dislikes.includes(userId)
-                ? dislikes.filter((id) => id !== userId)
-                : [...dislikes, userId];
-
-              success = true;
-              return {
-                ...comment,
-                likes: newLikes,
-                dislikes: newDislikes,
-                updatedAt: new Date(),
-              };
-            }
-            return comment;
-          });
-
-          return {
-            ...complaint,
-            comments: updatedComments,
-            updatedAt: new Date(),
-          };
-        }
-        return complaint;
-      })
-    );
-
-    return success;
   };
 
   const addReply = (
@@ -722,204 +419,6 @@ export function ComplaintDbProvider({ children }: { children: ReactNode }) {
     );
 
     return newReply;
-  };
-
-  const updateReply = (
-    complaintId: string,
-    commentId: string,
-    replyId: string,
-    content: string
-  ): Reply | null => {
-    let updatedReply: Reply | null = null;
-
-    setComplaints((prev) =>
-      prev.map((complaint) => {
-        if (complaint.id === complaintId) {
-          const updatedComments = (complaint.comments || []).map((comment) => {
-            if (comment.id === commentId) {
-              const updatedReplies = (comment.replies || []).map((reply) => {
-                if (reply.id === replyId) {
-                  updatedReply = {
-                    ...reply,
-                    content,
-                    updatedAt: new Date(),
-                  };
-                  return updatedReply;
-                }
-                return reply;
-              });
-
-              return {
-                ...comment,
-                replies: updatedReplies,
-                updatedAt: new Date(),
-              };
-            }
-            return comment;
-          });
-
-          return {
-            ...complaint,
-            comments: updatedComments,
-            updatedAt: new Date(),
-          };
-        }
-        return complaint;
-      })
-    );
-
-    return updatedReply;
-  };
-
-  const deleteReply = (
-    complaintId: string,
-    commentId: string,
-    replyId: string
-  ): boolean => {
-    let success = false;
-
-    setComplaints((prev) =>
-      prev.map((complaint) => {
-        if (complaint.id === complaintId) {
-          const updatedComments = (complaint.comments || []).map((comment) => {
-            if (comment.id === commentId) {
-              const filteredReplies = (comment.replies || []).filter(
-                (reply) => reply.id !== replyId
-              );
-              success = filteredReplies.length !== (comment.replies || []).length;
-
-              return {
-                ...comment,
-                replies: filteredReplies,
-                updatedAt: new Date(),
-              };
-            }
-            return comment;
-          });
-
-          return {
-            ...complaint,
-            comments: updatedComments,
-            updatedAt: new Date(),
-          };
-        }
-        return complaint;
-      })
-    );
-
-    return success;
-  };
-
-  const likeReply = (
-    complaintId: string,
-    commentId: string,
-    replyId: string,
-    userId: string
-  ): boolean => {
-    let success = false;
-
-    setComplaints((prev) =>
-      prev.map((complaint) => {
-        if (complaint.id === complaintId) {
-          const updatedComments = (complaint.comments || []).map((comment) => {
-            if (comment.id === commentId) {
-              const updatedReplies = (comment.replies || []).map((reply) => {
-                if (reply.id === replyId) {
-                  const likes = reply.likes || [];
-                  const dislikes = reply.dislikes || [];
-
-                  const newDislikes = dislikes.filter((id) => id !== userId);
-                  const newLikes = likes.includes(userId)
-                    ? likes.filter((id) => id !== userId)
-                    : [...likes, userId];
-
-                  success = true;
-                  return {
-                    ...reply,
-                    likes: newLikes,
-                    dislikes: newDislikes,
-                    updatedAt: new Date(),
-                  };
-                }
-                return reply;
-              });
-
-              return {
-                ...comment,
-                replies: updatedReplies,
-                updatedAt: new Date(),
-              };
-            }
-            return comment;
-          });
-
-          return {
-            ...complaint,
-            comments: updatedComments,
-            updatedAt: new Date(),
-          };
-        }
-        return complaint;
-      })
-    );
-
-    return success;
-  };
-
-  const dislikeReply = (
-    complaintId: string,
-    commentId: string,
-    replyId: string,
-    userId: string
-  ): boolean => {
-    let success = false;
-
-    setComplaints((prev) =>
-      prev.map((complaint) => {
-        if (complaint.id === complaintId) {
-          const updatedComments = (complaint.comments || []).map((comment) => {
-            if (comment.id === commentId) {
-              const updatedReplies = (comment.replies || []).map((reply) => {
-                if (reply.id === replyId) {
-                  const likes = reply.likes || [];
-                  const dislikes = reply.dislikes || [];
-
-                  const newLikes = likes.filter((id) => id !== userId);
-                  const newDislikes = dislikes.includes(userId)
-                    ? dislikes.filter((id) => id !== userId)
-                    : [...dislikes, userId];
-
-                  success = true;
-                  return {
-                    ...reply,
-                    likes: newLikes,
-                    dislikes: newDislikes,
-                    updatedAt: new Date(),
-                  };
-                }
-                return reply;
-              });
-
-              return {
-                ...comment,
-                replies: updatedReplies,
-                updatedAt: new Date(),
-              };
-            }
-            return comment;
-          });
-
-          return {
-            ...complaint,
-            comments: updatedComments,
-            updatedAt: new Date(),
-          };
-        }
-        return complaint;
-      })
-    );
-
-    return success;
   };
 
   const generateAIAnalysis = async (complaintId: string): Promise<ComplaintAiAnalysis> => {
@@ -1039,7 +538,7 @@ export function ComplaintDbProvider({ children }: { children: ReactNode }) {
     return aiAnalysis;
   };
 
-  const generateCommunitySentiment = async (complaintId: string): Promise<CommunitySentiment> => {
+  const generateCommunitySentiment = async (complaintId: string): Promise<void> => {
     const complaint = complaints.find((c) => c.id === complaintId);
 
     if (!complaint) {
@@ -1049,36 +548,21 @@ export function ComplaintDbProvider({ children }: { children: ReactNode }) {
     // Simulate AI sentiment analysis generation with delay
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
-    const comments = complaint.comments || [];
-    let sentiment: 'supportive' | 'positive' | 'negative' | 'neutral';
-    let summary: string;
+    // Generate random sentiment
+    const sentiments: Array<'supportive' | 'positive' | 'negative' | 'neutral'> = ['supportive', 'positive', 'negative', 'neutral'];
+    const sentiment = sentiments[Math.floor(Math.random() * sentiments.length)];
 
-    if (comments.length === 0) {
-      sentiment = 'neutral';
-      summary = 'No community comments yet on this complaint.';
-    } else {
-      // Analyze sentiment based on likes and dislikes
-      const totalLikes = comments.reduce((sum, c) => sum + (c.likes?.length || 0), 0);
-      const totalDislikes = comments.reduce((sum, c) => sum + (c.dislikes?.length || 0), 0);
-      const avgLikes = totalLikes / comments.length;
-      const avgDislikes = totalDislikes / comments.length;
-
-      if (avgLikes >= 3 && avgDislikes < 1) {
-        sentiment = 'supportive';
-      } else if (avgLikes >= 1 && avgDislikes < avgLikes) {
-        sentiment = 'positive';
-      } else if (avgDislikes > avgLikes) {
-        sentiment = 'negative';
-      } else {
-        sentiment = 'neutral';
-      }
-
-      summary = `${comments.length} resident${comments.length > 1 ? 's have' : ' has'} commented on this issue. Community engagement is ${sentiment}.`;
-    }
+    // Generate realistic summary based on sentiment
+    const summaries = {
+      supportive: 'Community shows strong support for this issue. Residents are actively engaged and encouraging resolution.',
+      positive: 'Community feedback is generally positive. Residents appreciate the attention to this matter.',
+      negative: 'Community expresses concerns about this issue. Some residents are frustrated with the situation.',
+      neutral: 'Community engagement is moderate. Residents are monitoring the situation.'
+    };
 
     const communitySentiment: CommunitySentiment = {
       sentiment,
-      summary
+      summary: summaries[sentiment]
     };
 
     // Update the complaint with the generated community sentiment
@@ -1094,30 +578,14 @@ export function ComplaintDbProvider({ children }: { children: ReactNode }) {
         return c;
       })
     );
-
-    return communitySentiment;
   };
 
   const value: ComplaintDbContextType = {
     complaints,
-    getComplaints,
-    getComplaintById,
-    createComplaint,
-    updateComplaint,
     deleteComplaint,
     updateComplaintStatus,
-    likeComplaint,
-    dislikeComplaint,
     addComplaintComment,
-    updateComplaintComment,
-    deleteComplaintComment,
-    likeComplaintComment,
-    dislikeComplaintComment,
     addReply,
-    updateReply,
-    deleteReply,
-    likeReply,
-    dislikeReply,
     generateAIAnalysis,
     generateCommunitySentiment,
   };

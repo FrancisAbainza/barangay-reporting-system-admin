@@ -1,19 +1,17 @@
 "use client";
 
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, ReactNode } from "react";
 import type {
-  Image,
-  Reply,
-  Comment,
   ProjectCategory,
   ProjectStatus,
   ProjectLocation,
   ProgressUpdate,
-  CommunitySentiment,
   Project,
   CreateProjectInput,
   UpdateProjectInput,
 } from "@/types/project";
+
+import type { Image, Reply, Comment, CommunitySentiment } from "@/types/shared";
 
 // Re-export types for backward compatibility
 export type {
@@ -33,13 +31,8 @@ export type {
 // Context types
 interface ProjectDbContextType {
   projects: Project[];
-  getProjects: () => Project[];
-  getProjectById: (id: string) => Project | undefined;
-  createProject: (input: CreateProjectInput) => Project;
   updateProject: (id: string, input: UpdateProjectInput) => Project | null;
   deleteProject: (id: string) => boolean;
-  likeProject: (projectId: string, userId: string) => boolean;
-  dislikeProject: (projectId: string, userId: string) => boolean;
   addProjectComment: (
     projectId: string,
     userId: string,
@@ -47,22 +40,6 @@ interface ProjectDbContextType {
     content: string,
     isAdmin?: boolean
   ) => Comment | null;
-  updateProjectComment: (
-    projectId: string,
-    commentId: string,
-    content: string
-  ) => Comment | null;
-  deleteProjectComment: (projectId: string, commentId: string) => boolean;
-  likeProjectComment: (
-    projectId: string,
-    commentId: string,
-    userId: string
-  ) => boolean;
-  dislikeProjectComment: (
-    projectId: string,
-    commentId: string,
-    userId: string
-  ) => boolean;
   addReply: (
     projectId: string,
     commentId: string,
@@ -71,7 +48,7 @@ interface ProjectDbContextType {
     content: string,
     isAdmin?: boolean
   ) => Reply | null;
-  generateCommunitySentiment: (projectId: string) => Promise<CommunitySentiment>;
+  generateCommunitySentiment: (projectId: string) => Promise<void>;
 }
 
 // Initial dummy data
@@ -367,30 +344,6 @@ export function ProjectDbProvider({ children }: { children: ReactNode }) {
     return `${prefix}${Date.now()}${Math.random().toString(36).substr(2, 9)}`;
   };
 
-  const getProjects = (): Project[] => {
-    return projects;
-  };
-
-  const getProjectById = (id: string): Project | undefined => {
-    return projects.find((project) => project.id === id);
-  };
-
-  const createProject = (input: CreateProjectInput): Project => {
-    const newProject: Project = {
-      id: generateId("p"),
-      ...input,
-      progressPercentage: input.progressPercentage ?? 0,
-      likes: [],
-      dislikes: [],
-      comments: [],
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-
-    setProjects((prev) => [...prev, newProject]);
-    return newProject;
-  };
-
   const updateProject = (
     id: string,
     input: UpdateProjectInput
@@ -418,64 +371,6 @@ export function ProjectDbProvider({ children }: { children: ReactNode }) {
     const initialLength = projects.length;
     setProjects((prev) => prev.filter((project) => project.id !== id));
     return projects.length !== initialLength;
-  };
-
-  const likeProject = (projectId: string, userId: string): boolean => {
-    let success = false;
-
-    setProjects((prev) =>
-      prev.map((project) => {
-        if (project.id === projectId) {
-          const likes = project.likes || [];
-          const dislikes = project.dislikes || [];
-
-          const newDislikes = dislikes.filter((id) => id !== userId);
-          const newLikes = likes.includes(userId)
-            ? likes.filter((id) => id !== userId)
-            : [...likes, userId];
-
-          success = true;
-          return {
-            ...project,
-            likes: newLikes,
-            dislikes: newDislikes,
-            updatedAt: new Date(),
-          };
-        }
-        return project;
-      })
-    );
-
-    return success;
-  };
-
-  const dislikeProject = (projectId: string, userId: string): boolean => {
-    let success = false;
-
-    setProjects((prev) =>
-      prev.map((project) => {
-        if (project.id === projectId) {
-          const likes = project.likes || [];
-          const dislikes = project.dislikes || [];
-
-          const newLikes = likes.filter((id) => id !== userId);
-          const newDislikes = dislikes.includes(userId)
-            ? dislikes.filter((id) => id !== userId)
-            : [...dislikes, userId];
-
-          success = true;
-          return {
-            ...project,
-            likes: newLikes,
-            dislikes: newDislikes,
-            updatedAt: new Date(),
-          };
-        }
-        return project;
-      })
-    );
-
-    return success;
   };
 
   const addProjectComment = (
@@ -513,156 +408,6 @@ export function ProjectDbProvider({ children }: { children: ReactNode }) {
     );
 
     return newComment;
-  };
-
-  const updateProjectComment = (
-    projectId: string,
-    commentId: string,
-    content: string
-  ): Comment | null => {
-    let updatedComment: Comment | null = null;
-
-    setProjects((prev) =>
-      prev.map((project) => {
-        if (project.id === projectId) {
-          const updatedComments = (project.comments || []).map((comment) => {
-            if (comment.id === commentId) {
-              updatedComment = {
-                ...comment,
-                content,
-                updatedAt: new Date(),
-              };
-              return updatedComment;
-            }
-            return comment;
-          });
-
-          return {
-            ...project,
-            comments: updatedComments,
-            updatedAt: new Date(),
-          };
-        }
-        return project;
-      })
-    );
-
-    return updatedComment;
-  };
-
-  const deleteProjectComment = (
-    projectId: string,
-    commentId: string
-  ): boolean => {
-    let success = false;
-
-    setProjects((prev) =>
-      prev.map((project) => {
-        if (project.id === projectId) {
-          const filteredComments = (project.comments || []).filter(
-            (comment) => comment.id !== commentId
-          );
-          success = filteredComments.length !== (project.comments || []).length;
-
-          return {
-            ...project,
-            comments: filteredComments,
-            updatedAt: new Date(),
-          };
-        }
-        return project;
-      })
-    );
-
-    return success;
-  };
-
-  const likeProjectComment = (
-    projectId: string,
-    commentId: string,
-    userId: string
-  ): boolean => {
-    let success = false;
-
-    setProjects((prev) =>
-      prev.map((project) => {
-        if (project.id === projectId) {
-          const updatedComments = (project.comments || []).map((comment) => {
-            if (comment.id === commentId) {
-              const likes = comment.likes || [];
-              const dislikes = comment.dislikes || [];
-
-              const newDislikes = dislikes.filter((id) => id !== userId);
-              const newLikes = likes.includes(userId)
-                ? likes.filter((id) => id !== userId)
-                : [...likes, userId];
-
-              success = true;
-              return {
-                ...comment,
-                likes: newLikes,
-                dislikes: newDislikes,
-                updatedAt: new Date(),
-              };
-            }
-            return comment;
-          });
-
-          return {
-            ...project,
-            comments: updatedComments,
-            updatedAt: new Date(),
-          };
-        }
-        return project;
-      })
-    );
-
-    return success;
-  };
-
-  const dislikeProjectComment = (
-    projectId: string,
-    commentId: string,
-    userId: string
-  ): boolean => {
-    let success = false;
-
-    setProjects((prev) =>
-      prev.map((project) => {
-        if (project.id === projectId) {
-          const updatedComments = (project.comments || []).map((comment) => {
-            if (comment.id === commentId) {
-              const likes = comment.likes || [];
-              const dislikes = comment.dislikes || [];
-
-              const newLikes = likes.filter((id) => id !== userId);
-              const newDislikes = dislikes.includes(userId)
-                ? dislikes.filter((id) => id !== userId)
-                : [...dislikes, userId];
-
-              success = true;
-              return {
-                ...comment,
-                likes: newLikes,
-                dislikes: newDislikes,
-                updatedAt: new Date(),
-              };
-            }
-            return comment;
-          });
-
-          return {
-            ...project,
-            comments: updatedComments,
-            updatedAt: new Date(),
-          };
-        }
-        return project;
-      })
-    );
-
-    return success;
   };
 
   const addReply = (
@@ -714,7 +459,7 @@ export function ProjectDbProvider({ children }: { children: ReactNode }) {
     return newReply;
   };
 
-  const generateCommunitySentiment = async (projectId: string): Promise<CommunitySentiment> => {
+  const generateCommunitySentiment = async (projectId: string): Promise<void> => {
     const project = projects.find((p) => p.id === projectId);
     
     if (!project) {
@@ -724,36 +469,21 @@ export function ProjectDbProvider({ children }: { children: ReactNode }) {
     // Simulate AI sentiment analysis generation with delay
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
-    const comments = project.comments || [];
-    let sentiment: 'supportive' | 'positive' | 'negative' | 'neutral';
-    let summary: string;
+    // Generate random sentiment
+    const sentiments: Array<'supportive' | 'positive' | 'negative' | 'neutral'> = ['supportive', 'positive', 'negative', 'neutral'];
+    const sentiment = sentiments[Math.floor(Math.random() * sentiments.length)];
 
-    if (comments.length === 0) {
-      sentiment = 'neutral';
-      summary = 'No community comments yet on this project.';
-    } else {
-      // Analyze sentiment based on likes and dislikes
-      const totalLikes = comments.reduce((sum, c) => sum + (c.likes?.length || 0), 0);
-      const totalDislikes = comments.reduce((sum, c) => sum + (c.dislikes?.length || 0), 0);
-      const avgLikes = totalLikes / comments.length;
-      const avgDislikes = totalDislikes / comments.length;
-      
-      if (avgLikes >= 3 && avgDislikes < 1) {
-        sentiment = 'supportive';
-      } else if (avgLikes >= 1 && avgDislikes < avgLikes) {
-        sentiment = 'positive';
-      } else if (avgDislikes > avgLikes) {
-        sentiment = 'negative';
-      } else {
-        sentiment = 'neutral';
-      }
-      
-      summary = `${comments.length} resident${comments.length > 1 ? 's have' : ' has'} commented on this project. Community engagement is ${sentiment}.`;
-    }
+    // Generate realistic summary based on sentiment
+    const summaries = {
+      supportive: 'Community shows strong support for this project. Residents are excited about the positive impact.',
+      positive: 'Community feedback is generally positive. Residents appreciate the initiative and progress.',
+      negative: 'Community expresses concerns about this project. Some residents have reservations about the implementation.',
+      neutral: 'Community engagement is moderate. Residents are monitoring the project development.'
+    };
 
     const communitySentiment: CommunitySentiment = {
       sentiment,
-      summary
+      summary: summaries[sentiment]
     };
 
     // Update the project with the generated community sentiment
@@ -769,24 +499,13 @@ export function ProjectDbProvider({ children }: { children: ReactNode }) {
         return p;
       })
     );
-
-    return communitySentiment;
   };
 
   const value: ProjectDbContextType = {
     projects,
-    getProjects,
-    getProjectById,
-    createProject,
     updateProject,
     deleteProject,
-    likeProject,
-    dislikeProject,
     addProjectComment,
-    updateProjectComment,
-    deleteProjectComment,
-    likeProjectComment,
-    dislikeProjectComment,
     addReply,
     generateCommunitySentiment,
   };

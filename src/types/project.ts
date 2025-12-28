@@ -1,31 +1,4 @@
-export interface Image {
-  uri: string;
-}
-
-export interface Reply {
-  id: string;
-  userId: string;
-  userName: string;
-  content: string;
-  isAdmin?: boolean;
-  likes?: string[];
-  dislikes?: string[];
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface Comment {
-  id: string;
-  userId: string;
-  userName: string;
-  content: string;
-  isAdmin?: boolean;
-  likes?: string[];
-  dislikes?: string[];
-  replies?: Reply[];
-  createdAt: Date;
-  updatedAt: Date;
-}
+import { Image, Comment, CommunitySentiment } from './shared';
 
 export type ProjectCategory =
   | "infrastructure"
@@ -56,11 +29,6 @@ export interface ProgressUpdate {
   description: string;
   image?: { uri: string };
   createdAt: Date;
-}
-
-export interface CommunitySentiment {
-  sentiment: 'supportive' | 'positive' | 'negative' | 'neutral';
-  summary: string;
 }
 
 export interface Project {

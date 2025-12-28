@@ -1,6 +1,4 @@
-export interface Image {
-  uri: string;
-}
+import { Image, Comment, CommunitySentiment } from './shared';
 
 export interface ResolutionDetail {
   description: string;
@@ -27,31 +25,6 @@ export type ComplaintStatus =
   | "resolved"
   | "dismissed";
 
-export interface Reply {
-  id: string;
-  userId: string;
-  userName: string;
-  content: string;
-  isAdmin?: boolean;
-  likes?: string[];
-  dislikes?: string[];
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface Comment {
-  id: string;
-  userId: string;
-  userName: string;
-  content: string;
-  isAdmin?: boolean;
-  likes?: string[];
-  dislikes?: string[];
-  replies?: Reply[];
-  createdAt: Date;
-  updatedAt: Date;
-}
-
 export interface ComplaintAiAnalysis {
   // --- Existing Logic ---
   summary: string;
@@ -69,11 +42,6 @@ export interface ComplaintAiAnalysis {
   // --- Risk & Prevention ---
   publicSafetyRisk: string;        // Immediate dangers (e.g., "Risk of electrocution")
   preventionAdvice: string;        // How the Barangay can prevent this from happening again
-}
-
-export interface CommunitySentiment {
-  sentiment: 'supportive' | 'positive' | 'negative' | 'neutral';
-  summary: string;
 }
 
 export interface ComplaintLocation {
