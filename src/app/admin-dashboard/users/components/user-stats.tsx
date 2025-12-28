@@ -5,16 +5,12 @@ import { Users, UserCheck, Shield, UserX } from "lucide-react";
 
 interface UserStatsProps {
   totalUsers: number;
-  activeUsers: number;
   totalAdmins: number;
-  bannedUsers: number;
 }
 
 export function UserStats({
   totalUsers,
-  activeUsers,
   totalAdmins,
-  bannedUsers,
 }: UserStatsProps) {
   const stats = [
     {
@@ -26,14 +22,6 @@ export function UserStats({
       bgColor: "bg-blue-100",
     },
     {
-      title: "Active Users",
-      value: activeUsers,
-      icon: UserCheck,
-      description: "Currently active",
-      color: "text-green-600",
-      bgColor: "bg-green-100",
-    },
-    {
       title: "Administrators",
       value: totalAdmins,
       icon: Shield,
@@ -41,18 +29,10 @@ export function UserStats({
       color: "text-purple-600",
       bgColor: "bg-purple-100",
     },
-    {
-      title: "Banned Users",
-      value: bannedUsers,
-      icon: UserX,
-      description: "Restricted access",
-      color: "text-red-600",
-      bgColor: "bg-red-100",
-    },
   ];
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-4 md:grid-cols-2">
       {stats.map((stat) => {
         const Icon = stat.icon;
         return (

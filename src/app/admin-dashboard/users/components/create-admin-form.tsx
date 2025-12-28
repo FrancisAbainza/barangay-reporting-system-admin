@@ -33,7 +33,7 @@ import { UserPlus } from "lucide-react";
 
 const createAdminSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Invalid email address"),
+  employeeId: z.string().min(3, "Employee ID must be at least 3 characters"),
   password: z
     .string()
     .min(8, "Password must be at least 8 characters")
@@ -42,7 +42,7 @@ const createAdminSchema = z.object({
       "Password must contain uppercase, lowercase, and number"
     ),
   confirmPassword: z.string(),
-  role: z.enum(["admin", "user"]),
+  role: z.enum(["super_admin", "regular_admin"]),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords do not match",
   path: ["confirmPassword"],
@@ -57,10 +57,10 @@ export function CreateAdminForm() {
     resolver: zodResolver(createAdminSchema),
     defaultValues: {
       name: "",
-      email: "",
+      employeeId: "",
       password: "",
       confirmPassword: "",
-      role: "admin",
+      role: "regular_admin",
     },
   });
 
@@ -114,14 +114,13 @@ export function CreateAdminForm() {
 
             <FormField
               control={form.control}
-              name="email"
+              name="employeeId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email Address</FormLabel>
+                  <FormLabel>Employee ID</FormLabel>
                   <FormControl>
                     <Input
-                      type="email"
-                      placeholder="admin@example.com"
+                      placeholder="EMP-12345"
                       {...field}
                     />
                   </FormControl>
@@ -146,12 +145,12 @@ export function CreateAdminForm() {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="admin">Admin</SelectItem>
-                      <SelectItem value="user">User</SelectItem>
+                      <SelectItem value="super_admin">Super Admin</SelectItem>
+                      <SelectItem value="regular_admin">Regular Admin</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormDescription>
-                    Admin can manage users and content
+                    Super Admin has full access, Regular Admin has limited permissions
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

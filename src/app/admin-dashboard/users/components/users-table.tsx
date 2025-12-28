@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   Table,
   TableBody,
@@ -27,10 +27,11 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { MoreHorizontal, Ban, Users, AlertTriangle, CheckCircle } from "lucide-react";
+import { MoreHorizontal, Ban, Users, AlertTriangle, CheckCircle, Search } from "lucide-react";
 import type { User } from "@/types/user";
 import { formatDate } from "@/lib/date-formatter";
 
@@ -46,6 +47,14 @@ export function UsersTable({ users, onBanUser, onUnbanUser }: UsersTableProps) {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [banReason, setBanReason] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
+  const [searchId, setSearchId] = useState("");
+
+  const filteredUsers = useMemo(() => {
+    if (!searchId.trim()) return users;
+    return users.filter((user) =>
+      user.id.toLowerCase().includes(searchId.toLowerCase())
+    );
+  }, [users, searchId]);
 
   const handleBanClick = (user: User) => {
     setSelectedUser(user);
@@ -102,33 +111,45 @@ export function UsersTable({ users, onBanUser, onUnbanUser }: UsersTableProps) {
           </CardTitle>
         </CardHeader>
         <CardContent>
+          <div className="mb-4 flex items-center gap-2">
+            <div className="relative flex-1 max-w-sm">
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search by user ID..."
+                value={searchId}
+                onChange={(e) => setSearchId(e.target.value)}
+                className="pl-8"
+              />
+            </div>
+          </div>
           <div className="rounded-md border">
             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>Name</TableHead>
+                  <TableHead>User ID</TableHead>
                   <TableHead>Email</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Complaints</TableHead>
-                  <TableHead>Projects</TableHead>
                   <TableHead>Joined</TableHead>
                   <TableHead>Last Login</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {users.length === 0 ? (
+                {filteredUsers.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={8} className="text-center">
                       <div className="py-8 text-muted-foreground">
-                        No users found
+                        {searchId.trim() ? "No users match your search" : "No users found"}
                       </div>
                     </TableCell>
                   </TableRow>
                 ) : (
-                  users.map((user) => (
+                  filteredUsers.map((user) => (
                     <TableRow key={user.id}>
                       <TableCell className="font-medium">{user.name}</TableCell>
+                      <TableCell className="font-mono text-sm">{user.id}</TableCell>
                       <TableCell>{user.email}</TableCell>
                       <TableCell>
                         <Badge
@@ -145,7 +166,6 @@ export function UsersTable({ users, onBanUser, onUnbanUser }: UsersTableProps) {
                         </Badge>
                       </TableCell>
                       <TableCell>{user.complaintsCount || 0}</TableCell>
-                      <TableCell>{user.projectsCount || 0}</TableCell>
                       <TableCell>{formatDate(user.createdAt)}</TableCell>
                       <TableCell>
                         {user.lastLoginAt

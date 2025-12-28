@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   Table,
   TableBody,
@@ -27,22 +27,31 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MoreHorizontal, Trash2, Shield, AlertTriangle } from "lucide-react";
-import type { User } from "@/types/user";
+import { MoreHorizontal, Trash2, Shield, AlertTriangle, Search } from "lucide-react";
+import type { Admin } from "@/types/user";
 import { formatDate } from "@/lib/date-formatter";
 
 interface AdminTableProps {
-  admins: User[];
+  admins: Admin[];
   onDeleteAdmin: (adminId: string) => void;
 }
 
 export function AdminTable({ admins, onDeleteAdmin }: AdminTableProps) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [selectedAdmin, setSelectedAdmin] = useState<User | null>(null);
+  const [selectedAdmin, setSelectedAdmin] = useState<Admin | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [searchEmployeeId, setSearchEmployeeId] = useState("");
 
-  const handleDeleteClick = (admin: User) => {
+  const filteredAdmins = useMemo(() => {
+    if (!searchEmployeeId.trim()) return admins;
+    return admins.filter((admin) =>
+      admin.employeeId.toLowerCase().includes(searchEmployeeId.toLowerCase())
+    );
+  }, [admins, searchEmployeeId]);
+
+  const handleDeleteClick = (admin: Admin) => {
     setSelectedAdmin(admin);
     setDeleteDialogOpen(true);
   };
@@ -74,46 +83,46 @@ export function AdminTable({ admins, onDeleteAdmin }: AdminTableProps) {
           </CardTitle>
         </CardHeader>
         <CardContent>
+          <div className="mb-4 flex items-center gap-2">
+            <div className="relative flex-1 max-w-sm">
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search by employee ID..."
+                value={searchEmployeeId}
+                onChange={(e) => setSearchEmployeeId(e.target.value)}
+                className="pl-8"
+              />
+            </div>
+          </div>
           <div className="rounded-md border">
             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>Name</TableHead>
-                  <TableHead>Email</TableHead>
+                  <TableHead>Employee ID</TableHead>
                   <TableHead>Role</TableHead>
-                  <TableHead>Status</TableHead>
                   <TableHead>Created</TableHead>
                   <TableHead>Last Login</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {admins.length === 0 ? (
+                {filteredAdmins.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center">
+                    <TableCell colSpan={6} className="text-center">
                       <div className="py-8 text-muted-foreground">
-                        No admin accounts found
+                        {searchEmployeeId.trim() ? "No admins match your search" : "No admin accounts found"}
                       </div>
                     </TableCell>
                   </TableRow>
                 ) : (
-                  admins.map((admin) => (
+                  filteredAdmins.map((admin) => (
                     <TableRow key={admin.id}>
                       <TableCell className="font-medium">{admin.name}</TableCell>
-                      <TableCell>{admin.email}</TableCell>
+                      <TableCell>{admin.employeeId}</TableCell>
                       <TableCell>
                         <Badge variant="secondary" className="capitalize">
-                          {admin.role}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          variant={
-                            admin.status === "active" ? "default" : "destructive"
-                          }
-                          className="capitalize"
-                        >
-                          {admin.status}
+                          {admin.role.replace("_", " ")}
                         </Badge>
                       </TableCell>
                       <TableCell>{formatDate(admin.createdAt)}</TableCell>

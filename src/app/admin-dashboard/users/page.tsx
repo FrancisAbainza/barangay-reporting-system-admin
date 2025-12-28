@@ -6,25 +6,23 @@ import { CreateAdminForm } from "./components/create-admin-form";
 import { AdminTable } from "./components/admin-table";
 import { UsersTable } from "./components/users-table";
 import { UserStats } from "./components/user-stats";
-import type { User } from "@/types/user";
+import type { User, Admin } from "@/types/user";
 
 // Mock data - replace with actual API calls
-const mockAdmins: User[] = [
+const mockAdmins: Admin[] = [
   {
     id: "1",
+    employeeId: "EMP-001",
     name: "Admin User",
-    email: "admin@example.com",
-    role: "admin",
-    status: "active",
+    role: "super_admin",
     createdAt: new Date("2024-01-15"),
     lastLoginAt: new Date("2024-12-28"),
   },
   {
     id: "2",
+    employeeId: "EMP-002",
     name: "John Admin",
-    email: "john@example.com",
-    role: "admin",
-    status: "active",
+    role: "regular_admin",
     createdAt: new Date("2024-03-20"),
     lastLoginAt: new Date("2024-12-27"),
   },
@@ -40,7 +38,6 @@ const mockUsers: User[] = [
     createdAt: new Date("2024-06-10"),
     lastLoginAt: new Date("2024-12-29"),
     complaintsCount: 5,
-    projectsCount: 2,
   },
   {
     id: "4",
@@ -51,7 +48,6 @@ const mockUsers: User[] = [
     createdAt: new Date("2024-07-15"),
     lastLoginAt: new Date("2024-12-28"),
     complaintsCount: 3,
-    projectsCount: 1,
   },
   {
     id: "5",
@@ -62,12 +58,11 @@ const mockUsers: User[] = [
     createdAt: new Date("2024-08-20"),
     lastLoginAt: new Date("2024-12-15"),
     complaintsCount: 10,
-    projectsCount: 0,
   },
 ];
 
 export default function UsersPage() {
-  const [admins, setAdmins] = useState<User[]>(mockAdmins);
+  const [admins, setAdmins] = useState<Admin[]>(mockAdmins);
   const [users, setUsers] = useState<User[]>(mockUsers);
 
   const handleDeleteAdmin = async (adminId: string) => {
@@ -101,9 +96,7 @@ export default function UsersPage() {
 
   const stats = {
     totalUsers: users.length,
-    activeUsers: users.filter((u) => u.status === "active").length,
     totalAdmins: admins.length,
-    bannedUsers: users.filter((u) => u.status === "banned").length,
   };
 
   return (

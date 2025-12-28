@@ -1,3 +1,4 @@
+export type AdminRole = "super_admin" | "regular_admin";
 export type UserRole = "admin" | "user";
 export type UserStatus = "active" | "banned" | "suspended";
 
@@ -10,14 +11,22 @@ export interface User {
   createdAt: Date;
   lastLoginAt?: Date;
   complaintsCount?: number;
-  projectsCount?: number;
+}
+
+export interface Admin {
+  id: string;
+  employeeId: string;
+  name: string;
+  role: AdminRole;
+  createdAt: Date;
+  lastLoginAt?: Date;
 }
 
 export interface CreateAdminRequest {
-  email: string;
+  employeeId: string;
   password: string;
   name: string;
-  role: UserRole;
+  role: AdminRole;
 }
 
 export interface BanUserRequest {
@@ -27,7 +36,5 @@ export interface BanUserRequest {
 
 export interface UserStats {
   totalUsers: number;
-  activeUsers: number;
   totalAdmins: number;
-  bannedUsers: number;
 }
