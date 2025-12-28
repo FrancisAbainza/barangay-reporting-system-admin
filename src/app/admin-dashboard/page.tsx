@@ -1,3 +1,11 @@
+import { StatsCards } from "./components/stats-cards";
+import { ComplaintStatusChart } from "./components/complaint-status-chart";
+import { ComplaintCategoryChart } from "./components/complaint-category-chart";
+import { ProjectStatusChart } from "./components/project-status-chart";
+import { MonthlyTrendsChart } from "./components/monthly-trends-chart";
+import { ProjectCategoryChart } from "./components/project-category-chart";
+import { RecentActivity } from "./components/recent-activity";
+
 export default function DashboardPage() {
   return (
     <div className="container p-6">
@@ -8,11 +16,27 @@ export default function DashboardPage() {
         </p>
       </div>
 
-      {/* Placeholder for dashboard content */}
-      <div className="rounded-lg border border-dashed border-border p-8 text-center">
-        <p className="text-muted-foreground">
-          Dashboard overview content will be displayed here
-        </p>
+      <div className="space-y-6">
+        {/* Stats Cards */}
+        <StatsCards />
+
+        {/* Monthly Trends */}
+        <MonthlyTrendsChart />
+
+        {/* Complaint Charts */}
+        <div className="grid gap-6 md:grid-cols-2">
+          <ComplaintStatusChart />
+          <ComplaintCategoryChart />
+        </div>
+
+        {/* Project Charts */}
+        <div className="grid gap-6 md:grid-cols-2">
+          <ProjectStatusChart />
+          <ProjectCategoryChart />
+        </div>
+
+        {/* Recent Activity */}
+        <RecentActivity />
       </div>
     </div>
   );
