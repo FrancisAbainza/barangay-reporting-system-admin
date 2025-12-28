@@ -54,14 +54,14 @@ export function UpdateProgressMenuItem({ project, onOpenChange }: UpdateProgress
     setIsOpen(false);
   };
 
-  const handleClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleSelect = (e: Event) => {
+    e.preventDefault();
     setIsOpen(true);
   };
 
   return (
     <>
-      <DropdownMenuItem onClick={handleClick}>
+      <DropdownMenuItem onSelect={handleSelect}>
         <RefreshCw className="h-4 w-4 mr-2" />
         Update Status
       </DropdownMenuItem>

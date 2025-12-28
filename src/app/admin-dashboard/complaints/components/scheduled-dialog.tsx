@@ -1,36 +1,72 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+"use client";
+
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import type { Complaint } from "@/types/complaint";
 
 interface ScheduledDialogProps {
-  isOpen: boolean;
+  open: boolean;
   onOpenChange: (open: boolean) => void;
-  scheduledDate: string;
-  setScheduledDate: (value: string) => void;
-  onSubmit: () => void;
+  onSubmit: (data: ScheduledFormValues) => void;
+  complaint: Complaint | null;
 }
 
+const scheduledSchema = z.object({
+  scheduledDate: z.string().min(1, "Scheduled date is required"),
+});
+
+export type ScheduledFormValues = z.infer<typeof scheduledSchema>;
+
 export function ScheduledDialog({
-  isOpen,
+  open,
   onOpenChange,
-  scheduledDate,
-  setScheduledDate,
   onSubmit,
+  complaint,
 }: ScheduledDialogProps) {
-  const handleCancel = () => {
+  const form = useForm<ScheduledFormValues>({
+    resolver: zodResolver(scheduledSchema),
+    defaultValues: {
+      scheduledDate: "",
+    },
+  });
+
+  // Reset form when dialog opens
+  useEffect(() => {
+    if (open) {
+      form.reset({
+        scheduledDate: "",
+      });
+    }
+  }, [open, form]);
+
+  const handleSubmit = (data: ScheduledFormValues) => {
+    onSubmit(data);
+    form.reset();
     onOpenChange(false);
-    setScheduledDate("");
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>Schedule Complaint</DialogTitle>
@@ -39,31 +75,36 @@ export function ScheduledDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4 py-4">
-          <div className="space-y-2">
-            <Label htmlFor="scheduledDate">
-              Scheduled Date <span className="text-destructive">*</span>
-            </Label>
-            <Input
-              id="scheduledDate"
-              type="date"
-              value={scheduledDate}
-              onChange={(e) => setScheduledDate(e.target.value)}
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="scheduledDate"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Scheduled Date <span className="text-destructive">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input type="date" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-        </div>
 
-        <div className="flex justify-end gap-2">
-          <Button variant="outline" onClick={handleCancel}>
-            Cancel
-          </Button>
-          <Button 
-            onClick={onSubmit}
-            disabled={!scheduledDate}
-          >
-            Mark as Scheduled
-          </Button>
-        </div>
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+              >
+                Cancel
+              </Button>
+              <Button type="submit">Mark as Scheduled</Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );

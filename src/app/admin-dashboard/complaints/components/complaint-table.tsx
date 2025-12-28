@@ -1,3 +1,5 @@
+"use client";
+
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -18,22 +20,28 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreVertical, ThumbsUp, MessageSquare, Trash2 } from "lucide-react";
-import type { Complaint, ComplaintStatus } from "@/types/complaint";
+import type { Complaint } from "@/types/complaint";
 import { getStatusBadge, getPriorityBadge, getCategoryLabel, getCategoryBadge } from "@/lib/complaint-helpers";
 import { formatDate } from "@/lib/date-formatter";
+import { useComplaintDb } from "@/contexts/complaint-db-context";
+import { ResolveComplaintMenuItem } from "./resolve-complaint-menu-item";
+import { ScheduleComplaintMenuItem } from "./schedule-complaint-menu-item";
 
 interface ComplaintTableProps {
   complaints: Complaint[];
-  handleStatusChange: (complaintId: string, newStatus: ComplaintStatus) => void;
-  handleDeleteComplaint: (complaintId: string) => void;
 }
 
 export function ComplaintTable({
   complaints,
-  handleStatusChange,
-  handleDeleteComplaint,
 }: ComplaintTableProps) {
   const router = useRouter();
+  const { updateComplaintStatus, updateComplaint, deleteComplaint } = useComplaintDb();
+
+  const handleDeleteComplaint = (complaintId: string) => {
+    if (confirm("Are you sure you want to delete this complaint?")) {
+      deleteComplaint(complaintId);
+    }
+  };
 
   return (
     <div className="rounded-md border overflow-x-auto">
@@ -59,7 +67,7 @@ export function ComplaintTable({
             </TableRow>
           ) : (
             complaints.map((complaint) => (
-              <TableRow 
+              <TableRow
                 key={complaint.id}
                 className="cursor-pointer hover:bg-muted/50"
                 onClick={() => router.push(`/admin-dashboard/complaints/${complaint.id}`)}
@@ -108,27 +116,24 @@ export function ComplaintTable({
                     <DropdownMenuContent align="end">
                       <DropdownMenuLabel>Update Status</DropdownMenuLabel>
                       <DropdownMenuItem
-                        onClick={() => handleStatusChange(complaint.id, "under_review")}
+                        onClick={() => updateComplaintStatus(complaint.id, "submitted")}
+                      >
+                        Submitted
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => updateComplaintStatus(complaint.id, "under_review")}
                       >
                         Under Review
                       </DropdownMenuItem>
+                      <ScheduleComplaintMenuItem complaint={complaint} />
                       <DropdownMenuItem
-                        onClick={() => handleStatusChange(complaint.id, "scheduled")}
-                      >
-                        Scheduled
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => handleStatusChange(complaint.id, "in_progress")}
+                        onClick={() => updateComplaintStatus(complaint.id, "in_progress")}
                       >
                         In Progress
                       </DropdownMenuItem>
+                      <ResolveComplaintMenuItem complaint={complaint} />
                       <DropdownMenuItem
-                        onClick={() => handleStatusChange(complaint.id, "resolved")}
-                      >
-                        Resolved
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => handleStatusChange(complaint.id, "dismissed")}
+                        onClick={() => updateComplaintStatus(complaint.id, "dismissed")}
                       >
                         Dismissed
                       </DropdownMenuItem>

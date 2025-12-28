@@ -49,7 +49,7 @@ export type ProjectStatus =
 export interface ProjectLocation {
   latitude: number;
   longitude: number;
-  address?: string;
+  address: string;
 }
 
 export interface ProgressUpdate {

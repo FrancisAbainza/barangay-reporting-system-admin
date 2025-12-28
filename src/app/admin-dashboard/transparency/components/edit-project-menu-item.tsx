@@ -26,14 +26,14 @@ export function EditProjectMenuItem({ project, onOpenChange }: EditProjectMenuIt
     setIsOpen(false);
   };
 
-  const handleClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleSelect = (e: Event) => {
+    e.preventDefault();
     setIsOpen(true);
   };
 
   return (
     <>
-      <DropdownMenuItem onClick={handleClick}>
+      <DropdownMenuItem onSelect={handleSelect}>
         <Pencil className="h-4 w-4 mr-2" />
         Edit Project
       </DropdownMenuItem>

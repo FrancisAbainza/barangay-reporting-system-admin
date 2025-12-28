@@ -144,36 +144,43 @@ export function ComplaintDetailsDialog({
           </TabsContent>
 
           <TabsContent value="location" className="space-y-4">
-            <div>
-              <h4 className="font-semibold mb-2 flex items-center gap-2">
-                <MapPin className="h-4 w-4" />
-                Location Coordinates
-              </h4>
-              <div className="space-y-2">
-                <p className="text-sm">
-                  <span className="font-medium">Latitude:</span>{" "}
-                  {complaint.location.latitude}
-                </p>
-                <p className="text-sm">
-                  <span className="font-medium">Longitude:</span>{" "}
-                  {complaint.location.longitude}
-                </p>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="mt-2"
-                  onClick={() => {
-                    window.open(
-                      `https://www.google.com/maps?q=${complaint.location.latitude},${complaint.location.longitude}`,
-                      "_blank"
-                    );
-                  }}
-                >
-                  <MapPin className="h-4 w-4 mr-2" />
-                  View on Google Maps
-                </Button>
+            {complaint.location ? (
+              <div>
+                <h4 className="font-semibold mb-2 flex items-center gap-2">
+                  <MapPin className="h-4 w-4" />
+                  Location Coordinates
+                </h4>
+                <div className="space-y-2">
+                  <p className="text-sm">
+                    <span className="font-medium">Latitude:</span>{" "}
+                    {complaint.location.latitude}
+                  </p>
+                  <p className="text-sm">
+                    <span className="font-medium">Longitude:</span>{" "}
+                    {complaint.location.longitude}
+                  </p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="mt-2"
+                    onClick={() => {
+                      window.open(
+                        `https://www.google.com/maps?q=${complaint.location!.latitude},${complaint.location!.longitude}`,
+                        "_blank"
+                      );
+                    }}
+                  >
+                    <MapPin className="h-4 w-4 mr-2" />
+                    View on Google Maps
+                  </Button>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-12 text-center">
+                <MapPin className="h-12 w-12 text-muted-foreground mb-4" />
+                <p className="text-sm text-muted-foreground">No location information available for this complaint.</p>
+              </div>
+            )}
           </TabsContent>
 
           <TabsContent value="engagement" className="space-y-4">

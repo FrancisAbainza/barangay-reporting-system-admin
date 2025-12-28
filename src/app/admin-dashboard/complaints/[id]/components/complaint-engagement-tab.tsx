@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useComplaintDb } from "@/contexts/complaint-db-context";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
@@ -13,22 +14,52 @@ import { formatDate } from "@/lib/date-formatter";
 
 interface ComplaintEngagementTabProps {
   complaint: Complaint;
-  onAddComment: (content: string) => void;
-  onAddReply: (commentId: string, content: string) => void;
-  onGenerateCommunitySentiment: () => void;
-  isGeneratingSentiment: boolean;
 }
 
-export function ComplaintEngagementTab({
-  complaint,
-  onAddComment,
-  onAddReply,
-  onGenerateCommunitySentiment,
-  isGeneratingSentiment,
-}: ComplaintEngagementTabProps) {
-  const [adminComment, setAdminComment] = useState("");
+export function ComplaintEngagementTab({ complaint }: ComplaintEngagementTabProps) {
+  const { addComplaintComment, addReply, generateCommunitySentiment } = useComplaintDb();
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [replyContent, setReplyContent] = useState<Record<string, string>>({});
+  const [adminComment, setAdminComment] = useState("");
+  const [isGeneratingSentiment, setIsGeneratingSentiment] = useState(false);
+
+  const handleAddAdminComment = () => {
+    const content = adminComment.trim();
+    if (content) {
+      addComplaintComment(
+        complaint.id,
+        "admin1",
+        "Admin Staff",
+        content,
+        true
+      );
+      setAdminComment("");
+    }
+  };
+
+  const handleAddReply = (commentId: string, content: string) => {
+    addReply(
+      complaint.id,
+      commentId,
+      "admin1",
+      "Admin Staff",
+      content,
+      true
+    );
+  };
+
+  const handleGenerateCommunitySentiment = async () => {
+    setIsGeneratingSentiment(true);
+    
+    try {
+      await generateCommunitySentiment(complaint.id);
+    } catch (error) {
+      console.error("Error generating community sentiment:", error);
+      alert("Failed to generate community sentiment. Please try again.");
+    } finally {
+      setIsGeneratingSentiment(false);
+    }
+  };
 
   const getSentimentBadge = (sentiment: string) => {
     const colors: Record<string, string> = {
@@ -50,7 +81,7 @@ export function ComplaintEngagementTab({
   const handleReplySubmit = (commentId: string) => {
     const content = replyContent[commentId]?.trim();
     if (content) {
-      onAddReply(commentId, content);
+      handleAddReply(commentId, content);
       setReplyContent((prev) => ({ ...prev, [commentId]: "" }));
       setReplyingTo(null);
     }
@@ -58,14 +89,6 @@ export function ComplaintEngagementTab({
 
   const handleReplyChange = (commentId: string, value: string) => {
     setReplyContent((prev) => ({ ...prev, [commentId]: value }));
-  };
-
-  const handleAddAdminComment = () => {
-    const content = adminComment.trim();
-    if (content) {
-      onAddComment(content);
-      setAdminComment("");
-    }
   };
 
   const renderGeneratingSentiment = () => (
@@ -89,7 +112,7 @@ export function ComplaintEngagementTab({
         </div>
         <p className="text-sm text-muted-foreground">{complaint.communitySentiment!.summary}</p>
         <Button 
-          onClick={onGenerateCommunitySentiment} 
+          onClick={handleGenerateCommunitySentiment} 
           variant="outline" 
           size="sm"
           className="gap-2"
@@ -108,7 +131,7 @@ export function ComplaintEngagementTab({
           Generate AI-powered sentiment analysis based on community comments.
         </p>
         <Button 
-          onClick={onGenerateCommunitySentiment} 
+          onClick={handleGenerateCommunitySentiment} 
           size="sm"
           className="gap-2"
           disabled={!complaint.comments || complaint.comments.length === 0}

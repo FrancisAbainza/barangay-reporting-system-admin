@@ -76,6 +76,12 @@ export interface CommunitySentiment {
   summary: string;
 }
 
+export interface ComplaintLocation {
+  latitude: number;
+  longitude: number;
+  address: string;
+}
+
 export interface Complaint {
   id: string;
   title: string;
@@ -85,11 +91,7 @@ export interface Complaint {
   priority: "low" | "medium" | "high" | "urgent";
   complainantName: string;
   complainantId: string;
-  location: {
-    latitude: number;
-    longitude: number;
-    address: string;
-  };
+  location?: ComplaintLocation;
   images?: Image[];
   resolutionDetails?: ResolutionDetail;
   resolvedAt?: Date;
@@ -119,6 +121,7 @@ export interface UpdateComplaintInput {
   title?: string;
   description?: string;
   category?: ComplaintCategory;
+  status?: ComplaintStatus;
   location?: {
     latitude: number;
     longitude: number;
@@ -126,5 +129,6 @@ export interface UpdateComplaintInput {
   };
   images?: Image[];
   resolutionDetails?: ResolutionDetail;
+  resolvedAt?: Date;
   scheduledAt?: Date;
 }

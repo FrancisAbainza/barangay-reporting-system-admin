@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { useProjectDb } from "@/contexts/project-db-context";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import type { ProjectStatus, ProjectCategory, Project } from "@/types/project";
 import { ProjectFilters } from "./project-filters";
@@ -14,7 +13,6 @@ interface ProjectManagementCardProps {
 
 // Client Component - Receives data as prop, uses context for CRUD operations
 export function ProjectManagementCard({ projects }: ProjectManagementCardProps) {
-  const { deleteProject } = useProjectDb();
   const [filters, setFilters] = useState({
     searchQuery: "",
     statusFilters: [] as ProjectStatus[],

@@ -1,42 +1,76 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+"use client";
+
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import type { Complaint } from "@/types/complaint";
 
 interface ResolutionDialogProps {
-  isOpen: boolean;
+  open: boolean;
   onOpenChange: (open: boolean) => void;
-  resolutionDescription: string;
-  setResolutionDescription: (value: string) => void;
-  resolutionBudget: string;
-  setResolutionBudget: (value: string) => void;
-  onSubmit: () => void;
+  onSubmit: (data: ResolutionFormValues) => void;
+  complaint: Complaint | null;
 }
 
+const resolutionSchema = z.object({
+  description: z.string().min(1, "Resolution description is required"),
+  budget: z.string().optional(),
+});
+
+export type ResolutionFormValues = z.infer<typeof resolutionSchema>;
+
 export function ResolutionDialog({
-  isOpen,
+  open,
   onOpenChange,
-  resolutionDescription,
-  setResolutionDescription,
-  resolutionBudget,
-  setResolutionBudget,
   onSubmit,
+  complaint,
 }: ResolutionDialogProps) {
-  const handleCancel = () => {
+  const form = useForm<ResolutionFormValues>({
+    resolver: zodResolver(resolutionSchema),
+    defaultValues: {
+      description: "",
+      budget: "",
+    },
+  });
+
+  // Reset form when dialog opens
+  useEffect(() => {
+    if (open) {
+      form.reset({
+        description: "",
+        budget: "",
+      });
+    }
+  }, [open, form]);
+
+  const handleSubmit = (data: ResolutionFormValues) => {
+    onSubmit(data);
+    form.reset();
     onOpenChange(false);
-    setResolutionDescription("");
-    setResolutionBudget("");
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>Mark as Resolved</DialogTitle>
@@ -45,45 +79,58 @@ export function ResolutionDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4 py-4">
-          <div className="space-y-2">
-            <Label htmlFor="resolutionDescription">
-              Resolution Description <span className="text-destructive">*</span>
-            </Label>
-            <Textarea
-              id="resolutionDescription"
-              placeholder="Describe how the complaint was resolved..."
-              value={resolutionDescription}
-              onChange={(e) => setResolutionDescription(e.target.value)}
-              rows={5}
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Resolution Description <span className="text-destructive">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Describe how the complaint was resolved..."
+                      rows={5}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="resolutionBudget">
-              Budget (Optional)
-            </Label>
-            <Input
-              id="resolutionBudget"
-              type="number"
-              placeholder="Enter budget amount"
-              value={resolutionBudget}
-              onChange={(e) => setResolutionBudget(e.target.value)}
+            <FormField
+              control={form.control}
+              name="budget"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Budget (Optional)</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="Enter budget amount"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-        </div>
 
-        <div className="flex justify-end gap-2">
-          <Button variant="outline" onClick={handleCancel}>
-            Cancel
-          </Button>
-          <Button 
-            onClick={onSubmit}
-            disabled={!resolutionDescription.trim()}
-          >
-            Mark as Resolved
-          </Button>
-        </div>
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+              >
+                Cancel
+              </Button>
+              <Button type="submit">Mark as Resolved</Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );

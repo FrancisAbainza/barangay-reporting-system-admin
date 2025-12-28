@@ -1,3 +1,7 @@
+"use client";
+
+import { useState } from "react";
+import { useComplaintDb } from "@/contexts/complaint-db-context";
 import { Button } from "@/components/ui/button";
 import { TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
@@ -16,19 +20,28 @@ import {
   Shield,
   FileText
 } from "lucide-react";
-import type { ComplaintAiAnalysis } from "@/types/complaint";
+import type { Complaint } from "@/types/complaint";
 
 interface ComplaintAIAnalysisTabProps {
-  isGenerating: boolean;
-  analysis: ComplaintAiAnalysis | null;
-  onGenerate: () => void;
+  complaint: Complaint;
 }
 
-export function ComplaintAIAnalysisTab({
-  isGenerating,
-  analysis,
-  onGenerate,
-}: ComplaintAIAnalysisTabProps) {
+export function ComplaintAIAnalysisTab({ complaint }: ComplaintAIAnalysisTabProps) {
+  const { generateAIAnalysis } = useComplaintDb();
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  const handleGenerateAI = async () => {
+    setIsGenerating(true);
+    
+    try {
+      await generateAIAnalysis(complaint.id);
+    } catch (error) {
+      console.error("Error generating AI analysis:", error);
+      alert("Failed to generate AI analysis. Please try again.");
+    } finally {
+      setIsGenerating(false);
+    }
+  };
   const renderGeneratingState = () => (
     <div className="flex flex-col items-center justify-center py-12 space-y-4">
       <Spinner size="lg" />
@@ -36,7 +49,12 @@ export function ComplaintAIAnalysisTab({
     </div>
   );
 
-  const renderAnalysisContent = (analysis: ComplaintAiAnalysis) => (
+  const analysis = complaint.aiAnalysis;
+
+  const renderAnalysisContent = () => {
+    if (!analysis) return null;
+    
+    return (
     <div className="space-y-6">
       {/* Header */}
       <div className="bg-linear-to-r from-primary/10 to-primary/5 border border-primary/20 rounded-lg p-6">
@@ -110,13 +128,14 @@ export function ComplaintAIAnalysisTab({
 
       {/* Regenerate Button */}
       <div className="pt-4 border-t">
-        <Button onClick={onGenerate} variant="outline" className="gap-2">
+        <Button onClick={handleGenerateAI} variant="outline" className="gap-2">
           <RefreshCw className="h-4 w-4" />
           Regenerate Analysis
         </Button>
       </div>
     </div>
-  );
+    );
+  };
 
   const renderEmptyState = () => (
     <div className="flex flex-col items-center justify-center py-12 space-y-4 text-center">
@@ -130,7 +149,7 @@ export function ComplaintAIAnalysisTab({
           recommendations, and analysis for this complaint.
         </p>
       </div>
-      <Button onClick={onGenerate} size="lg" className="gap-2 mt-4">
+      <Button onClick={handleGenerateAI} size="lg" className="gap-2 mt-4">
         <Sparkles className="h-5 w-5" />
         Generate AI Analysis
       </Button>
@@ -140,7 +159,7 @@ export function ComplaintAIAnalysisTab({
   return (
     <TabsContent value="ai-analysis" className="space-y-4 p-6">
       {isGenerating && renderGeneratingState()}
-      {!isGenerating && analysis && renderAnalysisContent(analysis)}
+      {!isGenerating && analysis && renderAnalysisContent()}
       {!isGenerating && !analysis && renderEmptyState()}
     </TabsContent>
   );
