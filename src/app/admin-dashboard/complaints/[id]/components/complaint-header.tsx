@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Trash2 } from "lucide-react";
 import { GenerateAIButton } from "./generate-ai-button";
+import { ComplaintStatusSelect } from "./complaint-status-select";
 import { Complaint } from "@/types/complaint";
 import { useComplaintDb } from "@/contexts/complaint-db-context";
 import { useRouter } from "next/navigation";
@@ -34,6 +35,7 @@ export function ComplaintHeader({
         </div>
       </div>
       <div className="flex gap-2">
+        <ComplaintStatusSelect complaint={complaint} />
         <Button
           variant="destructive"
           onClick={handleDeleteComplaint}
@@ -42,7 +44,6 @@ export function ComplaintHeader({
           <Trash2 className="h-4 w-4" />
           Delete
         </Button>
-        <GenerateAIButton complaint={complaint} />
       </div>
     </div>
   );

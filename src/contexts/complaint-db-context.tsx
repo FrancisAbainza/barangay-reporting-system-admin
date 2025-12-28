@@ -307,16 +307,17 @@ export function ComplaintDbProvider({ children }: { children: ReactNode }) {
               updateData.resolutionDetails = resolutionDetails;
             }
           } else if (complaint.status === "resolved") {
-            // Clear resolvedAt if changing from resolved to another status
+            // Clear resolvedAt, resolutionDetails, and actualCompletionDate if changing from resolved to another status
             updateData.resolvedAt = undefined;
+            updateData.resolutionDetails = undefined;
+            updateData.actualCompletionDate = undefined;
           }
 
           // Set scheduledAt timestamp when marking as scheduled
           if (status === "scheduled") {
             updateData.scheduledAt = scheduledAt || new Date();
-          } else if (complaint.status === "scheduled" &&
-            (status === "submitted" || status === "under_review" || status === "dismissed")) {
-            // Clear scheduledAt only when changing to submitted, under_review, or dismissed
+          } else if (status === "submitted" || status === "under_review" || status === "dismissed") {
+            // Clear scheduledAt when changing to submitted, under_review, or dismissed
             updateData.scheduledAt = undefined;
           }
 
@@ -325,6 +326,13 @@ export function ComplaintDbProvider({ children }: { children: ReactNode }) {
             ...updateData,
             updatedAt: new Date(),
           };
+          
+          // Explicitly remove undefined fields only when they were set to undefined
+          if (updateData.hasOwnProperty('resolvedAt') && updateData.resolvedAt === undefined) delete updated.resolvedAt;
+          if (updateData.hasOwnProperty('resolutionDetails') && updateData.resolutionDetails === undefined) delete updated.resolutionDetails;
+          if (updateData.hasOwnProperty('actualCompletionDate') && updateData.actualCompletionDate === undefined) delete updated.actualCompletionDate;
+          if (updateData.hasOwnProperty('scheduledAt') && updateData.scheduledAt === undefined) delete updated.scheduledAt;
+          
           updatedComplaint = updated;
           return updated;
         }

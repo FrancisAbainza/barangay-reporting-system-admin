@@ -63,7 +63,7 @@ export function UpdateProgressMenuItem({ project, onOpenChange }: UpdateProgress
     <>
       <DropdownMenuItem onSelect={handleSelect}>
         <RefreshCw className="h-4 w-4 mr-2" />
-        Update Status
+        Update Progress
       </DropdownMenuItem>
 
       <UpdateStatusDialog

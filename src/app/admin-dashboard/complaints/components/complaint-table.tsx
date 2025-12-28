@@ -35,7 +35,7 @@ export function ComplaintTable({
   complaints,
 }: ComplaintTableProps) {
   const router = useRouter();
-  const { updateComplaintStatus, updateComplaint, deleteComplaint } = useComplaintDb();
+  const { updateComplaintStatus, deleteComplaint } = useComplaintDb();
 
   const handleDeleteComplaint = (complaintId: string) => {
     if (confirm("Are you sure you want to delete this complaint?")) {
