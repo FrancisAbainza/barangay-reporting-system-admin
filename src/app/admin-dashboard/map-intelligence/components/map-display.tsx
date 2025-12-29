@@ -1,17 +1,19 @@
 "use client";
 
-import { useCallback, useState, useEffect } from "react";
+import { useCallback, useState, useEffect, useMemo } from "react";
 import { GoogleMap, Marker, InfoWindow, useJsApiLoader } from "@react-google-maps/api";
 import { Card, CardContent } from "@/components/ui/card";
 import type { Complaint } from "@/types/complaint";
 import type { Project } from "@/types/project";
 import { ComplaintInfoWindow } from "./complaint-info-window";
 import { ProjectInfoWindow } from "./project-info-window";
+import { HeatmapOverlay } from "./heatmap-overlay";
 
 interface MapDisplayProps {
   complaints?: Complaint[];
   projects?: Project[];
   type: "complaints" | "transparency";
+  showHeatmap?: boolean;
 }
 
 const mapContainerStyle = {
@@ -36,14 +38,14 @@ const mapOptions: google.maps.MapOptions = {
   fullscreenControl: true,
 };
 
-export function MapDisplay({ complaints, projects, type }: MapDisplayProps) {
+export function MapDisplay({ complaints, projects, type, showHeatmap = false }: MapDisplayProps) {
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
   const [selectedMarker, setSelectedMarker] = useState<string | null>(null);
   const [map, setMap] = useState<google.maps.Map | null>(null);
 
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: apiKey || "",
-    libraries: ["places"],
+    libraries: ["places", "visualization"],
   });
 
   // Calculate map center based on available markers
@@ -96,6 +98,21 @@ export function MapDisplay({ complaints, projects, type }: MapDisplayProps) {
       }
     }
   }, [map, complaints, projects, type]);
+
+  // Prepare heatmap data
+  const heatmapData = useMemo(() => {
+    if (!isLoaded) return [];
+    
+    const items = type === "complaints" ? complaints : projects;
+    return items
+      ?.filter((item) => item.location)
+      .map((item) => 
+        new google.maps.LatLng(
+          item.location!.latitude,
+          item.location!.longitude
+        )
+      ) || [];
+  }, [complaints, projects, type, isLoaded]);
 
   if (!apiKey) {
     return (
@@ -152,7 +169,11 @@ export function MapDisplay({ complaints, projects, type }: MapDisplayProps) {
         onUnmount={onUnmount}
         options={mapOptions}
       >
-            {type === "complaints" && complaints?.map((complaint) => {
+            {/* Heatmap Overlay Component */}
+            <HeatmapOverlay map={map} data={heatmapData} show={showHeatmap} />
+
+            {/* Markers - hide when heatmap is active */}
+            {!showHeatmap && type === "complaints" && complaints?.map((complaint) => {
               if (!complaint.location) return null;
 
               return (
@@ -178,7 +199,7 @@ export function MapDisplay({ complaints, projects, type }: MapDisplayProps) {
               );
             })}
 
-            {type === "transparency" && projects?.map((project) => {
+            {!showHeatmap && type === "transparency" && projects?.map((project) => {
               if (!project.location) return null;
 
               return (

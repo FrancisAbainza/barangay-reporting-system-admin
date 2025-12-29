@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
 import {
   Popover,
   PopoverContent,
@@ -24,6 +25,7 @@ interface MapFiltersProps {
     priorityFilters?: string[];
     dateFrom?: string;
     dateTo?: string;
+    showHeatmap?: boolean;
   }) => void;
 }
 
@@ -34,6 +36,7 @@ export function MapFilters({ type, onFilterChange }: MapFiltersProps) {
   const [priorityFilters, setPriorityFilters] = useState<string[]>([]);
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
+  const [showHeatmap, setShowHeatmap] = useState(false);
 
   const hasActiveFilters = 
     searchQuery || 
@@ -50,6 +53,7 @@ export function MapFilters({ type, onFilterChange }: MapFiltersProps) {
     priorityFilters: string[];
     dateFrom: string;
     dateTo: string;
+    showHeatmap: boolean;
   }>) => {
     const newFilters = {
       searchQuery: updates.searchQuery ?? searchQuery,
@@ -58,6 +62,7 @@ export function MapFilters({ type, onFilterChange }: MapFiltersProps) {
       priorityFilters: updates.priorityFilters ?? priorityFilters,
       dateFrom: updates.dateFrom ?? dateFrom,
       dateTo: updates.dateTo ?? dateTo,
+      showHeatmap: updates.showHeatmap ?? showHeatmap,
     };
 
     if (updates.searchQuery !== undefined) setSearchQuery(updates.searchQuery);
@@ -66,6 +71,7 @@ export function MapFilters({ type, onFilterChange }: MapFiltersProps) {
     if (updates.priorityFilters !== undefined) setPriorityFilters(updates.priorityFilters);
     if (updates.dateFrom !== undefined) setDateFrom(updates.dateFrom);
     if (updates.dateTo !== undefined) setDateTo(updates.dateTo);
+    if (updates.showHeatmap !== undefined) setShowHeatmap(updates.showHeatmap);
 
     onFilterChange(newFilters);
   };
@@ -77,6 +83,7 @@ export function MapFilters({ type, onFilterChange }: MapFiltersProps) {
     setPriorityFilters([]);
     setDateFrom("");
     setDateTo("");
+    setShowHeatmap(false);
     onFilterChange({
       searchQuery: "",
       statusFilters: [],
@@ -84,6 +91,7 @@ export function MapFilters({ type, onFilterChange }: MapFiltersProps) {
       priorityFilters: [],
       dateFrom: "",
       dateTo: "",
+      showHeatmap: false,
     });
   };
 
@@ -338,6 +346,23 @@ export function MapFilters({ type, onFilterChange }: MapFiltersProps) {
             </PopoverContent>
           </Popover>
         )}
+      </div>
+
+      {/* Heatmap Toggle */}
+      <div className="flex items-center justify-between rounded-lg border border-input p-3 bg-card">
+        <div className="flex flex-col gap-1">
+          <Label htmlFor="heatmap-toggle" className="text-sm font-medium cursor-pointer">
+            Heat Map View
+          </Label>
+          <p className="text-xs text-muted-foreground">
+            Visualize data density across the map
+          </p>
+        </div>
+        <Switch
+          id="heatmap-toggle"
+          checked={showHeatmap}
+          onCheckedChange={(checked) => updateFilters({ showHeatmap: checked })}
+        />
       </div>
     </div>
   );

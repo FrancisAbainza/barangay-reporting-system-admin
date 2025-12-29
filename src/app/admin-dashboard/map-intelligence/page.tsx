@@ -24,6 +24,7 @@ export default function MapIntelligencePage() {
     priorityFilters: [] as string[],
     dateFrom: "",
     dateTo: "",
+    showHeatmap: false,
   });
 
   const [projectFilters, setProjectFilters] = useState({
@@ -32,6 +33,7 @@ export default function MapIntelligencePage() {
     categoryFilters: [] as ProjectCategory[],
     dateFrom: "",
     dateTo: "",
+    showHeatmap: false,
   });
 
   // Filter complaints
@@ -176,10 +178,11 @@ export default function MapIntelligencePage() {
                     priorityFilters: filters.priorityFilters || [],
                     dateFrom: filters.dateFrom || "",
                     dateTo: filters.dateTo || "",
+                    showHeatmap: filters.showHeatmap || false,
                   })
                 }
               />
-              <MapDisplay complaints={filteredComplaints} type="complaints" />
+              <MapDisplay complaints={filteredComplaints} type="complaints" showHeatmap={complaintFilters.showHeatmap} />
             </CardContent>
           </Card>
         </TabsContent>
@@ -201,10 +204,11 @@ export default function MapIntelligencePage() {
                     categoryFilters: filters.categoryFilters as ProjectCategory[],
                     dateFrom: filters.dateFrom || "",
                     dateTo: filters.dateTo || "",
+                    showHeatmap: filters.showHeatmap || false,
                   })
                 }
               />
-              <MapDisplay projects={filteredProjects} type="transparency" />
+              <MapDisplay projects={filteredProjects} type="transparency" showHeatmap={projectFilters.showHeatmap} />
             </CardContent>
           </Card>
         </TabsContent>
