@@ -77,11 +77,7 @@ export interface CreateComplaintInput {
   title: string;
   description: string;
   category: ComplaintCategory;
-  location: {
-    latitude: number;
-    longitude: number;
-    address: string;
-  };
+  location?: ComplaintLocation;
   images?: Image[];
 }
 
@@ -90,11 +86,7 @@ export interface UpdateComplaintInput {
   description?: string;
   category?: ComplaintCategory;
   status?: ComplaintStatus;
-  location?: {
-    latitude: number;
-    longitude: number;
-    address: string;
-  };
+  location?: ComplaintLocation;
   images?: Image[];
   resolutionDetails?: ResolutionDetail;
   resolvedAt?: Date;

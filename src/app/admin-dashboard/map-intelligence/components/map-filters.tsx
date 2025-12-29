@@ -38,10 +38,10 @@ export function MapFilters({ type, onFilterChange }: MapFiltersProps) {
   const [dateTo, setDateTo] = useState("");
   const [showHeatmap, setShowHeatmap] = useState(false);
 
-  const hasActiveFilters = 
-    searchQuery || 
-    statusFilters.length > 0 || 
-    categoryFilters.length > 0 || 
+  const hasActiveFilters =
+    searchQuery ||
+    statusFilters.length > 0 ||
+    categoryFilters.length > 0 ||
     (type === "complaints" && priorityFilters.length > 0) ||
     dateFrom ||
     dateTo;
@@ -148,170 +148,42 @@ export function MapFilters({ type, onFilterChange }: MapFiltersProps) {
   const categories = type === "complaints" ? complaintCategories : projectCategories;
 
   return (
-    <div className="space-y-3">
+    <div className="flex flex-col gap-3 lg:flex-row">
       {/* Search */}
-      <div className="flex items-center gap-2">
-        <div className="relative flex-1">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder={type === "complaints" ? "Search complaints..." : "Search projects..."}
-            className="pl-8"
-            value={searchQuery}
-            onChange={(e) => updateFilters({ searchQuery: e.target.value })}
-          />
+      <div className="flex-1 space-y-3">
+        <div className="flex items-center gap-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder={type === "complaints" ? "Search complaints..." : "Search projects..."}
+              className="pl-8"
+              value={searchQuery}
+              onChange={(e) => updateFilters({ searchQuery: e.target.value })}
+            />
+          </div>
+          {hasActiveFilters && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={clearAllFilters}
+              className="whitespace-nowrap"
+            >
+              <XCircle className="h-4 w-4 mr-2" />
+              Clear
+            </Button>
+          )}
         </div>
-        {hasActiveFilters && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={clearAllFilters}
-            className="whitespace-nowrap"
-          >
-            <XCircle className="h-4 w-4 mr-2" />
-            Clear
-          </Button>
-        )}
-      </div>
-
-      {/* Filters */}
-      <div className="flex flex-wrap gap-2">
-        {/* Status Filter */}
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button variant="outline" size="sm">
-              <Filter className="h-4 w-4 mr-2" />
-              Status
-              {statusFilters.length > 0 && (
-                <Badge variant="secondary" className="ml-2">
-                  {statusFilters.length}
-                </Badge>
-              )}
-              <ChevronDown className="h-4 w-4 ml-2" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-64" align="start">
-            <div className="space-y-3">
-              <h4 className="font-medium text-sm">Filter by Status</h4>
-              <div className="space-y-2">
-                {statuses.map((status) => (
-                  <div key={status.value} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`status-${status.value}`}
-                      checked={statusFilters.includes(status.value)}
-                      onCheckedChange={(checked: boolean) => {
-                        const newFilters = checked
-                          ? [...statusFilters, status.value]
-                          : statusFilters.filter((s) => s !== status.value);
-                        updateFilters({ statusFilters: newFilters });
-                      }}
-                    />
-                    <Label
-                      htmlFor={`status-${status.value}`}
-                      className="text-sm font-normal cursor-pointer"
-                    >
-                      {status.label}
-                    </Label>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </PopoverContent>
-        </Popover>
-
-        {/* Category Filter */}
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button variant="outline" size="sm">
-              <Tag className="h-4 w-4 mr-2" />
-              Category
-              {categoryFilters.length > 0 && (
-                <Badge variant="secondary" className="ml-2">
-                  {categoryFilters.length}
-                </Badge>
-              )}
-              <ChevronDown className="h-4 w-4 ml-2" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-64" align="start">
-            <div className="space-y-3">
-              <h4 className="font-medium text-sm">Filter by Category</h4>
-              <div className="space-y-2 max-h-[300px] overflow-y-auto">
-                {categories.map((category) => (
-                  <div key={category.value} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`category-${category.value}`}
-                      checked={categoryFilters.includes(category.value)}
-                      onCheckedChange={(checked: boolean) => {
-                        const newFilters = checked
-                          ? [...categoryFilters, category.value]
-                          : categoryFilters.filter((c) => c !== category.value);
-                        updateFilters({ categoryFilters: newFilters });
-                      }}
-                    />
-                    <Label
-                      htmlFor={`category-${category.value}`}
-                      className="text-sm font-normal cursor-pointer"
-                    >
-                      {category.label}
-                    </Label>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </PopoverContent>
-        </Popover>
-
-        {/* Date Range Filter */}
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button variant="outline" size="sm">
-              <CalendarIcon className="h-4 w-4 mr-2" />
-              Date Range
-              {(dateFrom || dateTo) && (
-                <Badge variant="secondary" className="ml-2">
-                  1
-                </Badge>
-              )}
-              <ChevronDown className="h-4 w-4 ml-2" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-80" align="start">
-            <div className="space-y-3">
-              <h4 className="font-medium text-sm">Filter by Date Range</h4>
-              <div className="space-y-3">
-                <div className="space-y-2">
-                  <Label htmlFor="date-from" className="text-sm">From</Label>
-                  <Input
-                    id="date-from"
-                    type="date"
-                    value={dateFrom}
-                    onChange={(e) => updateFilters({ dateFrom: e.target.value })}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="date-to" className="text-sm">To</Label>
-                  <Input
-                    id="date-to"
-                    type="date"
-                    value={dateTo}
-                    onChange={(e) => updateFilters({ dateTo: e.target.value })}
-                  />
-                </div>
-              </div>
-            </div>
-          </PopoverContent>
-        </Popover>
-
-        {/* Priority Filter (only for complaints) */}
-        {type === "complaints" && (
+        {/* Filters */}
+        <div className="flex flex-wrap gap-2">
+          {/* Status Filter */}
           <Popover>
             <PopoverTrigger asChild>
               <Button variant="outline" size="sm">
-                <Flag className="h-4 w-4 mr-2" />
-                Priority
-                {priorityFilters.length > 0 && (
+                <Filter className="h-4 w-4 mr-2" />
+                Status
+                {statusFilters.length > 0 && (
                   <Badge variant="secondary" className="ml-2">
-                    {priorityFilters.length}
+                    {statusFilters.length}
                   </Badge>
                 )}
                 <ChevronDown className="h-4 w-4 ml-2" />
@@ -319,25 +191,25 @@ export function MapFilters({ type, onFilterChange }: MapFiltersProps) {
             </PopoverTrigger>
             <PopoverContent className="w-64" align="start">
               <div className="space-y-3">
-                <h4 className="font-medium text-sm">Filter by Priority</h4>
+                <h4 className="font-medium text-sm">Filter by Status</h4>
                 <div className="space-y-2">
-                  {priorities.map((priority) => (
-                    <div key={priority.value} className="flex items-center space-x-2">
+                  {statuses.map((status) => (
+                    <div key={status.value} className="flex items-center space-x-2">
                       <Checkbox
-                        id={`priority-${priority.value}`}
-                        checked={priorityFilters.includes(priority.value)}
+                        id={`status-${status.value}`}
+                        checked={statusFilters.includes(status.value)}
                         onCheckedChange={(checked: boolean) => {
                           const newFilters = checked
-                            ? [...priorityFilters, priority.value]
-                            : priorityFilters.filter((p) => p !== priority.value);
-                          updateFilters({ priorityFilters: newFilters });
+                            ? [...statusFilters, status.value]
+                            : statusFilters.filter((s) => s !== status.value);
+                          updateFilters({ statusFilters: newFilters });
                         }}
                       />
                       <Label
-                        htmlFor={`priority-${priority.value}`}
+                        htmlFor={`status-${status.value}`}
                         className="text-sm font-normal cursor-pointer"
                       >
-                        {priority.label}
+                        {status.label}
                       </Label>
                     </div>
                   ))}
@@ -345,11 +217,140 @@ export function MapFilters({ type, onFilterChange }: MapFiltersProps) {
               </div>
             </PopoverContent>
           </Popover>
-        )}
+
+          {/* Category Filter */}
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="sm">
+                <Tag className="h-4 w-4 mr-2" />
+                Category
+                {categoryFilters.length > 0 && (
+                  <Badge variant="secondary" className="ml-2">
+                    {categoryFilters.length}
+                  </Badge>
+                )}
+                <ChevronDown className="h-4 w-4 ml-2" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-64" align="start">
+              <div className="space-y-3">
+                <h4 className="font-medium text-sm">Filter by Category</h4>
+                <div className="space-y-2 max-h-[300px] overflow-y-auto">
+                  {categories.map((category) => (
+                    <div key={category.value} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`category-${category.value}`}
+                        checked={categoryFilters.includes(category.value)}
+                        onCheckedChange={(checked: boolean) => {
+                          const newFilters = checked
+                            ? [...categoryFilters, category.value]
+                            : categoryFilters.filter((c) => c !== category.value);
+                          updateFilters({ categoryFilters: newFilters });
+                        }}
+                      />
+                      <Label
+                        htmlFor={`category-${category.value}`}
+                        className="text-sm font-normal cursor-pointer"
+                      >
+                        {category.label}
+                      </Label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
+
+          {/* Date Range Filter */}
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="sm">
+                <CalendarIcon className="h-4 w-4 mr-2" />
+                Date Range
+                {(dateFrom || dateTo) && (
+                  <Badge variant="secondary" className="ml-2">
+                    1
+                  </Badge>
+                )}
+                <ChevronDown className="h-4 w-4 ml-2" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80" align="start">
+              <div className="space-y-3">
+                <h4 className="font-medium text-sm">Filter by Date Range</h4>
+                <div className="space-y-3">
+                  <div className="space-y-2">
+                    <Label htmlFor="date-from" className="text-sm">From</Label>
+                    <Input
+                      id="date-from"
+                      type="date"
+                      value={dateFrom}
+                      onChange={(e) => updateFilters({ dateFrom: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="date-to" className="text-sm">To</Label>
+                    <Input
+                      id="date-to"
+                      type="date"
+                      value={dateTo}
+                      onChange={(e) => updateFilters({ dateTo: e.target.value })}
+                    />
+                  </div>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
+
+          {/* Priority Filter (only for complaints) */}
+          {type === "complaints" && (
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <Flag className="h-4 w-4 mr-2" />
+                  Priority
+                  {priorityFilters.length > 0 && (
+                    <Badge variant="secondary" className="ml-2">
+                      {priorityFilters.length}
+                    </Badge>
+                  )}
+                  <ChevronDown className="h-4 w-4 ml-2" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-64" align="start">
+                <div className="space-y-3">
+                  <h4 className="font-medium text-sm">Filter by Priority</h4>
+                  <div className="space-y-2">
+                    {priorities.map((priority) => (
+                      <div key={priority.value} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`priority-${priority.value}`}
+                          checked={priorityFilters.includes(priority.value)}
+                          onCheckedChange={(checked: boolean) => {
+                            const newFilters = checked
+                              ? [...priorityFilters, priority.value]
+                              : priorityFilters.filter((p) => p !== priority.value);
+                            updateFilters({ priorityFilters: newFilters });
+                          }}
+                        />
+                        <Label
+                          htmlFor={`priority-${priority.value}`}
+                          className="text-sm font-normal cursor-pointer"
+                        >
+                          {priority.label}
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
+          )}
+        </div>
       </div>
 
       {/* Heatmap Toggle */}
-      <div className="flex items-center justify-between rounded-lg border border-input p-3 bg-card">
+      <div className="flex-1 flex items-center justify-between rounded-lg border border-input p-3 bg-card">
         <div className="flex flex-col gap-1">
           <Label htmlFor="heatmap-toggle" className="text-sm font-medium cursor-pointer">
             Heat Map View

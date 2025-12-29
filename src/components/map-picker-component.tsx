@@ -13,10 +13,10 @@ const mapContainerStyle = {
   height: "400px",
 };
 
-// Default center (Manila, Philippines)
+// Default center (Barangay location)
 const defaultCenter = {
-  lat: 14.5995,
-  lng: 120.9842,
+  lat: 14.318734,
+  lng: 121.102831,
 };
 
 const mapOptions: google.maps.MapOptions = {
@@ -34,7 +34,7 @@ export default function MapPickerComponent({ position, onLocationSelect }: MapPi
 
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: apiKey || "",
-    libraries: ["places"],
+    libraries: ["places", "visualization"],
   });
 
   const [map, setMap] = useState<google.maps.Map | null>(null);
@@ -55,7 +55,11 @@ export default function MapPickerComponent({ position, onLocationSelect }: MapPi
 
   const onLoad = useCallback((map: google.maps.Map) => {
     setMap(map);
-  }, []);
+    // Pan to position if it exists
+    if (position) {
+      map.panTo(position);
+    }
+  }, [position]);
 
   const onUnmount = useCallback(() => {
     setMap(null);
@@ -102,6 +106,12 @@ export default function MapPickerComponent({ position, onLocationSelect }: MapPi
   }
 
   const center = position || defaultCenter;
+
+  // Update map center when position changes
+  if (map && position) {
+    map.panTo(position);
+    map.setZoom(15);
+  }
 
   return (
     <div className="h-[400px] w-full rounded-md overflow-hidden border border-input">
