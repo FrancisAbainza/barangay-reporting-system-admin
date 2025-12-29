@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -19,6 +20,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreVertical, ThumbsUp, MessageSquare, Trash2 } from "lucide-react";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import type { Project } from "@/types/project";
 import { formatBudget, getStatusBadge, getCategoryLabel, getCategoryBadge } from "@/lib/project-helpers";
 import { formatDate } from "@/lib/date-formatter";
@@ -37,6 +47,8 @@ export function ProjectTable({
 }: ProjectTableProps) {
   const router = useRouter();
   const { deleteProject } = useProjectDb();
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   const handleDeleteProject = (projectId: string) => {
     if (confirm("Are you sure you want to delete this project?")) {
@@ -44,9 +56,21 @@ export function ProjectTable({
     }
   };
 
+  // Sort by createdAt (newest first) and paginate
+  const { paginatedProjects, totalPages } = useMemo(() => {
+    const sorted = [...projects].sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+    const total = Math.ceil(sorted.length / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const paginated = sorted.slice(startIndex, startIndex + itemsPerPage);
+    return { paginatedProjects: paginated, totalPages: total };
+  }, [projects, currentPage]);
+
   return (
-    <div className="rounded-md border overflow-x-auto">
-      <Table>
+    <div className="space-y-4">
+      <div className="rounded-md border overflow-x-auto">
+        <Table>
         <TableHeader>
           <TableRow>
             <TableHead className="min-w-50">Title</TableHead>
@@ -60,14 +84,14 @@ export function ProjectTable({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {projects.length === 0 ? (
+          {paginatedProjects.length === 0 ? (
             <TableRow>
               <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                 No projects found
               </TableCell>
             </TableRow>
           ) : (
-            projects.map((project) => (
+            paginatedProjects.map((project) => (
               <TableRow
                 key={project.id}
                 className="cursor-pointer hover:bg-muted/50"
@@ -141,6 +165,51 @@ export function ProjectTable({
           )}
         </TableBody>
       </Table>
+      </div>
+      
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center">
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setCurrentPage((prev) => Math.max(prev - 1, 1));
+                  }}
+                  className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                />
+              </PaginationItem>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <PaginationItem key={page}>
+                  <PaginationLink
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setCurrentPage(page);
+                    }}
+                    isActive={currentPage === page}
+                    className="cursor-pointer"
+                  >
+                    {page}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+              <PaginationItem>
+                <PaginationNext
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+                  }}
+                  className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      )}
     </div>
   );
 }

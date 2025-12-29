@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -20,6 +21,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreVertical, ThumbsUp, MessageSquare, Trash2 } from "lucide-react";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import type { Complaint } from "@/types/complaint";
 import { getStatusBadge, getPriorityBadge, getCategoryLabel, getCategoryBadge } from "@/lib/complaint-helpers";
 import { formatDate } from "@/lib/date-formatter";
@@ -36,6 +46,8 @@ export function ComplaintTable({
 }: ComplaintTableProps) {
   const router = useRouter();
   const { updateComplaintStatus, deleteComplaint } = useComplaintDb();
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   const handleDeleteComplaint = (complaintId: string) => {
     if (confirm("Are you sure you want to delete this complaint?")) {
@@ -43,9 +55,21 @@ export function ComplaintTable({
     }
   };
 
+  // Sort by createdAt (newest first) and paginate
+  const { paginatedComplaints, totalPages } = useMemo(() => {
+    const sorted = [...complaints].sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+    const total = Math.ceil(sorted.length / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const paginated = sorted.slice(startIndex, startIndex + itemsPerPage);
+    return { paginatedComplaints: paginated, totalPages: total };
+  }, [complaints, currentPage]);
+
   return (
-    <div className="rounded-md border overflow-x-auto">
-      <Table>
+    <div className="space-y-4">
+      <div className="rounded-md border overflow-x-auto">
+        <Table>
         <TableHeader>
           <TableRow>
             <TableHead className="min-w-50">Title</TableHead>
@@ -59,14 +83,14 @@ export function ComplaintTable({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {complaints.length === 0 ? (
+          {paginatedComplaints.length === 0 ? (
             <TableRow>
               <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                 No complaints found
               </TableCell>
             </TableRow>
           ) : (
-            complaints.map((complaint) => (
+            paginatedComplaints.map((complaint) => (
               <TableRow
                 key={complaint.id}
                 className="cursor-pointer hover:bg-muted/50"
@@ -153,6 +177,51 @@ export function ComplaintTable({
           )}
         </TableBody>
       </Table>
+      </div>
+      
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center">
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setCurrentPage((prev) => Math.max(prev - 1, 1));
+                  }}
+                  className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                />
+              </PaginationItem>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <PaginationItem key={page}>
+                  <PaginationLink
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setCurrentPage(page);
+                    }}
+                    isActive={currentPage === page}
+                    className="cursor-pointer"
+                  >
+                    {page}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+              <PaginationItem>
+                <PaginationNext
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+                  }}
+                  className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      )}
     </div>
   );
 }

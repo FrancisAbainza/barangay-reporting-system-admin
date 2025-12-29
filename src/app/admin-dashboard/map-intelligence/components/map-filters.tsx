@@ -261,47 +261,6 @@ export function MapFilters({ type, onFilterChange }: MapFiltersProps) {
             </PopoverContent>
           </Popover>
 
-          {/* Date Range Filter */}
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" size="sm">
-                <CalendarIcon className="h-4 w-4 mr-2" />
-                Date Range
-                {(dateFrom || dateTo) && (
-                  <Badge variant="secondary" className="ml-2">
-                    1
-                  </Badge>
-                )}
-                <ChevronDown className="h-4 w-4 ml-2" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-80" align="start">
-              <div className="space-y-3">
-                <h4 className="font-medium text-sm">Filter by Date Range</h4>
-                <div className="space-y-3">
-                  <div className="space-y-2">
-                    <Label htmlFor="date-from" className="text-sm">From</Label>
-                    <Input
-                      id="date-from"
-                      type="date"
-                      value={dateFrom}
-                      onChange={(e) => updateFilters({ dateFrom: e.target.value })}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="date-to" className="text-sm">To</Label>
-                    <Input
-                      id="date-to"
-                      type="date"
-                      value={dateTo}
-                      onChange={(e) => updateFilters({ dateTo: e.target.value })}
-                    />
-                  </div>
-                </div>
-              </div>
-            </PopoverContent>
-          </Popover>
-
           {/* Priority Filter (only for complaints) */}
           {type === "complaints" && (
             <Popover>
@@ -346,6 +305,47 @@ export function MapFilters({ type, onFilterChange }: MapFiltersProps) {
               </PopoverContent>
             </Popover>
           )}
+
+          {/* Date Range Filter */}
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="sm">
+                <CalendarIcon className="h-4 w-4 mr-2" />
+                Date Range
+                {(dateFrom || dateTo) && (
+                  <Badge variant="secondary" className="ml-2">
+                    1
+                  </Badge>
+                )}
+                <ChevronDown className="h-4 w-4 ml-2" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80" align="start">
+              <div className="space-y-3">
+                <h4 className="font-medium text-sm">Filter by Date Range</h4>
+                <div className="space-y-3">
+                  <div className="space-y-2">
+                    <Label htmlFor="date-from" className="text-sm">From</Label>
+                    <Input
+                      id="date-from"
+                      type="date"
+                      value={dateFrom}
+                      onChange={(e) => updateFilters({ dateFrom: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="date-to" className="text-sm">To</Label>
+                    <Input
+                      id="date-to"
+                      type="date"
+                      value={dateTo}
+                      onChange={(e) => updateFilters({ dateTo: e.target.value })}
+                    />
+                  </div>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
 
