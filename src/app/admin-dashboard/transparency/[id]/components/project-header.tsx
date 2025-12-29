@@ -35,6 +35,8 @@ export function ProjectHeader({
         </div>
       </div>
       <div className="flex gap-2">
+        <EditProjectButton project={project} />
+        <UpdateProgressButton project={project} />
         <Button
           variant="destructive"
           onClick={handleDeleteProject}
@@ -43,8 +45,6 @@ export function ProjectHeader({
           <Trash2 className="h-4 w-4" />
           Delete
         </Button>
-        <UpdateProgressButton project={project} />
-        <EditProjectButton project={project} />
       </div>
     </div>
   );

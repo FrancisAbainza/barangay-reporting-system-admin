@@ -7,6 +7,7 @@ import { AdminTable } from "./components/admin-table";
 import { UsersTable } from "./components/users-table";
 import { UserStats } from "./components/user-stats";
 import type { User, Admin } from "@/types/user";
+import { Users } from "lucide-react";
 
 // Mock data - replace with actual API calls
 const mockAdmins: Admin[] = [
@@ -102,10 +103,17 @@ export default function UsersPage() {
   return (
     <div className="container space-y-6 p-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">User Management</h1>
-        <p className="text-muted-foreground">
-          Manage users, roles, and permissions
-        </p>
+        <div className="flex items-center gap-3 mb-2">
+          <div className="p-2 bg-primary/10 rounded-lg">
+            <Users className="h-6 w-6 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">User Management</h1>
+            <p className="text-muted-foreground">
+              Manage users, roles, and permissions
+            </p>
+          </div>
+        </div>
       </div>
 
       <UserStats {...stats} />

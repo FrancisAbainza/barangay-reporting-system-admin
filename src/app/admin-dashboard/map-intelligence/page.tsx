@@ -10,7 +10,7 @@ import { useComplaintDb } from "@/contexts/complaint-db-context";
 import { useProjectDb } from "@/contexts/project-db-context";
 import type { ComplaintStatus, ComplaintCategory } from "@/types/complaint";
 import type { ProjectStatus, ProjectCategory } from "@/types/project";
-import { MapIcon, AlertCircle, Building2 } from "lucide-react";
+import { Map, Eye, MessageSquareWarning } from "lucide-react";
 
 export default function MapIntelligencePage() {
   const { complaints } = useComplaintDb();
@@ -22,12 +22,16 @@ export default function MapIntelligencePage() {
     statusFilters: [] as ComplaintStatus[],
     categoryFilters: [] as ComplaintCategory[],
     priorityFilters: [] as string[],
+    dateFrom: "",
+    dateTo: "",
   });
 
   const [projectFilters, setProjectFilters] = useState({
     searchQuery: "",
     statusFilters: [] as ProjectStatus[],
     categoryFilters: [] as ProjectCategory[],
+    dateFrom: "",
+    dateTo: "",
   });
 
   // Filter complaints
@@ -66,6 +70,17 @@ export default function MapIntelligencePage() {
         return false;
       }
 
+      // Filter by date range
+      if (complaintFilters.dateFrom || complaintFilters.dateTo) {
+        const complaintDate = new Date(complaint.createdAt);
+        if (complaintFilters.dateFrom && complaintDate < new Date(complaintFilters.dateFrom)) {
+          return false;
+        }
+        if (complaintFilters.dateTo && complaintDate > new Date(complaintFilters.dateTo + "T23:59:59")) {
+          return false;
+        }
+      }
+
       return true;
     });
   }, [complaints, complaintFilters]);
@@ -98,6 +113,17 @@ export default function MapIntelligencePage() {
         return false;
       }
 
+      // Filter by date range
+      if (projectFilters.dateFrom || projectFilters.dateTo) {
+        const projectDate = new Date(project.createdAt);
+        if (projectFilters.dateFrom && projectDate < new Date(projectFilters.dateFrom)) {
+          return false;
+        }
+        if (projectFilters.dateTo && projectDate > new Date(projectFilters.dateTo + "T23:59:59")) {
+          return false;
+        }
+      }
+
       return true;
     });
   }, [projects, projectFilters]);
@@ -108,7 +134,7 @@ export default function MapIntelligencePage() {
       <div>
         <div className="flex items-center gap-3 mb-2">
           <div className="p-2 bg-primary/10 rounded-lg">
-            <MapIcon className="h-6 w-6 text-primary" />
+            <Map className="h-6 w-6 text-primary" />
           </div>
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Map Intelligence</h1>
@@ -123,11 +149,11 @@ export default function MapIntelligencePage() {
       <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "complaints" | "transparency")}>
         <TabsList className="grid w-full max-w-md grid-cols-2">
           <TabsTrigger value="complaints" className="gap-2">
-            <AlertCircle className="h-4 w-4" />
+            <MessageSquareWarning className="h-4 w-4" />
             Complaints
           </TabsTrigger>
           <TabsTrigger value="transparency" className="gap-2">
-            <Building2 className="h-4 w-4" />
+            <Eye className="h-4 w-4" />
             Transparency
           </TabsTrigger>
         </TabsList>
@@ -138,7 +164,7 @@ export default function MapIntelligencePage() {
           <MapStats complaints={filteredComplaints} type="complaints" />
 
           {/* Filters and Map */}
-          <Card>
+          <Card className="py-0">
             <CardContent className="p-4 space-y-4">
               <MapFilters
                 type="complaints"
@@ -148,6 +174,8 @@ export default function MapIntelligencePage() {
                     statusFilters: filters.statusFilters as ComplaintStatus[],
                     categoryFilters: filters.categoryFilters as ComplaintCategory[],
                     priorityFilters: filters.priorityFilters || [],
+                    dateFrom: filters.dateFrom || "",
+                    dateTo: filters.dateTo || "",
                   })
                 }
               />
@@ -162,7 +190,7 @@ export default function MapIntelligencePage() {
           <MapStats projects={filteredProjects} type="transparency" />
 
           {/* Filters and Map */}
-          <Card>
+          <Card className="py-0">
             <CardContent className="p-4 space-y-4">
               <MapFilters
                 type="transparency"
@@ -171,6 +199,8 @@ export default function MapIntelligencePage() {
                     searchQuery: filters.searchQuery,
                     statusFilters: filters.statusFilters as ProjectStatus[],
                     categoryFilters: filters.categoryFilters as ProjectCategory[],
+                    dateFrom: filters.dateFrom || "",
+                    dateTo: filters.dateTo || "",
                   })
                 }
               />

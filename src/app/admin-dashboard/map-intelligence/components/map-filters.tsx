@@ -11,7 +11,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Search, Filter, ChevronDown, Tag, Flag, XCircle } from "lucide-react";
+import { Search, Filter, ChevronDown, Tag, Flag, XCircle, CalendarIcon } from "lucide-react";
 import type { ComplaintStatus, ComplaintCategory } from "@/types/complaint";
 import type { ProjectStatus, ProjectCategory } from "@/types/project";
 
@@ -22,6 +22,8 @@ interface MapFiltersProps {
     statusFilters: (ComplaintStatus | ProjectStatus)[];
     categoryFilters: (ComplaintCategory | ProjectCategory)[];
     priorityFilters?: string[];
+    dateFrom?: string;
+    dateTo?: string;
   }) => void;
 }
 
@@ -30,30 +32,40 @@ export function MapFilters({ type, onFilterChange }: MapFiltersProps) {
   const [statusFilters, setStatusFilters] = useState<(ComplaintStatus | ProjectStatus)[]>([]);
   const [categoryFilters, setCategoryFilters] = useState<(ComplaintCategory | ProjectCategory)[]>([]);
   const [priorityFilters, setPriorityFilters] = useState<string[]>([]);
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
 
   const hasActiveFilters = 
     searchQuery || 
     statusFilters.length > 0 || 
     categoryFilters.length > 0 || 
-    (type === "complaints" && priorityFilters.length > 0);
+    (type === "complaints" && priorityFilters.length > 0) ||
+    dateFrom ||
+    dateTo;
 
   const updateFilters = (updates: Partial<{
     searchQuery: string;
     statusFilters: (ComplaintStatus | ProjectStatus)[];
     categoryFilters: (ComplaintCategory | ProjectCategory)[];
     priorityFilters: string[];
+    dateFrom: string;
+    dateTo: string;
   }>) => {
     const newFilters = {
       searchQuery: updates.searchQuery ?? searchQuery,
       statusFilters: updates.statusFilters ?? statusFilters,
       categoryFilters: updates.categoryFilters ?? categoryFilters,
       priorityFilters: updates.priorityFilters ?? priorityFilters,
+      dateFrom: updates.dateFrom ?? dateFrom,
+      dateTo: updates.dateTo ?? dateTo,
     };
 
     if (updates.searchQuery !== undefined) setSearchQuery(updates.searchQuery);
     if (updates.statusFilters !== undefined) setStatusFilters(updates.statusFilters);
     if (updates.categoryFilters !== undefined) setCategoryFilters(updates.categoryFilters);
     if (updates.priorityFilters !== undefined) setPriorityFilters(updates.priorityFilters);
+    if (updates.dateFrom !== undefined) setDateFrom(updates.dateFrom);
+    if (updates.dateTo !== undefined) setDateTo(updates.dateTo);
 
     onFilterChange(newFilters);
   };
@@ -63,11 +75,15 @@ export function MapFilters({ type, onFilterChange }: MapFiltersProps) {
     setStatusFilters([]);
     setCategoryFilters([]);
     setPriorityFilters([]);
+    setDateFrom("");
+    setDateTo("");
     onFilterChange({
       searchQuery: "",
       statusFilters: [],
       categoryFilters: [],
       priorityFilters: [],
+      dateFrom: "",
+      dateTo: "",
     });
   };
 
@@ -232,6 +248,47 @@ export function MapFilters({ type, onFilterChange }: MapFiltersProps) {
                     </Label>
                   </div>
                 ))}
+              </div>
+            </div>
+          </PopoverContent>
+        </Popover>
+
+        {/* Date Range Filter */}
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="outline" size="sm">
+              <CalendarIcon className="h-4 w-4 mr-2" />
+              Date Range
+              {(dateFrom || dateTo) && (
+                <Badge variant="secondary" className="ml-2">
+                  1
+                </Badge>
+              )}
+              <ChevronDown className="h-4 w-4 ml-2" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-80" align="start">
+            <div className="space-y-3">
+              <h4 className="font-medium text-sm">Filter by Date Range</h4>
+              <div className="space-y-3">
+                <div className="space-y-2">
+                  <Label htmlFor="date-from" className="text-sm">From</Label>
+                  <Input
+                    id="date-from"
+                    type="date"
+                    value={dateFrom}
+                    onChange={(e) => updateFilters({ dateFrom: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="date-to" className="text-sm">To</Label>
+                  <Input
+                    id="date-to"
+                    type="date"
+                    value={dateTo}
+                    onChange={(e) => updateFilters({ dateTo: e.target.value })}
+                  />
+                </div>
               </div>
             </div>
           </PopoverContent>

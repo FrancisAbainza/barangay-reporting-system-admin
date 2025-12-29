@@ -75,7 +75,7 @@ export function MapLocationPicker({ value, onChange }: MapLocationPickerProps) {
 
   return (
     <div className="space-y-4">
-      <Card className="p-4 space-y-4">
+      <Card className="p-4 gap-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <MapPin className="h-4 w-4 text-muted-foreground" />

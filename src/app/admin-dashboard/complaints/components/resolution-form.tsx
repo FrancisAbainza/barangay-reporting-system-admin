@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -14,10 +15,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { MultiImageUploader } from "@/components/multi-image-uploader";
+import { FileUpload } from "@/types/files";
 
 const resolutionSchema = z.object({
   description: z.string().min(1, "Resolution description is required"),
   budget: z.string().optional(),
+  images: z.array(z.any()).max(1, "Maximum 1 image allowed").optional(),
 });
 
 export type ResolutionFormValues = z.infer<typeof resolutionSchema>;
@@ -31,6 +35,7 @@ export function ResolutionForm({ handleSubmit, defaultValues }: ResolutionFormPr
   const combinedDefaultValues: ResolutionFormValues = {
     description: "",
     budget: "",
+    images: [],
     ...defaultValues,
   };
 
@@ -38,6 +43,8 @@ export function ResolutionForm({ handleSubmit, defaultValues }: ResolutionFormPr
     resolver: zodResolver(resolutionSchema),
     defaultValues: combinedDefaultValues,
   });
+
+  const [images, setImages] = useState<FileUpload[]>(defaultValues?.images || []);
 
   return (
     <Form {...form}>
@@ -76,6 +83,29 @@ export function ResolutionForm({ handleSubmit, defaultValues }: ResolutionFormPr
                     {...field}
                   />
                 </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="images"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Resolution Image (Optional)</FormLabel>
+                <FormControl>
+                  <MultiImageUploader
+                    images={images}
+                    onImagesChange={(newImages) => {
+                      if (newImages.length <= 1) {
+                        setImages(newImages);
+                        field.onChange(newImages);
+                      }
+                    }}
+                  />
+                </FormControl>
+                <p className="text-sm text-muted-foreground">Maximum 1 image allowed</p>
                 <FormMessage />
               </FormItem>
             )}

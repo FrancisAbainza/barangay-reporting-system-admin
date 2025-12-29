@@ -72,6 +72,22 @@ export function ComplaintDetailsTab({ complaint }: ComplaintDetailsTabProps) {
                 Budget: ₱{complaint.resolutionDetails.budget.toLocaleString()}
               </p>
             )}
+            {complaint.resolutionDetails.images && complaint.resolutionDetails.images.length > 0 && (
+              <div className="mt-3">
+                <p className="text-sm font-medium mb-2">Resolution Image:</p>
+                <button
+                  onClick={() => setSelectedImage(complaint.resolutionDetails!.images![0].uri)}
+                  className="group relative aspect-square w-48 border rounded-lg overflow-hidden cursor-pointer transition-all hover:shadow-lg hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary"
+                >
+                  <img
+                    src={complaint.resolutionDetails.images[0].uri}
+                    alt="Resolution image"
+                    className="w-full h-full object-cover transition-transform group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
+                </button>
+              </div>
+            )}
           </InfoCard>
         )}
       </div>

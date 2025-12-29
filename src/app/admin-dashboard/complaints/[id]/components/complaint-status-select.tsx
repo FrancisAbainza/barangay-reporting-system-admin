@@ -56,13 +56,36 @@ export function ComplaintStatusSelect({ complaint }: ComplaintStatusSelectProps)
     }
   };
 
+  const convertFileToDataURL = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  };
+
   const handleResolveSubmit = async (data: ResolutionFormValues) => {
     try {
       const budget = data.budget ? parseFloat(data.budget) : undefined;
       
+      // Convert File objects to data URLs
+      let images;
+      if (data.images && data.images.length > 0) {
+        const imagePromises = data.images.map(async (img) => {
+          if (img instanceof File) {
+            const dataUrl = await convertFileToDataURL(img);
+            return { uri: dataUrl };
+          }
+          return typeof img === 'string' ? { uri: img } : img;
+        });
+        images = await Promise.all(imagePromises);
+      }
+      
       const resolutionDetails = {
         description: data.description,
         budget,
+        images,
       };
 
       updateComplaintStatus(complaint.id, "resolved", undefined, resolutionDetails);
