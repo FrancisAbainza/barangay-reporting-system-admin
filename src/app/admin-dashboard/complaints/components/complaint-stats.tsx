@@ -1,12 +1,12 @@
 "use client";
 
 import { useMemo } from "react";
-import type { Complaint } from "@/types/complaint";
+import type { ComplaintType } from "@/types/complaint";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertCircle, CheckCircle2, Clock, AlertTriangle } from "lucide-react";
 
 interface ComplaintStatsProps {
-  complaints: Complaint[];
+  complaints: ComplaintType[];
 }
 
 export function ComplaintStats({ complaints }: ComplaintStatsProps) {

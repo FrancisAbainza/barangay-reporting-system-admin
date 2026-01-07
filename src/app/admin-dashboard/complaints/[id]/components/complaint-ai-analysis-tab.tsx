@@ -20,10 +20,10 @@ import {
   Shield,
   FileText
 } from "lucide-react";
-import type { Complaint } from "@/types/complaint";
+import type { ComplaintType } from "@/types/complaint";
 
 interface ComplaintAIAnalysisTabProps {
-  complaint: Complaint;
+  complaint: ComplaintType;
 }
 
 export function ComplaintAIAnalysisTab({ complaint }: ComplaintAIAnalysisTabProps) {

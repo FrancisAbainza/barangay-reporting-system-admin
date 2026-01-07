@@ -1,9 +1,10 @@
-export type AdminRole = "super_admin" | "regular_admin";
+export type AdminRoleType = "super_admin" | "regular_admin";
 
-export interface Admin {
+export interface AdminType {
   id: string;
+  employeeId: string;
   name: string;
-  role: AdminRole;
+  role: AdminRoleType;
   createdAt: Date;
-  updatedAt: Date;
+  lastLoginAt?: Date;
 }

@@ -4,12 +4,13 @@ import { useRef, useState } from "react";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogTitle, DialogClose, DialogHeader, DialogDescription } from "@/components/ui/dialog";
 import { useComplaintDb } from "@/contexts/complaint-db-context";
-import { ScheduledForm, type ScheduledFormValues } from "./scheduled-form";
-import type { Complaint } from "@/types/complaint";
+import { ScheduledForm } from "./scheduled-form";
+import { type ScheduledFormValues } from "@/schemas/complaint.schema";
+import type { ComplaintType } from "@/types/complaint";
 import { toast } from "sonner";
 
 interface ScheduleComplaintMenuItemProps {
-  complaint: Complaint;
+  complaint: ComplaintType;
   onOpenChange?: (open: boolean) => void;
 }
 

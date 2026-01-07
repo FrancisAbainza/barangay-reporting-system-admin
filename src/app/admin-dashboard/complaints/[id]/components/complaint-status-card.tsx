@@ -1,13 +1,13 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertCircle, CheckCircle2, Clock, XCircle } from "lucide-react";
-import type { ComplaintStatus, ComplaintCategory } from "@/types/complaint";
+import type { ComplaintStatusType, ComplaintCategoryType } from "@/types/complaint";
 import { getStatusBadge, getPriorityBadge, getCategoryLabel, getCategoryBadge } from "@/lib/complaint-helpers";
 
 interface ComplaintStatusCardProps {
-  status: ComplaintStatus;
+  status: ComplaintStatusType;
   priority: string;
-  category: ComplaintCategory;
+  category: ComplaintCategoryType;
 }
 
 export function ComplaintStatusCard({
@@ -15,7 +15,7 @@ export function ComplaintStatusCard({
   priority,
   category,
 }: ComplaintStatusCardProps) {
-  const getStatusIcon = (status: ComplaintStatus) => {
+  const getStatusIcon = (status: ComplaintStatusType) => {
     switch (status) {
       case "resolved":
         return <CheckCircle2 className="h-4 w-4" />;

@@ -7,10 +7,10 @@ import { FileText, MapPin, MessageSquare } from "lucide-react";
 import { ProjectDetailsTab } from "./project-details-tab";
 import { ProjectLocationTab } from "./project-location-tab";
 import { ProjectEngagementTab } from "./project-engagement-tab";
-import { Project } from "@/types/project";
+import { ProjectType } from "@/types/project";
 
 interface ProjectTabsProps {
-  project: Project;
+  project: ProjectType;
 }
 
 export function ProjectTabs({ project }: ProjectTabsProps) {

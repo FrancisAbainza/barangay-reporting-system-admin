@@ -1,1 +1,1 @@
-export type FileUpload = File | string;
+export type FileUploadType = File | string;

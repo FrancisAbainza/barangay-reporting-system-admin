@@ -5,15 +5,10 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
-  Brain,
   MessageSquareWarning,
   Eye,
   Map,
-  MessageCircle,
-  TrendingUp,
-  FileText,
   Users,
-  Settings,
   LogOut,
   ShieldCheck,
 } from "lucide-react";
@@ -30,6 +25,7 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
+import Logo from "./logo";
 
 const menuItems = [
   {
@@ -37,11 +33,6 @@ const menuItems = [
     href: "/admin-dashboard",
     icon: LayoutDashboard,
   },
-  /* {
-    title: "AI Insights / Analysis",
-    href: "/admin-dashboard/ai-insights",
-    icon: Brain,
-  }, */
   {
     title: "Complaint Management",
     href: "/admin-dashboard/complaints",
@@ -57,31 +48,11 @@ const menuItems = [
     href: "/admin-dashboard/map-intelligence",
     icon: Map,
   },
-  /* {
-    title: "Engagement & Sentiment",
-    href: "/admin-dashboard/engagement",
-    icon: MessageCircle,
-  },
-  {
-    title: "Barangay Performance",
-    href: "/admin-dashboard/performance",
-    icon: TrendingUp,
-  },
-  {
-    title: "Reports & Exports",
-    href: "/admin-dashboard/reports",
-    icon: FileText,
-  }, */
   {
     title: "User Management",
     href: "/admin-dashboard/users",
     icon: Users,
   },
- /*  {
-    title: "Settings & Rules",
-    href: "/admin-dashboard/settings",
-    icon: Settings,
-  }, */
 ];
 
 export function DashboardSidebar({ className }: { className?: string }) {
@@ -95,10 +66,8 @@ export function DashboardSidebar({ className }: { className?: string }) {
       {/* Header */}
       <SidebarHeader className="flex flex-row items-center justify-between border-b border-sidebar-border py-4">
         {!collapsed && (
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-sidebar-primary">
-              <ShieldCheck className="h-4 w-4 text-sidebar-primary-foreground" />
-            </div>
+          <div className="flex items-center gap-3">
+            <Logo className="bg-primary-foreground/10 p-2"/>
             <span className="font-semibold text-sm">BRTS Admin</span>
           </div>
         )}
@@ -137,7 +106,7 @@ export function DashboardSidebar({ className }: { className?: string }) {
       {/* User Section */}
       <SidebarFooter className="border-t border-sidebar-border">
         {!collapsed && user && (
-          <div className="mb-3 rounded-lg bg-sidebar-primary/10 p-3">
+          <div className="mb-3 p-3">
             <p className="text-sm font-medium text-sidebar-foreground">
               {user.name}
             </p>
@@ -147,10 +116,11 @@ export function DashboardSidebar({ className }: { className?: string }) {
         <Button
           variant="ghost"
           onClick={logout}
-          className={cn(
-            "w-full justify-start gap-3 text-sidebar-foreground hover:bg-destructive hover:text-destructive-foreground",
-            collapsed && "justify-center"
-          )}
+          className={`
+            w-full justify-start gap-3 text-sidebar-foreground hover:bg-destructive hover:text-destructive-foreground
+            ${collapsed && "justify-center" }`
+          }
+
           title={collapsed ? "Logout" : undefined}
         >
           <LogOut />

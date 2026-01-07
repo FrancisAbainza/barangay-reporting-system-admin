@@ -8,8 +8,8 @@ import { MapFilters } from "./components/map-filters";
 import { MapStats } from "./components/map-stats";
 import { useComplaintDb } from "@/contexts/complaint-db-context";
 import { useProjectDb } from "@/contexts/project-db-context";
-import type { ComplaintStatus, ComplaintCategory } from "@/types/complaint";
-import type { ProjectStatus, ProjectCategory } from "@/types/project";
+import type { ComplaintStatusType, ComplaintCategoryType } from "@/types/complaint";
+import type { ProjectStatusType, ProjectCategoryType } from "@/types/project";
 import { Map, Eye, MessageSquareWarning } from "lucide-react";
 
 export default function MapIntelligencePage() {
@@ -19,8 +19,8 @@ export default function MapIntelligencePage() {
 
   const [complaintFilters, setComplaintFilters] = useState({
     searchQuery: "",
-    statusFilters: [] as ComplaintStatus[],
-    categoryFilters: [] as ComplaintCategory[],
+    statusFilters: [] as ComplaintStatusType[],
+    categoryFilters: [] as ComplaintCategoryType[],
     priorityFilters: [] as string[],
     dateFrom: "",
     dateTo: "",
@@ -29,8 +29,8 @@ export default function MapIntelligencePage() {
 
   const [projectFilters, setProjectFilters] = useState({
     searchQuery: "",
-    statusFilters: [] as ProjectStatus[],
-    categoryFilters: [] as ProjectCategory[],
+    statusFilters: [] as ProjectStatusType[],
+    categoryFilters: [] as ProjectCategoryType[],
     dateFrom: "",
     dateTo: "",
     showHeatmap: false,
@@ -173,8 +173,8 @@ export default function MapIntelligencePage() {
                 onFilterChange={(filters) =>
                   setComplaintFilters({
                     searchQuery: filters.searchQuery,
-                    statusFilters: filters.statusFilters as ComplaintStatus[],
-                    categoryFilters: filters.categoryFilters as ComplaintCategory[],
+                    statusFilters: filters.statusFilters as ComplaintStatusType[],
+                    categoryFilters: filters.categoryFilters as ComplaintCategoryType[],
                     priorityFilters: filters.priorityFilters || [],
                     dateFrom: filters.dateFrom || "",
                     dateTo: filters.dateTo || "",
@@ -200,8 +200,8 @@ export default function MapIntelligencePage() {
                 onFilterChange={(filters) =>
                   setProjectFilters({
                     searchQuery: filters.searchQuery,
-                    statusFilters: filters.statusFilters as ProjectStatus[],
-                    categoryFilters: filters.categoryFilters as ProjectCategory[],
+                    statusFilters: filters.statusFilters as ProjectStatusType[],
+                    categoryFilters: filters.categoryFilters as ProjectCategoryType[],
                     dateFrom: filters.dateFrom || "",
                     dateTo: filters.dateTo || "",
                     showHeatmap: filters.showHeatmap || false,

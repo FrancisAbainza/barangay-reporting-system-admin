@@ -6,10 +6,10 @@ import { AdminCommentForm } from "@/components/admin-comment-form";
 import { CommentsList } from "@/components/comments-list";
 import { CommunitySentimentCard } from "@/components/community-sentiment-card";
 import { ThumbsUp, ThumbsDown, MessageSquare } from "lucide-react";
-import type { Complaint } from "@/types/complaint";
+import type { ComplaintType } from "@/types/complaint";
 
 interface ComplaintEngagementTabProps {
-  complaint: Complaint;
+  complaint: ComplaintType;
 }
 
 export function ComplaintEngagementTab({ complaint }: ComplaintEngagementTabProps) {

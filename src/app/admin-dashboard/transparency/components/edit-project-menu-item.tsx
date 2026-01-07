@@ -5,10 +5,10 @@ import { useProjectDb } from "@/contexts/project-db-context";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { ProjectFormDialog } from "./project-form-dialog";
 import { Pencil } from "lucide-react";
-import type { Project, CreateProjectInput } from "@/types/project";
+import type { ProjectType, CreateProjectInputType } from "@/types/project";
 
 interface EditProjectMenuItemProps {
-  project: Project;
+  project: ProjectType;
   onOpenChange?: (open: boolean) => void;
 }
 
@@ -21,7 +21,7 @@ export function EditProjectMenuItem({ project, onOpenChange }: EditProjectMenuIt
     onOpenChange?.(open);
   };
 
-  const handleSubmit = (data: CreateProjectInput) => {
+  const handleSubmit = (data: CreateProjectInputType) => {
     updateProject(project.id, data);
     setIsOpen(false);
   };

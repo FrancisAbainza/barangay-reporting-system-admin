@@ -1,98 +1,37 @@
 "use client";
 
-import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CreateAdminForm } from "./components/create-admin-form";
 import { AdminTable } from "./components/admin-table";
 import { UsersTable } from "./components/users-table";
 import { UserStats } from "./components/user-stats";
-import type { User, Admin } from "@/types/user";
+import { useAdminDb } from "@/contexts/admin-db-context";
+import { useUserDb } from "@/contexts/user-db-context";
 import { Users } from "lucide-react";
 
-// Mock data - replace with actual API calls
-const mockAdmins: Admin[] = [
-  {
-    id: "1",
-    employeeId: "EMP-001",
-    name: "Admin User",
-    role: "super_admin",
-    createdAt: new Date("2024-01-15"),
-    lastLoginAt: new Date("2024-12-28"),
-  },
-  {
-    id: "2",
-    employeeId: "EMP-002",
-    name: "John Admin",
-    role: "regular_admin",
-    createdAt: new Date("2024-03-20"),
-    lastLoginAt: new Date("2024-12-27"),
-  },
-];
-
-const mockUsers: User[] = [
-  {
-    id: "3",
-    name: "Jane Doe",
-    email: "jane@example.com",
-    role: "user",
-    status: "active",
-    createdAt: new Date("2024-06-10"),
-    lastLoginAt: new Date("2024-12-29"),
-    complaintsCount: 5,
-  },
-  {
-    id: "4",
-    name: "Bob Smith",
-    email: "bob@example.com",
-    role: "user",
-    status: "active",
-    createdAt: new Date("2024-07-15"),
-    lastLoginAt: new Date("2024-12-28"),
-    complaintsCount: 3,
-  },
-  {
-    id: "5",
-    name: "Alice Johnson",
-    email: "alice@example.com",
-    role: "user",
-    status: "banned",
-    createdAt: new Date("2024-08-20"),
-    lastLoginAt: new Date("2024-12-15"),
-    complaintsCount: 10,
-  },
-];
-
 export default function UsersPage() {
-  const [admins, setAdmins] = useState<Admin[]>(mockAdmins);
-  const [users, setUsers] = useState<User[]>(mockUsers);
+  const { admins, deleteAdmin } = useAdminDb();
+  const { users, banUser, unbanUser } = useUserDb();
 
   const handleDeleteAdmin = async (adminId: string) => {
     // TODO: Implement actual API call
     console.log("Deleting admin:", adminId);
     await new Promise((resolve) => setTimeout(resolve, 500));
-    setAdmins(admins.filter((admin) => admin.id !== adminId));
+    deleteAdmin(adminId);
   };
 
   const handleBanUser = async (userId: string, reason?: string) => {
     // TODO: Implement actual API call
     console.log("Banning user:", userId, "Reason:", reason);
     await new Promise((resolve) => setTimeout(resolve, 500));
-    setUsers(
-      users.map((user) =>
-        user.id === userId ? { ...user, status: "banned" as const } : user
-      )
-    );
+    banUser(userId);
   };
 
   const handleUnbanUser = async (userId: string) => {
     // TODO: Implement actual API call
     console.log("Unbanning user:", userId);
     await new Promise((resolve) => setTimeout(resolve, 500));
-    setUsers(
-      users.map((user) =>
-        user.id === userId ? { ...user, status: "active" as const } : user
-      )
-    );
+    unbanUser(userId);
   };
 
   const stats = {

@@ -1,6 +1,6 @@
-import { Image, Comment, CommunitySentiment } from './shared';
+import { ImageType, CommentType, CommunitySentimentType } from './shared';
 
-export type ProjectCategory =
+export type ProjectCategoryType =
   | "infrastructure"
   | "health"
   | "education"
@@ -11,7 +11,7 @@ export type ProjectCategory =
   | "sports_culture"
   | "others";
 
-export type ProjectStatus =
+export type ProjectStatusType =
   | "planned"
   | "approved"
   | "ongoing"
@@ -19,72 +19,72 @@ export type ProjectStatus =
   | "completed"
   | "cancelled";
 
-export interface ProjectLocation {
+export interface ProjectLocationType {
   latitude: number;
   longitude: number;
   address: string;
 }
 
-export interface ProgressUpdate {
+export interface ProgressUpdateType {
   description: string;
   image?: { uri: string };
   createdAt: Date;
 }
 
-export interface Project {
+export interface ProjectType {
   id: string;
   title: string;
   description: string;
-  category: ProjectCategory;
-  status: ProjectStatus;
+  category: ProjectCategoryType;
+  status: ProjectStatusType;
   startDate: Date;
   expectedCompletionDate?: Date;
   actualCompletionDate?: Date;
   budget?: number;
   contractor?: string;
   sourceOfFunds?: string;
-  location?: ProjectLocation;
-  images?: Image[];
+  location?: ProjectLocationType;
+  images?: ImageType[];
   progressPercentage: number;
-  progressUpdates?: ProgressUpdate[];
+  progressUpdates?: ProgressUpdateType[];
   likes?: string[];
   dislikes?: string[];
-  comments?: Comment[];
-  communitySentiment?: CommunitySentiment;
+  comments?: CommentType[];
+  communitySentiment?: CommunitySentimentType;
   createdAt: Date;
   updatedAt: Date;
 }
 
-export interface CreateProjectInput {
+export interface CreateProjectInputType {
   title: string;
   description: string;
-  category: ProjectCategory;
-  status: ProjectStatus;
+  category: ProjectCategoryType;
+  status: ProjectStatusType;
   startDate: Date;
   expectedCompletionDate?: Date;
   actualCompletionDate?: Date;
   budget?: number;
   contractor?: string;
   sourceOfFunds?: string;
-  location?: ProjectLocation;
-  images?: Image[];
+  location?: ProjectLocationType;
+  images?: ImageType[];
   progressPercentage: number;
-  progressUpdates?: ProgressUpdate[];
+  progressUpdates?: ProgressUpdateType[];
 }
 
-export interface UpdateProjectInput {
+export interface UpdateProjectInputType {
   title?: string;
   description?: string;
-  category?: ProjectCategory;
-  status?: ProjectStatus;
+  category?: ProjectCategoryType;
+  status?: ProjectStatusType;
   startDate?: Date;
   expectedCompletionDate?: Date;
   actualCompletionDate?: Date;
   budget?: number;
   contractor?: string;
   sourceOfFunds?: string;
-  location?: ProjectLocation;
-  images?: Image[];
+  location?: ProjectLocationType;
+  images?: ImageType[];
   progressPercentage?: number;
-  progressUpdates?: ProgressUpdate[];
+  progressUpdates?: ProgressUpdateType[];
 }

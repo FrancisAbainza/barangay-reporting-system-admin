@@ -6,11 +6,11 @@ import { Badge } from "@/components/ui/badge";
 import { InfoCard } from "@/components/ui/info-card";
 import { Spinner } from "@/components/ui/spinner";
 import { MessageSquare, TrendingUp, Sparkles } from "lucide-react";
-import type { Complaint } from "@/types/complaint";
-import type { Project } from "@/types/project";
+import type { ComplaintType } from "@/types/complaint";
+import type { ProjectType } from "@/types/project";
 
 interface CommunitySentimentCardProps {
-  item: Complaint | Project;
+  item: ComplaintType | ProjectType;
   onGenerate: (itemId: string) => Promise<void>;
 }
 

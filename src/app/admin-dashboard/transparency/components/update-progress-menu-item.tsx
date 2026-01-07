@@ -3,12 +3,13 @@
 import { useState } from "react";
 import { useProjectDb } from "@/contexts/project-db-context";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
-import { UpdateStatusDialog, type UpdateStatusFormValues } from "./update-progress-dialog";
+import { UpdateStatusDialog } from "./update-progress-dialog";
+import { type UpdateStatusFormValues } from "@/schemas/project.schema";
 import { RefreshCw } from "lucide-react";
-import type { Project } from "@/types/project";
+import type { ProjectType } from "@/types/project";
 
 interface UpdateProgressMenuItemProps {
-  project: Project;
+  project: ProjectType;
   onOpenChange?: (open: boolean) => void;
 }
 

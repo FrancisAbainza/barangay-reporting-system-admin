@@ -6,10 +6,10 @@ import { AdminCommentForm } from "@/components/admin-comment-form";
 import { CommentsList } from "@/components/comments-list";
 import { CommunitySentimentCard } from "@/components/community-sentiment-card";
 import { ThumbsUp, ThumbsDown, MessageSquare } from "lucide-react";
-import type { Project } from "@/types/project";
+import type { ProjectType } from "@/types/project";
 
 interface ProjectEngagementTabProps {
-  project: Project;
+  project: ProjectType;
 }
 
 export function ProjectEngagementTab({ project }: ProjectEngagementTabProps) {

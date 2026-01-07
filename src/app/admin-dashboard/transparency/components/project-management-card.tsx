@@ -2,21 +2,21 @@
 
 import { useState, useMemo } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import type { ProjectStatus, ProjectCategory, Project } from "@/types/project";
+import type { ProjectStatusType, ProjectCategoryType, ProjectType } from "@/types/project";
 import { ProjectFilters } from "./project-filters";
 import { ProjectTable } from "./project-table";
 import { CreateProjectButton } from "./create-project-button";
 
 interface ProjectManagementCardProps {
-  projects: Project[];
+  projects: ProjectType[];
 }
 
 // Client Component - Receives data as prop, uses context for CRUD operations
 export function ProjectManagementCard({ projects }: ProjectManagementCardProps) {
   const [filters, setFilters] = useState({
     searchQuery: "",
-    statusFilters: [] as ProjectStatus[],
-    categoryFilters: [] as ProjectCategory[],
+    statusFilters: [] as ProjectStatusType[],
+    categoryFilters: [] as ProjectCategoryType[],
     dateFrom: "",
     dateTo: "",
   });

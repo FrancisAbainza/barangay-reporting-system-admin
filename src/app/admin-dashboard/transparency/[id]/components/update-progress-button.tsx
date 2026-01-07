@@ -3,12 +3,13 @@
 import { useState } from "react";
 import { useProjectDb } from "@/contexts/project-db-context";
 import { Button } from "@/components/ui/button";
-import { UpdateStatusDialog, type UpdateStatusFormValues } from "../../components/update-progress-dialog";
+import { UpdateStatusDialog } from "../../components/update-progress-dialog";
+import { type UpdateStatusFormValues } from "@/schemas/project.schema";
 import { RefreshCw } from "lucide-react";
-import type { Project } from "@/types/project";
+import type { ProjectType } from "@/types/project";
 
 interface UpdateProgressButtonProps {
-  project: Project;
+  project: ProjectType;
 }
 
 export function UpdateProgressButton({ project }: UpdateProgressButtonProps) {

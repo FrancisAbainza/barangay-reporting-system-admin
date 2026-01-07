@@ -2,7 +2,6 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import {
   Form,
   FormControl,
@@ -13,12 +12,7 @@ import {
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-
-const scheduledSchema = z.object({
-  scheduledDate: z.string().min(1, "Scheduled date is required"),
-});
-
-export type ScheduledFormValues = z.infer<typeof scheduledSchema>;
+import { scheduledSchema, type ScheduledFormValues } from "@/schemas/complaint.schema";
 
 type ScheduledFormProps = {
   handleSubmit: (data: ScheduledFormValues) => void;

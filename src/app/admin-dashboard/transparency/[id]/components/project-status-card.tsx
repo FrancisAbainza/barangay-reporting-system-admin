@@ -1,12 +1,12 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle2, Clock, Pause, XCircle } from "lucide-react";
-import type { ProjectStatus, ProjectCategory } from "@/types/project";
+import type { ProjectStatusType, ProjectCategoryType } from "@/types/project";
 import { getStatusBadge, getCategoryLabel, getCategoryBadge } from "@/lib/project-helpers";
 
 interface ProjectStatusCardProps {
-  status: ProjectStatus;
-  category: ProjectCategory;
+  status: ProjectStatusType;
+  category: ProjectCategoryType;
   progressPercentage: number;
 }
 
@@ -15,7 +15,7 @@ export function ProjectStatusCard({
   category,
   progressPercentage,
 }: ProjectStatusCardProps) {
-  const getStatusIcon = (status: ProjectStatus) => {
+  const getStatusIcon = (status: ProjectStatusType) => {
     switch (status) {
       case "completed":
         return <CheckCircle2 className="h-4 w-4" />;

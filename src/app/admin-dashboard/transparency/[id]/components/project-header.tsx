@@ -2,12 +2,12 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Trash2 } from "lucide-react";
 import { UpdateProgressButton } from "./update-progress-button";
 import { EditProjectButton } from "./edit-project-button";
-import { Project } from "@/types/project";
+import { ProjectType } from "@/types/project";
 import { useProjectDb } from "@/contexts/project-db-context";
 import { useRouter } from "next/navigation";
 
 interface ProjectHeaderProps {
-  project: Project;
+  project: ProjectType;
 }
 
 export function ProjectHeader({

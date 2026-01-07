@@ -1,12 +1,12 @@
 "use client";
 
 import { useMemo } from "react";
-import type { Project } from "@/types/project";
+import type { ProjectType } from "@/types/project";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart3, CheckCircle2, Clock, FolderKanban } from "lucide-react";
 
 interface ProjectStatsProps {
-  projects: Project[];
+  projects: ProjectType[];
 }
 
 export function ProjectStats({ projects }: ProjectStatsProps) {

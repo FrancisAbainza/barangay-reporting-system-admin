@@ -16,14 +16,15 @@ import {
   DialogHeader,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Complaint, ComplaintStatus } from "@/types/complaint";
+import { ComplaintType, ComplaintStatusType } from "@/types/complaint";
 import { useComplaintDb } from "@/contexts/complaint-db-context";
-import { ScheduledForm, type ScheduledFormValues } from "../../components/scheduled-form";
-import { ResolutionForm, type ResolutionFormValues } from "../../components/resolution-form";
+import { ScheduledForm } from "../../components/scheduled-form";
+import { ResolutionForm } from "../../components/resolution-form";
+import { type ScheduledFormValues, type ResolutionFormValues } from "@/schemas/complaint.schema";
 import { toast } from "sonner";
 
 interface ComplaintStatusSelectProps {
-  complaint: Complaint;
+  complaint: ComplaintType;
 }
 
 export function ComplaintStatusSelect({ complaint }: ComplaintStatusSelectProps) {
@@ -33,7 +34,7 @@ export function ComplaintStatusSelect({ complaint }: ComplaintStatusSelectProps)
   const scheduleCloseRef = useRef<HTMLButtonElement>(null);
   const resolveCloseRef = useRef<HTMLButtonElement>(null);
 
-  const handleStatusChange = (status: ComplaintStatus) => {
+  const handleStatusChange = (status: ComplaintStatusType) => {
     if (status === "scheduled") {
       setIsScheduleDialogOpen(true);
     } else if (status === "resolved") {

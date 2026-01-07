@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import {
   Form,
   FormControl,
@@ -16,15 +15,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { MultiImageUploader } from "@/components/multi-image-uploader";
-import { FileUpload } from "@/types/files";
-
-const resolutionSchema = z.object({
-  description: z.string().min(1, "Resolution description is required"),
-  budget: z.string().optional(),
-  images: z.array(z.any()).max(1, "Maximum 1 image allowed").optional(),
-});
-
-export type ResolutionFormValues = z.infer<typeof resolutionSchema>;
+import { FileUploadType } from "@/types/files";
+import { resolutionSchema, type ResolutionFormValues } from "@/schemas/complaint.schema";
 
 type ResolutionFormProps = {
   handleSubmit: (data: ResolutionFormValues) => void;
@@ -44,7 +36,7 @@ export function ResolutionForm({ handleSubmit, defaultValues }: ResolutionFormPr
     defaultValues: combinedDefaultValues,
   });
 
-  const [images, setImages] = useState<FileUpload[]>(defaultValues?.images || []);
+  const [images, setImages] = useState<FileUploadType[]>(defaultValues?.images || []);
 
   return (
     <Form {...form}>

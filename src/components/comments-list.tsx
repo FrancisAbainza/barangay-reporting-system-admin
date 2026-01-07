@@ -6,10 +6,10 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { ThumbsUp, MessageSquare, Send, Reply as ReplyIcon } from "lucide-react";
 import { formatDate } from "@/lib/date-formatter";
-import type { Comment, Reply } from "@/types/shared";
+import type { CommentType, ReplyType } from "@/types/shared";
 
 interface CommentsListProps {
-  comments: Comment[];
+  comments: CommentType[];
   onSubmitReply: (commentId: string, content: string) => void;
 }
 
@@ -66,7 +66,7 @@ export function CommentsList({ comments, onSubmitReply }: CommentsListProps) {
     </div>
   );
 
-  const renderReplies = (replies: Reply[]) => (
+  const renderReplies = (replies: ReplyType[]) => (
     <div className="ml-8 space-y-2">
       {replies.map((reply) => (
         <div

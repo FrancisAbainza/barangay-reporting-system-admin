@@ -5,10 +5,10 @@ import { TabsContent } from "@/components/ui/tabs";
 import { InfoCard } from "@/components/ui/info-card";
 import { MapPin, ExternalLink, Navigation } from "lucide-react";
 import { APIProvider, Map, AdvancedMarker } from "@vis.gl/react-google-maps";
-import type { Project } from "@/types/project";
+import type { ProjectType } from "@/types/project";
 
 interface ProjectLocationTabProps {
-  project: Project;
+  project: ProjectType;
 }
 
 export function ProjectLocationTab({ project }: ProjectLocationTabProps) {

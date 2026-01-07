@@ -1,7 +1,7 @@
-import type { ComplaintStatus, ComplaintCategory } from "@/types/complaint";
+import type { ComplaintStatusType, ComplaintCategoryType } from "@/types/complaint";
 
-export function getStatusBadge(status: ComplaintStatus) {
-  const variants: Record<ComplaintStatus, { className: string; label: string }> = {
+export function getStatusBadge(status: ComplaintStatusType) {
+  const variants: Record<ComplaintStatusType, { className: string; label: string }> = {
     submitted: { className: "bg-primary/10 text-primary", label: "Submitted" },
     under_review: { className: "bg-secondary/10 text-secondary", label: "Under Review" },
     scheduled: { className: "bg-accent text-accent-foreground", label: "Scheduled" },
@@ -22,8 +22,8 @@ export function getPriorityBadge(priority: string) {
   return colors[priority] || colors.medium;
 }
 
-export function getCategoryLabel(category: ComplaintCategory) {
-  const labels: Record<ComplaintCategory, string> = {
+export function getCategoryLabel(category: ComplaintCategoryType) {
+  const labels: Record<ComplaintCategoryType, string> = {
     noise: "Noise",
     sanitation: "Sanitation",
     public_safety: "Public Safety",
@@ -37,8 +37,8 @@ export function getCategoryLabel(category: ComplaintCategory) {
   return labels[category];
 }
 
-export function getCategoryBadge(category: ComplaintCategory) {
-  const colors: Record<ComplaintCategory, string> = {
+export function getCategoryBadge(category: ComplaintCategoryType) {
+  const colors: Record<ComplaintCategoryType, string> = {
     noise: "bg-secondary/10 text-secondary",
     sanitation: "bg-chart-3/20 text-chart-3",
     public_safety: "bg-destructive/10 text-destructive",

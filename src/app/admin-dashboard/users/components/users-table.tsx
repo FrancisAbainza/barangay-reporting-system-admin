@@ -32,11 +32,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { MoreHorizontal, Ban, Users, AlertTriangle, CheckCircle, Search } from "lucide-react";
-import type { User } from "@/types/user";
+import type { UserType } from "@/types/user";
 import { formatDate } from "@/lib/date-formatter";
 
 interface UsersTableProps {
-  users: User[];
+  users: UserType[];
   onBanUser: (userId: string, reason?: string) => void;
   onUnbanUser: (userId: string) => void;
 }
@@ -44,7 +44,7 @@ interface UsersTableProps {
 export function UsersTable({ users, onBanUser, onUnbanUser }: UsersTableProps) {
   const [banDialogOpen, setBanDialogOpen] = useState(false);
   const [unbanDialogOpen, setUnbanDialogOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [selectedUser, setSelectedUser] = useState<UserType | null>(null);
   const [banReason, setBanReason] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [searchId, setSearchId] = useState("");
@@ -56,12 +56,12 @@ export function UsersTable({ users, onBanUser, onUnbanUser }: UsersTableProps) {
     );
   }, [users, searchId]);
 
-  const handleBanClick = (user: User) => {
+  const handleBanClick = (user: UserType) => {
     setSelectedUser(user);
     setBanDialogOpen(true);
   };
 
-  const handleUnbanClick = (user: User) => {
+  const handleUnbanClick = (user: UserType) => {
     setSelectedUser(user);
     setUnbanDialogOpen(true);
   };

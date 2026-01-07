@@ -3,11 +3,11 @@ import { FileText, User, Calendar, CheckCircle, ImageIcon, Receipt, X } from "lu
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { InfoCard } from "@/components/ui/info-card";
 import { useState } from "react";
-import type { Complaint } from "@/types/complaint";
+import type { ComplaintType } from "@/types/complaint";
 import { formatDate } from "@/lib/date-formatter";
 
 interface ComplaintDetailsTabProps {
-  complaint: Complaint;
+  complaint: ComplaintType;
 }
 
 export function ComplaintDetailsTab({ complaint }: ComplaintDetailsTabProps) {

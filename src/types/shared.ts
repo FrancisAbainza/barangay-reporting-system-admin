@@ -1,8 +1,8 @@
-export interface Image {
+export interface ImageType {
   uri: string;
 }
 
-export interface Reply {
+export interface ReplyType {
   id: string;
   userId: string;
   userName: string;
@@ -14,7 +14,7 @@ export interface Reply {
   updatedAt: Date;
 }
 
-export interface Comment {
+export interface CommentType {
   id: string;
   userId: string;
   userName: string;
@@ -22,12 +22,12 @@ export interface Comment {
   isAdmin?: boolean;
   likes?: string[];
   dislikes?: string[];
-  replies?: Reply[];
+  replies?: ReplyType[];
   createdAt: Date;
   updatedAt: Date;
 }
 
-export interface CommunitySentiment {
+export interface CommunitySentimentType {
   sentiment: 'supportive' | 'positive' | 'negative' | 'neutral';
   summary: string;
 }

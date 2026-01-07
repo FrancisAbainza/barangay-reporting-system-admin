@@ -14,6 +14,12 @@ export function HeatmapOverlay({ map, data, show }: HeatmapOverlayProps) {
   useEffect(() => {
     if (!map) return;
 
+    // Check if visualization library is loaded
+    if (!google?.maps?.visualization?.HeatmapLayer) {
+      console.warn("Google Maps Visualization library is not loaded yet");
+      return;
+    }
+
     // Remove existing heatmap
     if (heatmapRef.current) {
       heatmapRef.current.setMap(null);

@@ -22,7 +22,7 @@ export function MonthlyTrendsChart() {
 
   const chartData = months.map(({ month, monthNum, year }) => {
     const monthComplaints = complaints.filter((c) => {
-      const date = c.createdAt instanceof Date ? c.createdAt : new Date(c.createdAt);
+      const date = c.createdAt;
       return date.getMonth() === monthNum && date.getFullYear() === year;
     }).length;
 
@@ -35,7 +35,7 @@ export function MonthlyTrendsChart() {
   const chartConfig = {
     complaints: {
       label: "Complaints",
-      color: "hsl(217 91% 60%)",
+      color: "var(--primary)",
     },
   } satisfies ChartConfig;
 

@@ -3,11 +3,11 @@ import { useDropzone } from "react-dropzone";
 import Image from "next/image";
 import { Badge } from "./ui/badge";
 import { XIcon } from "lucide-react";
-import { FileUpload } from "@/types/files";
+import { FileUploadType } from "@/types/files";
 
 type Props = {
-  onImagesChange: (images: FileUpload[]) => void;
-  images: FileUpload[];
+  onImagesChange: (images: FileUploadType[]) => void;
+  images: FileUploadType[];
 }
 
 export function MultiImageUploader({ onImagesChange, images }: Props) {

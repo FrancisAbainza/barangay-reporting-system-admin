@@ -3,15 +3,15 @@
 import { useCallback, useState, useEffect, useMemo } from "react";
 import { GoogleMap, Marker, InfoWindow, useJsApiLoader } from "@react-google-maps/api";
 import { Card, CardContent } from "@/components/ui/card";
-import type { Complaint } from "@/types/complaint";
-import type { Project } from "@/types/project";
+import type { ComplaintType } from "@/types/complaint";
+import type { ProjectType } from "@/types/project";
 import { ComplaintInfoWindow } from "./complaint-info-window";
 import { ProjectInfoWindow } from "./project-info-window";
 import { HeatmapOverlay } from "./heatmap-overlay";
 
 interface MapDisplayProps {
-  complaints?: Complaint[];
-  projects?: Project[];
+  complaints?: ComplaintType[];
+  projects?: ProjectType[];
   type: "complaints" | "transparency";
   showHeatmap?: boolean;
 }
@@ -187,6 +187,10 @@ export function MapDisplay({ complaints, projects, type, showHeatmap = false }: 
                 >
                   {selectedMarker === complaint.id && (
                     <InfoWindow 
+                      position={{
+                        lat: complaint.location.latitude,
+                        lng: complaint.location.longitude,
+                      }}
                       onCloseClick={() => setSelectedMarker(null)}
                       options={{
                         pixelOffset: new google.maps.Size(0, -40),
@@ -213,6 +217,10 @@ export function MapDisplay({ complaints, projects, type, showHeatmap = false }: 
                 >
                   {selectedMarker === project.id && (
                     <InfoWindow 
+                      position={{
+                        lat: project.location.latitude,
+                        lng: project.location.longitude,
+                      }}
                       onCloseClick={() => setSelectedMarker(null)}
                       options={{
                         pixelOffset: new google.maps.Size(0, -40),

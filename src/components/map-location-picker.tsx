@@ -5,11 +5,11 @@ import dynamic from "next/dynamic";
 import { MapPin, Navigation, X, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import type { ProjectLocation } from "@/types/project";
+import type { ProjectLocationType } from "@/types/project";
 
 interface MapLocationPickerProps {
-  value?: ProjectLocation | null;
-  onChange: (location: ProjectLocation | null) => void;
+  value?: ProjectLocationType | null;
+  onChange: (location: ProjectLocationType | null) => void;
 }
 
 // Dynamically import the map component to avoid SSR issues

@@ -30,7 +30,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import type { Complaint } from "@/types/complaint";
+import type { ComplaintType } from "@/types/complaint";
 import { getStatusBadge, getPriorityBadge, getCategoryLabel, getCategoryBadge } from "@/lib/complaint-helpers";
 import { formatDate } from "@/lib/date-formatter";
 import { useComplaintDb } from "@/contexts/complaint-db-context";
@@ -38,7 +38,7 @@ import { ResolveComplaintMenuItem } from "./resolve-complaint-menu-item";
 import { ScheduleComplaintMenuItem } from "./schedule-complaint-menu-item";
 
 interface ComplaintTableProps {
-  complaints: Complaint[];
+  complaints: ComplaintType[];
 }
 
 export function ComplaintTable({

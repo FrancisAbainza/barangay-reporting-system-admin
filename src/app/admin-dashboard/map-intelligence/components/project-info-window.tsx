@@ -2,12 +2,12 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MapPin, Calendar, TrendingUp, Wallet, ExternalLink } from "lucide-react";
-import type { Project } from "@/types/project";
+import type { ProjectType } from "@/types/project";
 import { getStatusBadge, getCategoryLabel } from "@/lib/project-helpers";
 import { formatDate } from "@/lib/date-formatter";
 
 interface ProjectInfoWindowProps {
-  project: Project;
+  project: ProjectType;
 }
 
 export function ProjectInfoWindow({ project }: ProjectInfoWindowProps) {

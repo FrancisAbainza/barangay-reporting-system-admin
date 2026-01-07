@@ -13,15 +13,15 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Search, Filter, ChevronDown, Tag, Flag, XCircle, CalendarIcon } from "lucide-react";
-import type { ComplaintStatus, ComplaintCategory } from "@/types/complaint";
-import type { ProjectStatus, ProjectCategory } from "@/types/project";
+import type { ComplaintStatusType, ComplaintCategoryType } from "@/types/complaint";
+import type { ProjectStatusType, ProjectCategoryType } from "@/types/project";
 
 interface MapFiltersProps {
   type: "complaints" | "transparency";
   onFilterChange: (filters: {
     searchQuery: string;
-    statusFilters: (ComplaintStatus | ProjectStatus)[];
-    categoryFilters: (ComplaintCategory | ProjectCategory)[];
+    statusFilters: (ComplaintStatusType | ProjectStatusType)[];
+    categoryFilters: (ComplaintCategoryType | ProjectCategoryType)[];
     priorityFilters?: string[];
     dateFrom?: string;
     dateTo?: string;
@@ -31,8 +31,8 @@ interface MapFiltersProps {
 
 export function MapFilters({ type, onFilterChange }: MapFiltersProps) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilters, setStatusFilters] = useState<(ComplaintStatus | ProjectStatus)[]>([]);
-  const [categoryFilters, setCategoryFilters] = useState<(ComplaintCategory | ProjectCategory)[]>([]);
+  const [statusFilters, setStatusFilters] = useState<(ComplaintStatusType | ProjectStatusType)[]>([]);
+  const [categoryFilters, setCategoryFilters] = useState<(ComplaintCategoryType | ProjectCategoryType)[]>([]);
   const [priorityFilters, setPriorityFilters] = useState<string[]>([]);
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
@@ -48,8 +48,8 @@ export function MapFilters({ type, onFilterChange }: MapFiltersProps) {
 
   const updateFilters = (updates: Partial<{
     searchQuery: string;
-    statusFilters: (ComplaintStatus | ProjectStatus)[];
-    categoryFilters: (ComplaintCategory | ProjectCategory)[];
+    statusFilters: (ComplaintStatusType | ProjectStatusType)[];
+    categoryFilters: (ComplaintCategoryType | ProjectCategoryType)[];
     priorityFilters: string[];
     dateFrom: string;
     dateTo: string;
@@ -96,45 +96,45 @@ export function MapFilters({ type, onFilterChange }: MapFiltersProps) {
   };
 
   const complaintStatuses = [
-    { value: "submitted" as ComplaintStatus, label: "Submitted" },
-    { value: "under_review" as ComplaintStatus, label: "Under Review" },
-    { value: "scheduled" as ComplaintStatus, label: "Scheduled" },
-    { value: "in_progress" as ComplaintStatus, label: "In Progress" },
-    { value: "resolved" as ComplaintStatus, label: "Resolved" },
-    { value: "dismissed" as ComplaintStatus, label: "Dismissed" },
+    { value: "submitted" as ComplaintStatusType, label: "Submitted" },
+    { value: "under_review" as ComplaintStatusType, label: "Under Review" },
+    { value: "scheduled" as ComplaintStatusType, label: "Scheduled" },
+    { value: "in_progress" as ComplaintStatusType, label: "In Progress" },
+    { value: "resolved" as ComplaintStatusType, label: "Resolved" },
+    { value: "dismissed" as ComplaintStatusType, label: "Dismissed" },
   ];
 
   const projectStatuses = [
-    { value: "planned" as ProjectStatus, label: "Planned" },
-    { value: "approved" as ProjectStatus, label: "Approved" },
-    { value: "ongoing" as ProjectStatus, label: "Ongoing" },
-    { value: "on_hold" as ProjectStatus, label: "On Hold" },
-    { value: "completed" as ProjectStatus, label: "Completed" },
-    { value: "cancelled" as ProjectStatus, label: "Cancelled" },
+    { value: "planned" as ProjectStatusType, label: "Planned" },
+    { value: "approved" as ProjectStatusType, label: "Approved" },
+    { value: "ongoing" as ProjectStatusType, label: "Ongoing" },
+    { value: "on_hold" as ProjectStatusType, label: "On Hold" },
+    { value: "completed" as ProjectStatusType, label: "Completed" },
+    { value: "cancelled" as ProjectStatusType, label: "Cancelled" },
   ];
 
   const complaintCategories = [
-    { value: "noise" as ComplaintCategory, label: "Noise" },
-    { value: "sanitation" as ComplaintCategory, label: "Sanitation" },
-    { value: "public_safety" as ComplaintCategory, label: "Public Safety" },
-    { value: "traffic" as ComplaintCategory, label: "Traffic" },
-    { value: "infrastructure" as ComplaintCategory, label: "Infrastructure" },
-    { value: "water_electricity" as ComplaintCategory, label: "Water & Electricity" },
-    { value: "domestic" as ComplaintCategory, label: "Domestic" },
-    { value: "environment" as ComplaintCategory, label: "Environment" },
-    { value: "others" as ComplaintCategory, label: "Others" },
+    { value: "noise" as ComplaintCategoryType, label: "Noise" },
+    { value: "sanitation" as ComplaintCategoryType, label: "Sanitation" },
+    { value: "public_safety" as ComplaintCategoryType, label: "Public Safety" },
+    { value: "traffic" as ComplaintCategoryType, label: "Traffic" },
+    { value: "infrastructure" as ComplaintCategoryType, label: "Infrastructure" },
+    { value: "water_electricity" as ComplaintCategoryType, label: "Water & Electricity" },
+    { value: "domestic" as ComplaintCategoryType, label: "Domestic" },
+    { value: "environment" as ComplaintCategoryType, label: "Environment" },
+    { value: "others" as ComplaintCategoryType, label: "Others" },
   ];
 
   const projectCategories = [
-    { value: "infrastructure" as ProjectCategory, label: "Infrastructure" },
-    { value: "health" as ProjectCategory, label: "Health" },
-    { value: "education" as ProjectCategory, label: "Education" },
-    { value: "environment" as ProjectCategory, label: "Environment" },
-    { value: "livelihood" as ProjectCategory, label: "Livelihood" },
-    { value: "disaster_preparedness" as ProjectCategory, label: "Disaster Preparedness" },
-    { value: "social_services" as ProjectCategory, label: "Social Services" },
-    { value: "sports_culture" as ProjectCategory, label: "Sports & Culture" },
-    { value: "others" as ProjectCategory, label: "Others" },
+    { value: "infrastructure" as ProjectCategoryType, label: "Infrastructure" },
+    { value: "health" as ProjectCategoryType, label: "Health" },
+    { value: "education" as ProjectCategoryType, label: "Education" },
+    { value: "environment" as ProjectCategoryType, label: "Environment" },
+    { value: "livelihood" as ProjectCategoryType, label: "Livelihood" },
+    { value: "disaster_preparedness" as ProjectCategoryType, label: "Disaster Preparedness" },
+    { value: "social_services" as ProjectCategoryType, label: "Social Services" },
+    { value: "sports_culture" as ProjectCategoryType, label: "Sports & Culture" },
+    { value: "others" as ProjectCategoryType, label: "Others" },
   ];
 
   const priorities = [

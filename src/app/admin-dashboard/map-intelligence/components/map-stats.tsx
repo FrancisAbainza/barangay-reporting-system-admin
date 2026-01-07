@@ -2,12 +2,12 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertCircle, CheckCircle2, Clock, AlertTriangle, FolderKanban, BarChart3 } from "lucide-react";
-import type { Complaint } from "@/types/complaint";
-import type { Project } from "@/types/project";
+import type { ComplaintType } from "@/types/complaint";
+import type { ProjectType } from "@/types/project";
 
 interface MapStatsProps {
-  complaints?: Complaint[];
-  projects?: Project[];
+  complaints?: ComplaintType[];
+  projects?: ProjectType[];
   type: "complaints" | "transparency";
 }
 

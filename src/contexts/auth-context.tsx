@@ -1,11 +1,10 @@
 "use client";
 
 import { createContext, useContext, useState, ReactNode } from "react";
-import type { User } from "@/types/auth";
+import { UserType } from "./user-db-context";
 
 interface AuthContextType {
-  user: User | null;
-  loading: boolean;
+  user: UserType | null;
   login: (email: string, password: string) => Promise<void>;
   signup: (email: string, password: string, name: string) => Promise<void>;
   logout: () => void;
@@ -14,47 +13,33 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(false);
-
+  const [user, setUser] = useState<UserType | null>(null);
   const login = async (email: string, password: string) => {
-    setLoading(true);
-    try {
-      // Simulated login - for demonstration purposes
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      
-      // Mock user data
-      setUser({
-        id: "1",
-        email,
-        name: "Demo User",
-      });
-    } catch (error) {
-      console.error("Login failed:", error);
-      throw error;
-    } finally {
-      setLoading(false);
-    }
+    // Simulated login - for demonstration purposes
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    // Mock user data
+    setUser({
+      id: "1",
+      email,
+      name: "Demo User",
+      status: "active",
+      createdAt: new Date(),
+    });
   };
 
   const signup = async (email: string, password: string, name: string) => {
-    setLoading(true);
-    try {
-      // Simulated signup - for demonstration purposes
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      
-      // Mock user data
-      setUser({
-        id: "1",
-        email,
-        name,
-      });
-    } catch (error) {
-      console.error("Signup failed:", error);
-      throw error;
-    } finally {
-      setLoading(false);
-    }
+    // Simulated signup - for demonstration purposes
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    // Mock user data
+    setUser({
+      id: "1",
+      email,
+      name,
+      status: "active",
+      createdAt: new Date(),
+    });
   };
 
   const logout = () => {
@@ -62,7 +47,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, signup, logout }}>
+    <AuthContext.Provider value={{ user, login, signup, logout }}>
       {children}
     </AuthContext.Provider>
   );

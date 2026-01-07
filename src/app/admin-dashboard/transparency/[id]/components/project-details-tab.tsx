@@ -3,12 +3,12 @@ import { FileText, Calendar, DollarSign, Briefcase, Wallet, ImageIcon, TrendingU
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { InfoCard } from "@/components/ui/info-card";
 import { useState } from "react";
-import type { Project } from "@/types/project";
+import type { ProjectType } from "@/types/project";
 import { formatBudget } from "@/lib/project-helpers";
 import { formatDate } from "@/lib/date-formatter";
 
 interface ProjectDetailsTabProps {
-  project: Project;
+  project: ProjectType;
 }
 
 export function ProjectDetailsTab({ project }: ProjectDetailsTabProps) {

@@ -3,11 +3,11 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Sparkles } from "lucide-react";
-import { Complaint } from "@/types/complaint";
+import { ComplaintType } from "@/types/complaint";
 import { useComplaintDb } from "@/contexts/complaint-db-context";
 
 interface GenerateAIButtonProps {
-  complaint: Complaint;
+  complaint: ComplaintType;
 }
 
 export function GenerateAIButton({ complaint }: GenerateAIButtonProps) {

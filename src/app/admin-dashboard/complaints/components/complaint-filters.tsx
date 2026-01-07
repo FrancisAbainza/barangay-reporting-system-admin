@@ -10,14 +10,14 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Search, Filter, ChevronDown, CalendarIcon, Tag, Flag } from "lucide-react";
-import type { ComplaintStatus, ComplaintCategory } from "@/types/complaint";
+import type { ComplaintStatusType, ComplaintCategoryType } from "@/types/complaint";
 import { getStatusBadge, getCategoryLabel } from "@/lib/complaint-helpers";
 
 interface ComplaintFiltersProps {
   onFilterChange: (filters: {
     searchQuery: string;
-    statusFilters: ComplaintStatus[];
-    categoryFilters: ComplaintCategory[];
+    statusFilters: ComplaintStatusType[];
+    categoryFilters: ComplaintCategoryType[];
     priorityFilters: string[];
     dateFrom: string;
     dateTo: string;
@@ -26,8 +26,8 @@ interface ComplaintFiltersProps {
 
 export function ComplaintFilters({ onFilterChange }: ComplaintFiltersProps) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilters, setStatusFilters] = useState<ComplaintStatus[]>([]);
-  const [categoryFilters, setCategoryFilters] = useState<ComplaintCategory[]>([]);
+  const [statusFilters, setStatusFilters] = useState<ComplaintStatusType[]>([]);
+  const [categoryFilters, setCategoryFilters] = useState<ComplaintCategoryType[]>([]);
   const [priorityFilters, setPriorityFilters] = useState<string[]>([]);
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
@@ -36,8 +36,8 @@ export function ComplaintFilters({ onFilterChange }: ComplaintFiltersProps) {
 
   const updateFilters = (updates: Partial<{
     searchQuery: string;
-    statusFilters: ComplaintStatus[];
-    categoryFilters: ComplaintCategory[];
+    statusFilters: ComplaintStatusType[];
+    categoryFilters: ComplaintCategoryType[];
     priorityFilters: string[];
     dateFrom: string;
     dateTo: string;
@@ -115,12 +115,12 @@ export function ComplaintFilters({ onFilterChange }: ComplaintFiltersProps) {
                 <h4 className="font-medium text-sm">Filter by Status</h4>
                 <div className="space-y-2">
                   {[
-                    { value: "submitted" as ComplaintStatus, label: "Submitted" },
-                    { value: "under_review" as ComplaintStatus, label: "Under Review" },
-                    { value: "scheduled" as ComplaintStatus, label: "Scheduled" },
-                    { value: "in_progress" as ComplaintStatus, label: "In Progress" },
-                    { value: "resolved" as ComplaintStatus, label: "Resolved" },
-                    { value: "dismissed" as ComplaintStatus, label: "Dismissed" },
+                    { value: "submitted" as ComplaintStatusType, label: "Submitted" },
+                    { value: "under_review" as ComplaintStatusType, label: "Under Review" },
+                    { value: "scheduled" as ComplaintStatusType, label: "Scheduled" },
+                    { value: "in_progress" as ComplaintStatusType, label: "In Progress" },
+                    { value: "resolved" as ComplaintStatusType, label: "Resolved" },
+                    { value: "dismissed" as ComplaintStatusType, label: "Dismissed" },
                   ].map((status) => (
                     <div key={status.value} className="flex items-center space-x-2">
                       <Checkbox
@@ -165,15 +165,15 @@ export function ComplaintFilters({ onFilterChange }: ComplaintFiltersProps) {
                 <h4 className="font-medium text-sm">Filter by Category</h4>
                 <div className="space-y-2 max-h-64 overflow-y-auto">
                   {[
-                    { value: "noise" as ComplaintCategory, label: "Noise" },
-                    { value: "sanitation" as ComplaintCategory, label: "Sanitation" },
-                    { value: "public_safety" as ComplaintCategory, label: "Public Safety" },
-                    { value: "traffic" as ComplaintCategory, label: "Traffic" },
-                    { value: "infrastructure" as ComplaintCategory, label: "Infrastructure" },
-                    { value: "water_electricity" as ComplaintCategory, label: "Water/Electricity" },
-                    { value: "domestic" as ComplaintCategory, label: "Domestic" },
-                    { value: "environment" as ComplaintCategory, label: "Environment" },
-                    { value: "others" as ComplaintCategory, label: "Others" },
+                    { value: "noise" as ComplaintCategoryType, label: "Noise" },
+                    { value: "sanitation" as ComplaintCategoryType, label: "Sanitation" },
+                    { value: "public_safety" as ComplaintCategoryType, label: "Public Safety" },
+                    { value: "traffic" as ComplaintCategoryType, label: "Traffic" },
+                    { value: "infrastructure" as ComplaintCategoryType, label: "Infrastructure" },
+                    { value: "water_electricity" as ComplaintCategoryType, label: "Water/Electricity" },
+                    { value: "domestic" as ComplaintCategoryType, label: "Domestic" },
+                    { value: "environment" as ComplaintCategoryType, label: "Environment" },
+                    { value: "others" as ComplaintCategoryType, label: "Others" },
                   ].map((category) => (
                     <div key={category.value} className="flex items-center space-x-2">
                       <Checkbox

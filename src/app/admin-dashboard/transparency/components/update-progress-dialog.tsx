@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import { Trash2, ImageIcon } from "lucide-react";
 import {
   Dialog,
@@ -32,38 +31,19 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { MultiImageUploader } from "@/components/multi-image-uploader";
-import type { Project, ProjectStatus, ProgressUpdate } from "@/types/project";
-import type { FileUpload } from "@/types/files";
+import type { ProjectType, ProjectStatusType, ProgressUpdateType } from "@/types/project";
+import type { FileUploadType } from "@/types/files";
 import { formatDate } from "@/lib/date-formatter";
+import { updateStatusSchema, type UpdateStatusFormValues } from "@/schemas/project.schema";
 
 interface UpdateStatusDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit: (data: UpdateStatusFormValues & { deletedProgressUpdateIndices?: number[] }) => void;
-  project: Project | null;
+  project: ProjectType | null;
 }
 
-const updateStatusSchema = z.object({
-  status: z.enum([
-    "planned",
-    "approved",
-    "ongoing",
-    "on_hold",
-    "completed",
-    "cancelled",
-  ]),
-  progressPercentage: z.number().min(0).max(100),
-  progressUpdateDescription: z.string().optional(),
-  progressUpdateImage: z
-    .object({
-      uri: z.string(),
-    })
-    .optional(),
-});
-
-export type UpdateStatusFormValues = z.infer<typeof updateStatusSchema>;
-
-const statusOptions: { value: ProjectStatus; label: string }[] = [
+const statusOptions: { value: ProjectStatusType; label: string }[] = [
   { value: "planned", label: "Planned" },
   { value: "approved", label: "Approved" },
   { value: "ongoing", label: "Ongoing" },
@@ -78,7 +58,7 @@ export function UpdateStatusDialog({
   onSubmit,
   project,
 }: UpdateStatusDialogProps) {
-  const [progressImages, setProgressImages] = useState<FileUpload[]>([]);
+  const [progressImages, setProgressImages] = useState<FileUploadType[]>([]);
   const [deletedProgressUpdateIndices, setDeletedProgressUpdateIndices] = useState<number[]>([]);
   
   const form = useForm<UpdateStatusFormValues>({
@@ -145,7 +125,7 @@ export function UpdateStatusDialog({
     return deletedProgressUpdateIndices.includes(index);
   };
 
-  const handleImageUpload = (images: FileUpload[]) => {
+  const handleImageUpload = (images: FileUploadType[]) => {
     setProgressImages(images.slice(0, 1)); // Limit to 1 image
     if (images.length > 0) {
       const imageUri = images[0] instanceof File ? URL.createObjectURL(images[0]) : images[0];

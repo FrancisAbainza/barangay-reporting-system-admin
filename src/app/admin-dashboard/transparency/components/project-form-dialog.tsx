@@ -3,7 +3,6 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import {
   Dialog,
   DialogContent,
@@ -32,68 +31,18 @@ import {
 } from "@/components/ui/select";
 import { MultiImageUploader } from "@/components/multi-image-uploader";
 import { MapLocationPicker } from "@/components/map-location-picker";
-import type { Project, ProjectCategory, ProjectStatus, CreateProjectInput, ProjectLocation } from "@/types/project";
-import type { FileUpload } from "@/types/files";
+import type { ProjectType, ProjectCategoryType, ProjectStatusType, CreateProjectInputType, ProjectLocationType } from "@/types/project";
+import type { FileUploadType } from "@/types/files";
+import { projectFormSchema, type ProjectFormValues } from "@/schemas/project.schema";
 
 interface ProjectFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (data: CreateProjectInput) => void;
-  project?: Project | null;
+  onSubmit: (data: CreateProjectInputType) => void;
+  project?: ProjectType | null;
 }
 
-const projectFormSchema = z.object({
-  title: z.string().min(1, "Title is required"),
-  description: z.string().min(1, "Description is required"),
-  category: z.enum([
-    "infrastructure",
-    "health",
-    "education",
-    "environment",
-    "livelihood",
-    "disaster_preparedness",
-    "social_services",
-    "sports_culture",
-    "others",
-  ]),
-  status: z.enum([
-    "planned",
-    "approved",
-    "ongoing",
-    "on_hold",
-    "completed",
-    "cancelled",
-  ]),
-  startDate: z.string().min(1, "Start date is required"),
-  expectedCompletionDate: z.string().optional(),
-  actualCompletionDate: z.string().optional(),
-  budget: z.string().optional(),
-  contractor: z.string().optional(),
-  sourceOfFunds: z.string().optional(),
-  progressPercentage: z
-    .string()
-    .min(1, "Progress percentage is required")
-    .refine(
-      (val) => {
-        const num = parseInt(val);
-        return !isNaN(num) && num >= 0 && num <= 100;
-      },
-      { message: "Progress percentage must be between 0 and 100" }
-    ),
-  location: z
-    .object({
-      latitude: z.number(),
-      longitude: z.number(),
-      address: z.string().min(1, "Address is required"),
-    })
-    .optional()
-    .nullable(),
-  images: z.array(z.any()).optional(),
-});
-
-type ProjectFormValues = z.infer<typeof projectFormSchema>;
-
-const categoryOptions: { value: ProjectCategory; label: string }[] = [
+const categoryOptions: { value: ProjectCategoryType; label: string }[] = [
   { value: "infrastructure", label: "Infrastructure" },
   { value: "health", label: "Health" },
   { value: "education", label: "Education" },
@@ -105,7 +54,7 @@ const categoryOptions: { value: ProjectCategory; label: string }[] = [
   { value: "others", label: "Others" },
 ];
 
-const statusOptions: { value: ProjectStatus; label: string }[] = [
+const statusOptions: { value: ProjectStatusType; label: string }[] = [
   { value: "planned", label: "Planned" },
   { value: "approved", label: "Approved" },
   { value: "ongoing", label: "Ongoing" },
@@ -199,7 +148,7 @@ export function ProjectFormDialog({
   }, [project, open, form]);
 
   const handleSubmit = (values: ProjectFormValues) => {
-    const formData: CreateProjectInput = {
+    const formData: CreateProjectInputType = {
       title: values.title,
       description: values.description,
       category: values.category,
@@ -484,7 +433,7 @@ export function ProjectFormDialog({
                   <FormLabel>Project Images</FormLabel>
                   <FormControl>
                     <MultiImageUploader
-                      images={field.value as FileUpload[] || []}
+                      images={field.value as FileUploadType[] || []}
                       onImagesChange={field.onChange}
                     />
                   </FormControl>

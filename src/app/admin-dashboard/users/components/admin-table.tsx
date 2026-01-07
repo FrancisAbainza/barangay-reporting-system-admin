@@ -30,17 +30,17 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MoreHorizontal, Trash2, Shield, AlertTriangle, Search } from "lucide-react";
-import type { Admin } from "@/types/user";
+import type { AdminType } from "@/types/admin";
 import { formatDate } from "@/lib/date-formatter";
 
 interface AdminTableProps {
-  admins: Admin[];
+  admins: AdminType[];
   onDeleteAdmin: (adminId: string) => void;
 }
 
 export function AdminTable({ admins, onDeleteAdmin }: AdminTableProps) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [selectedAdmin, setSelectedAdmin] = useState<Admin | null>(null);
+  const [selectedAdmin, setSelectedAdmin] = useState<AdminType | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [searchEmployeeId, setSearchEmployeeId] = useState("");
 
@@ -51,7 +51,7 @@ export function AdminTable({ admins, onDeleteAdmin }: AdminTableProps) {
     );
   }, [admins, searchEmployeeId]);
 
-  const handleDeleteClick = (admin: Admin) => {
+  const handleDeleteClick = (admin: AdminType) => {
     setSelectedAdmin(admin);
     setDeleteDialogOpen(true);
   };

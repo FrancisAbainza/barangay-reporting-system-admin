@@ -1,12 +1,12 @@
-import { Image, Comment, CommunitySentiment } from './shared';
+import { ImageType, CommentType, CommunitySentimentType } from './shared';
 
-export interface ResolutionDetail {
+export interface ResolutionDetailType {
   description: string;
   budget?: number;
-  images?: Image[];
+  images?: ImageType[];
 }
 
-export type ComplaintCategory =
+export type ComplaintCategoryType =
   | "noise"
   | "sanitation"
   | "public_safety"
@@ -17,7 +17,7 @@ export type ComplaintCategory =
   | "environment"
   | "others";
 
-export type ComplaintStatus =
+export type ComplaintStatusType =
   | "submitted"
   | "under_review"
   | "scheduled"
@@ -25,7 +25,7 @@ export type ComplaintStatus =
   | "resolved"
   | "dismissed";
 
-export interface ComplaintAiAnalysis {
+export interface ComplaintAiAnalysisType {
   // --- Existing Logic ---
   summary: string;
 
@@ -44,51 +44,50 @@ export interface ComplaintAiAnalysis {
   preventionAdvice: string;        // How the Barangay can prevent this from happening again
 }
 
-export interface ComplaintLocation {
+export interface ComplaintLocationType {
   latitude: number;
   longitude: number;
   address: string;
 }
 
-export interface Complaint {
+export interface ComplaintType {
   id: string;
   title: string;
   description: string;
-  category: ComplaintCategory;
-  status: ComplaintStatus;
+  category: ComplaintCategoryType;
+  status: ComplaintStatusType;
   priority: "low" | "medium" | "high" | "urgent";
   complainantName: string;
   complainantId: string;
-  location?: ComplaintLocation;
-  images?: Image[];
-  resolutionDetails?: ResolutionDetail;
+  location: ComplaintLocationType;
+  images?: ImageType[];
+  resolutionDetails?: ResolutionDetailType;
   resolvedAt?: Date;
   scheduledAt?: Date;
   likes?: string[];
   dislikes?: string[];
-  comments?: Comment[];
-  aiAnalysis?: ComplaintAiAnalysis;
-  communitySentiment?: CommunitySentiment;
+  comments?: CommentType[];
+  aiAnalysis?: ComplaintAiAnalysisType;
+  communitySentiment?: CommunitySentimentType;
   createdAt: Date;
   updatedAt: Date;
 }
 
-export interface CreateComplaintInput {
+export interface CreateComplaintInputType {
   title: string;
   description: string;
-  category: ComplaintCategory;
-  location?: ComplaintLocation;
-  images?: Image[];
+  location: ComplaintLocationType;
+  images?: ImageType[];
 }
 
-export interface UpdateComplaintInput {
+export interface UpdateComplaintInputType {
   title?: string;
   description?: string;
-  category?: ComplaintCategory;
-  status?: ComplaintStatus;
-  location?: ComplaintLocation;
-  images?: Image[];
-  resolutionDetails?: ResolutionDetail;
+  category?: ComplaintCategoryType;
+  status?: ComplaintStatusType;
+  location?: ComplaintLocationType;
+  images?: ImageType[];
+  resolutionDetails?: ResolutionDetailType;
   resolvedAt?: Date;
   scheduledAt?: Date;
 }

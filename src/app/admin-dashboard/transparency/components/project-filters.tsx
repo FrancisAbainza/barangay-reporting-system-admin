@@ -10,14 +10,14 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Search, Filter, ChevronDown, CalendarIcon, Tag } from "lucide-react";
-import type { ProjectStatus, ProjectCategory } from "@/types/project";
+import type { ProjectStatusType, ProjectCategoryType } from "@/types/project";
 import { getStatusBadge, getCategoryLabel } from "@/lib/project-helpers";
 
 interface ProjectFiltersProps {
   onFilterChange: (filters: {
     searchQuery: string;
-    statusFilters: ProjectStatus[];
-    categoryFilters: ProjectCategory[];
+    statusFilters: ProjectStatusType[];
+    categoryFilters: ProjectCategoryType[];
     dateFrom: string;
     dateTo: string;
   }) => void;
@@ -25,8 +25,8 @@ interface ProjectFiltersProps {
 
 export function ProjectFilters({ onFilterChange }: ProjectFiltersProps) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilters, setStatusFilters] = useState<ProjectStatus[]>([]);
-  const [categoryFilters, setCategoryFilters] = useState<ProjectCategory[]>([]);
+  const [statusFilters, setStatusFilters] = useState<ProjectStatusType[]>([]);
+  const [categoryFilters, setCategoryFilters] = useState<ProjectCategoryType[]>([]);
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
 
@@ -34,8 +34,8 @@ export function ProjectFilters({ onFilterChange }: ProjectFiltersProps) {
 
   const updateFilters = (updates: Partial<{
     searchQuery: string;
-    statusFilters: ProjectStatus[];
-    categoryFilters: ProjectCategory[];
+    statusFilters: ProjectStatusType[];
+    categoryFilters: ProjectCategoryType[];
     dateFrom: string;
     dateTo: string;
   }>) => {
@@ -108,12 +108,12 @@ export function ProjectFilters({ onFilterChange }: ProjectFiltersProps) {
                 <h4 className="font-medium text-sm">Filter by Status</h4>
                 <div className="space-y-2">
                   {[
-                    { value: "planned" as ProjectStatus, label: "Planned" },
-                    { value: "approved" as ProjectStatus, label: "Approved" },
-                    { value: "ongoing" as ProjectStatus, label: "Ongoing" },
-                    { value: "on_hold" as ProjectStatus, label: "On Hold" },
-                    { value: "completed" as ProjectStatus, label: "Completed" },
-                    { value: "cancelled" as ProjectStatus, label: "Cancelled" },
+                    { value: "planned" as ProjectStatusType, label: "Planned" },
+                    { value: "approved" as ProjectStatusType, label: "Approved" },
+                    { value: "ongoing" as ProjectStatusType, label: "Ongoing" },
+                    { value: "on_hold" as ProjectStatusType, label: "On Hold" },
+                    { value: "completed" as ProjectStatusType, label: "Completed" },
+                    { value: "cancelled" as ProjectStatusType, label: "Cancelled" },
                   ].map((status) => (
                     <div key={status.value} className="flex items-center space-x-2">
                       <Checkbox
@@ -158,15 +158,15 @@ export function ProjectFilters({ onFilterChange }: ProjectFiltersProps) {
                 <h4 className="font-medium text-sm">Filter by Category</h4>
                 <div className="space-y-2 max-h-64 overflow-y-auto">
                   {[
-                    { value: "infrastructure" as ProjectCategory, label: "Infrastructure" },
-                    { value: "health" as ProjectCategory, label: "Health" },
-                    { value: "education" as ProjectCategory, label: "Education" },
-                    { value: "environment" as ProjectCategory, label: "Environment" },
-                    { value: "livelihood" as ProjectCategory, label: "Livelihood" },
-                    { value: "disaster_preparedness" as ProjectCategory, label: "Disaster Preparedness" },
-                    { value: "social_services" as ProjectCategory, label: "Social Services" },
-                    { value: "sports_culture" as ProjectCategory, label: "Sports & Culture" },
-                    { value: "others" as ProjectCategory, label: "Others" },
+                    { value: "infrastructure" as ProjectCategoryType, label: "Infrastructure" },
+                    { value: "health" as ProjectCategoryType, label: "Health" },
+                    { value: "education" as ProjectCategoryType, label: "Education" },
+                    { value: "environment" as ProjectCategoryType, label: "Environment" },
+                    { value: "livelihood" as ProjectCategoryType, label: "Livelihood" },
+                    { value: "disaster_preparedness" as ProjectCategoryType, label: "Disaster Preparedness" },
+                    { value: "social_services" as ProjectCategoryType, label: "Social Services" },
+                    { value: "sports_culture" as ProjectCategoryType, label: "Sports & Culture" },
+                    { value: "others" as ProjectCategoryType, label: "Others" },
                   ].map((category) => (
                     <div key={category.value} className="flex items-center space-x-2">
                       <Checkbox

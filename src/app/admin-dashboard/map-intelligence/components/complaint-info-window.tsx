@@ -2,12 +2,12 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MapPin, Calendar, ExternalLink } from "lucide-react";
-import type { Complaint } from "@/types/complaint";
+import type { ComplaintType } from "@/types/complaint";
 import { getStatusBadge, getCategoryLabel } from "@/lib/complaint-helpers";
 import { formatDate } from "@/lib/date-formatter";
 
 interface ComplaintInfoWindowProps {
-  complaint: Complaint;
+  complaint: ComplaintType;
 }
 
 const priorityVariant = (priority: string) => {

@@ -5,13 +5,13 @@ import { useProjectDb } from "@/contexts/project-db-context";
 import { Button } from "@/components/ui/button";
 import { ProjectFormDialog } from "./project-form-dialog";
 import { Plus } from "lucide-react";
-import type { CreateProjectInput } from "@/types/project";
+import type { CreateProjectInputType } from "@/types/project";
 
 export function CreateProjectButton() {
   const { createProject } = useProjectDb();
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleSubmit = (data: CreateProjectInput) => {
+  const handleSubmit = (data: CreateProjectInputType) => {
     createProject(data);
     setIsOpen(false);
   };

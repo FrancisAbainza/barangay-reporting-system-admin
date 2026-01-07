@@ -15,8 +15,8 @@ const mapContainerStyle = {
 
 // Default center (Barangay location)
 const defaultCenter = {
-  lat: 14.318734,
-  lng: 121.102831,
+  lat: 14.307030,
+  lng: 121.046630,
 };
 
 const mapOptions: google.maps.MapOptions = {

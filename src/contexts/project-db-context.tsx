@@ -2,37 +2,37 @@
 
 import { createContext, useContext, useState, ReactNode } from "react";
 import type {
-  ProjectCategory,
-  ProjectStatus,
-  ProjectLocation,
-  ProgressUpdate,
-  Project,
-  CreateProjectInput,
-  UpdateProjectInput,
+  ProjectCategoryType,
+  ProjectStatusType,
+  ProjectLocationType,
+  ProgressUpdateType,
+  ProjectType,
+  CreateProjectInputType,
+  UpdateProjectInputType,
 } from "@/types/project";
 
-import type { Image, Reply, Comment, CommunitySentiment } from "@/types/shared";
+import type { ImageType, ReplyType, CommentType, CommunitySentimentType } from "@/types/shared";
 
 // Re-export types for backward compatibility
 export type {
-  Image,
-  Reply,
-  Comment,
-  ProjectCategory,
-  ProjectStatus,
-  ProjectLocation,
-  ProgressUpdate,
-  CommunitySentiment,
-  Project,
-  CreateProjectInput,
-  UpdateProjectInput,
+  ImageType,
+  ReplyType,
+  CommentType,
+  ProjectCategoryType,
+  ProjectStatusType,
+  ProjectLocationType,
+  ProgressUpdateType,
+  CommunitySentimentType,
+  ProjectType,
+  CreateProjectInputType,
+  UpdateProjectInputType,
 };
 
 // Context types
 interface ProjectDbContextType {
-  projects: Project[];
-  createProject: (input: CreateProjectInput) => Project;
-  updateProject: (id: string, input: UpdateProjectInput) => Project | null;
+  projects: ProjectType[];
+  createProject: (input: CreateProjectInputType) => ProjectType;
+  updateProject: (id: string, input: UpdateProjectInputType) => ProjectType | null;
   deleteProject: (id: string) => boolean;
   addProjectComment: (
     projectId: string,
@@ -40,7 +40,7 @@ interface ProjectDbContextType {
     userName: string,
     content: string,
     isAdmin?: boolean
-  ) => Comment | null;
+  ) => CommentType | null;
   addReply: (
     projectId: string,
     commentId: string,
@@ -48,17 +48,16 @@ interface ProjectDbContextType {
     userName: string,
     content: string,
     isAdmin?: boolean
-  ) => Reply | null;
+  ) => ReplyType | null;
   generateCommunitySentiment: (projectId: string) => Promise<void>;
 }
 
 // Initial dummy data
-const initialProjects: Project[] = [
+const initialProjects: ProjectType[] = [
   {
     id: "p1",
     title: "Community Health Center Renovation",
-    description:
-      "Complete renovation of the barangay health center including new equipment, upgraded facilities, and improved waiting areas.",
+    description: "Complete renovation of the barangay health center including new equipment, upgraded facilities, and improved waiting areas.",
     category: "health",
     status: "ongoing",
     startDate: new Date("2025-11-01"),
@@ -67,8 +66,8 @@ const initialProjects: Project[] = [
     contractor: "ABC Construction Corp.",
     sourceOfFunds: "Municipal Budget 2025",
     location: {
-      latitude: 14.325423,
-      longitude: 121.105678,
+      latitude: 14.308423,
+      longitude: 121.045678,
       address: "123 Health Street, Barangay Central",
     },
     images: [
@@ -103,8 +102,7 @@ const initialProjects: Project[] = [
             id: "preply1",
             userId: "admin1",
             userName: "Barangay Admin",
-            content:
-              "Thank you for your support! We're working hard to complete this on schedule.",
+            content: "Thank you for your support! We're working hard to complete this on schedule.",
             isAdmin: true,
             likes: ["user1"],
             dislikes: [],
@@ -122,8 +120,7 @@ const initialProjects: Project[] = [
   {
     id: "p2",
     title: "Street Lighting Installation Project",
-    description:
-      "Installation of 50 new LED street lights across major roads and alleys to improve nighttime safety and security.",
+    description: "Installation of 50 new LED street lights across major roads and alleys to improve nighttime safety and security.",
     category: "infrastructure",
     status: "approved",
     startDate: new Date("2026-01-15"),
@@ -132,8 +129,8 @@ const initialProjects: Project[] = [
     contractor: "LightWorks Inc.",
     sourceOfFunds: "DILG Grant",
     location: {
-      latitude: 14.318956,
-      longitude: 121.102345,
+      latitude: 14.306956,
+      longitude: 121.042345,
       address: "Various locations across the barangay",
     },
     images: [{ uri: `https://picsum.photos/seed/${Math.random()}/1280/720` }],
@@ -147,8 +144,7 @@ const initialProjects: Project[] = [
   {
     id: "p3",
     title: "Waste Management and Recycling Program",
-    description:
-      "Implementation of a comprehensive waste segregation and recycling program including distribution of color-coded bins and weekly collection schedules.",
+    description: "Implementation of a comprehensive waste segregation and recycling program including distribution of color-coded bins and weekly collection schedules.",
     category: "environment",
     status: "ongoing",
     startDate: new Date("2025-10-01"),
@@ -157,8 +153,8 @@ const initialProjects: Project[] = [
     contractor: "GreenEarth Solutions",
     sourceOfFunds: "Environmental Fund",
     location: {
-      latitude: 14.320145,
-      longitude: 121.108234,
+      latitude: 14.306063,
+      longitude: 121.047574,
       address: "Barangay-wide implementation",
     },
     images: [
@@ -204,8 +200,7 @@ const initialProjects: Project[] = [
   {
     id: "p4",
     title: "Multipurpose Sports Complex",
-    description:
-      "Construction of a new multipurpose sports complex with basketball and volleyball courts, covered stage, and community hall.",
+    description: "Construction of a new multipurpose sports complex with basketball and volleyball courts, covered stage, and community hall.",
     category: "sports_culture",
     status: "planned",
     startDate: new Date("2026-06-01"),
@@ -213,8 +208,8 @@ const initialProjects: Project[] = [
     budget: 5000000,
     sourceOfFunds: "Provincial Development Fund",
     location: {
-      latitude: 14.328511,
-      longitude: 121.110442,
+      latitude: 14.309511,
+      longitude: 121.050442,
       address: "Corner of Sports Ave and Recreation St.",
     },
     images: [
@@ -243,13 +238,11 @@ const initialProjects: Project[] = [
     contractor: "AquaFlow Solutions",
     sourceOfFunds: "Barangay Infrastructure Fund",
     location: {
-      latitude: 14.312137,
-      longitude: 121.111034,
+      latitude: 14.308070,
+      longitude: 121.052176,
       address: "Zone 2 and Zone 3 residential areas",
     },
-    images: [
-      { uri: `https://picsum.photos/seed/${Math.random()}/1280/720` }
-    ],
+    images: [{ uri: `https://picsum.photos/seed/${Math.random()}/1280/720` }],
     progressPercentage: 35,
     progressUpdates: [
       {
@@ -283,8 +276,7 @@ const initialProjects: Project[] = [
   {
     id: "p6",
     title: "Flood Control and Drainage System",
-    description:
-      "Improvement of drainage systems and construction of flood control infrastructure in flood-prone areas.",
+    description: "Improvement of drainage systems and construction of flood control infrastructure in flood-prone areas.",
     category: "disaster_preparedness",
     status: "completed",
     startDate: new Date("2025-03-01"),
@@ -294,8 +286,8 @@ const initialProjects: Project[] = [
     contractor: "FloodSafe Engineering",
     sourceOfFunds: "Disaster Risk Reduction Fund",
     location: {
-      latitude: 14.328977,
-      longitude: 121.097194,
+      latitude: 14.308977,
+      longitude: 121.047194,
       address: "Low-lying areas, Zone 3 and 4",
     },
     images: [{ uri: `https://picsum.photos/seed/${Math.random()}/1280/720` }],
@@ -307,8 +299,7 @@ const initialProjects: Project[] = [
         createdAt: new Date("2025-05-15T13:00:00"),
       },
       {
-        description:
-          "Zone 4 flood control infrastructure completed. Final testing in progress.",
+        description: "Zone 4 flood control infrastructure completed. Final testing in progress.",
         image: { uri: `https://picsum.photos/seed/${Math.random()}/1280/720` },
         createdAt: new Date("2025-09-20T10:30:00"),
       },
@@ -347,8 +338,8 @@ const initialProjects: Project[] = [
     contractor: "SolidPath Builders",
     sourceOfFunds: "Barangay Infrastructure Fund",
     location: {
-      latitude: 14.322567,
-      longitude: 121.106789,
+      latitude: 14.307567,
+      longitude: 121.046789,
       address: "Main Road, Zone 2",
     },
     images: [{ uri: `https://picsum.photos/seed/${Math.random()}/1280/720` }],
@@ -363,7 +354,6 @@ const initialProjects: Project[] = [
     createdAt: new Date("2025-08-15"),
     updatedAt: new Date("2025-12-10"),
   },
-
   {
     id: "p8",
     title: "Senior Citizens Wellness Program",
@@ -375,8 +365,8 @@ const initialProjects: Project[] = [
     budget: 600000,
     sourceOfFunds: "Social Welfare Budget",
     location: {
-      latitude: 14.324891,
-      longitude: 121.103567,
+      latitude: 14.309411,
+      longitude: 121.052616,
       address: "Barangay Hall",
     },
     images: [{ uri: `https://picsum.photos/seed/${Math.random()}/1280/720` }],
@@ -384,7 +374,6 @@ const initialProjects: Project[] = [
     createdAt: new Date("2025-06-15"),
     updatedAt: new Date("2025-12-05"),
   },
-
   {
     id: "p9",
     title: "Community Tree Planting Drive",
@@ -396,8 +385,8 @@ const initialProjects: Project[] = [
     budget: 300000,
     sourceOfFunds: "Environmental Fund",
     location: {
-      latitude: 14.313456,
-      longitude: 121.098234,
+      latitude: 14.305456,
+      longitude: 121.043234,
       address: "Riverbank Area",
     },
     images: [{ uri: `https://picsum.photos/seed/${Math.random()}/1280/720` }],
@@ -405,7 +394,6 @@ const initialProjects: Project[] = [
     createdAt: new Date("2025-04-10"),
     updatedAt: new Date("2025-08-20"),
   },
-
   {
     id: "p10",
     title: "Barangay Free Wi-Fi Project",
@@ -418,8 +406,8 @@ const initialProjects: Project[] = [
     contractor: "NetConnect PH",
     sourceOfFunds: "DICTS Grant",
     location: {
-      latitude: 14.327234,
-      longitude: 121.104891,
+      latitude: 14.308475,
+      longitude: 121.051222,
       address: "Public Plaza & Hall",
     },
     images: [{ uri: `https://picsum.photos/seed/${Math.random()}/1280/720` }],
@@ -427,7 +415,6 @@ const initialProjects: Project[] = [
     createdAt: new Date("2025-12-01"),
     updatedAt: new Date("2025-12-01"),
   },
-
   {
     id: "p11",
     title: "Livelihood Skills Training",
@@ -439,8 +426,8 @@ const initialProjects: Project[] = [
     budget: 480000,
     sourceOfFunds: "TESDA Partnership",
     location: {
-      latitude: 14.319678,
-      longitude: 121.109456,
+      latitude: 14.309678,
+      longitude: 121.049456,
       address: "Training Center, Zone 5",
     },
     images: [{ uri: `https://picsum.photos/seed/${Math.random()}/1280/720` }],
@@ -448,7 +435,6 @@ const initialProjects: Project[] = [
     createdAt: new Date("2025-07-15"),
     updatedAt: new Date("2025-12-18"),
   },
-
   {
     id: "p12",
     title: "Public Market Sanitation Upgrade",
@@ -460,8 +446,8 @@ const initialProjects: Project[] = [
     budget: 1300000,
     contractor: "CleanBuild Services",
     location: {
-      latitude: 14.315234,
-      longitude: 121.100567,
+      latitude: 14.307851,
+      longitude: 121.050299,
       address: "Barangay Public Market",
     },
     images: [{ uri: `https://picsum.photos/seed/${Math.random()}/1280/720` }],
@@ -469,7 +455,6 @@ const initialProjects: Project[] = [
     createdAt: new Date("2025-09-01"),
     updatedAt: new Date("2025-12-12"),
   },
-
   {
     id: "p13",
     title: "Disaster Response Equipment Acquisition",
@@ -481,8 +466,8 @@ const initialProjects: Project[] = [
     budget: 900000,
     sourceOfFunds: "DRRM Fund",
     location: {
-      latitude: 14.326789,
-      longitude: 121.107234,
+      latitude: 14.306789,
+      longitude: 121.047234,
       address: "Barangay DRRM Office",
     },
     images: [{ uri: `https://picsum.photos/seed/${Math.random()}/1280/720` }],
@@ -490,7 +475,6 @@ const initialProjects: Project[] = [
     createdAt: new Date("2025-03-01"),
     updatedAt: new Date("2025-06-20"),
   },
-
   {
     id: "p14",
     title: "Youth Sports Development Program",
@@ -501,8 +485,8 @@ const initialProjects: Project[] = [
     expectedCompletionDate: new Date("2026-06-14"),
     budget: 520000,
     location: {
-      latitude: 14.321345,
-      longitude: 121.101234,
+      latitude: 14.307269,
+      longitude: 121.049162,
       address: "Covered Court",
     },
     images: [{ uri: `https://picsum.photos/seed/${Math.random()}/1280/720` }],
@@ -510,7 +494,6 @@ const initialProjects: Project[] = [
     createdAt: new Date("2025-05-20"),
     updatedAt: new Date("2025-12-08"),
   },
-
   {
     id: "p15",
     title: "Barangay Library Modernization",
@@ -521,8 +504,8 @@ const initialProjects: Project[] = [
     expectedCompletionDate: new Date("2026-10-31"),
     budget: 1100000,
     location: {
-      latitude: 14.314567,
-      longitude: 121.105123,
+      latitude: 14.304567,
+      longitude: 121.045123,
       address: "Old Library Building",
     },
     images: [{ uri: `https://picsum.photos/seed/${Math.random()}/1280/720` }],
@@ -530,7 +513,6 @@ const initialProjects: Project[] = [
     createdAt: new Date("2025-12-05"),
     updatedAt: new Date("2025-12-05"),
   },
-
   {
     id: "p16",
     title: "Community Feeding Program",
@@ -541,8 +523,8 @@ const initialProjects: Project[] = [
     expectedCompletionDate: new Date("2026-04-30"),
     budget: 700000,
     location: {
-      latitude: 14.323678,
-      longitude: 121.099678,
+      latitude: 14.308678,
+      longitude: 121.049678,
       address: "Day Care Centers",
     },
     images: [{ uri: `https://picsum.photos/seed/${Math.random()}/1280/720` }],
@@ -550,7 +532,6 @@ const initialProjects: Project[] = [
     createdAt: new Date("2025-04-10"),
     updatedAt: new Date("2025-12-15"),
   },
-
   {
     id: "p17",
     title: "Barangay CCTV Expansion",
@@ -561,8 +542,8 @@ const initialProjects: Project[] = [
     expectedCompletionDate: new Date("2026-04-30"),
     budget: 1600000,
     location: {
-      latitude: 14.318234,
-      longitude: 121.108567,
+      latitude: 14.308234,
+      longitude: 121.048567,
       address: "Various Zones",
     },
     images: [{ uri: `https://picsum.photos/seed/${Math.random()}/1280/720` }],
@@ -570,7 +551,6 @@ const initialProjects: Project[] = [
     createdAt: new Date("2025-12-18"),
     updatedAt: new Date("2025-12-18"),
   },
-
   {
     id: "p18",
     title: "Women Entrepreneurship Program",
@@ -581,8 +561,8 @@ const initialProjects: Project[] = [
     expectedCompletionDate: new Date("2026-03-31"),
     budget: 650000,
     location: {
-      latitude: 14.327891,
-      longitude: 121.102789,
+      latitude: 14.307891,
+      longitude: 121.042789,
       address: "Livelihood Office",
     },
     images: [{ uri: `https://picsum.photos/seed/${Math.random()}/1280/720` }],
@@ -590,7 +570,6 @@ const initialProjects: Project[] = [
     createdAt: new Date("2025-06-10"),
     updatedAt: new Date("2025-12-01"),
   },
-
   {
     id: "p19",
     title: "Barangay Clean-Up Drive",
@@ -601,8 +580,8 @@ const initialProjects: Project[] = [
     expectedCompletionDate: new Date("2025-12-31"),
     budget: 200000,
     location: {
-      latitude: 14.316234,
-      longitude: 121.106345,
+      latitude: 14.306234,
+      longitude: 121.046345,
       address: "Barangay-wide",
     },
     images: [{ uri: `https://picsum.photos/seed/${Math.random()}/1280/720` }],
@@ -610,7 +589,6 @@ const initialProjects: Project[] = [
     createdAt: new Date("2024-12-15"),
     updatedAt: new Date("2025-12-20"),
   },
-
   {
     id: "p20",
     title: "Public Restroom Construction",
@@ -620,15 +598,15 @@ const initialProjects: Project[] = [
     startDate: new Date("2025-08-01"),
     budget: 750000,
     location: {
-      latitude: 14.312567,
-      longitude: 121.110234,
+      latitude: 14.309317,
+      longitude: 121.051962,
       address: "Barangay Plaza",
     },
     images: [{ uri: `https://picsum.photos/seed/${Math.random()}/1280/720` }],
     progressPercentage: 10,
     createdAt: new Date("2025-07-01"),
     updatedAt: new Date("2025-10-01"),
-  },
+  }
 ];
 
 // Create Context
@@ -638,15 +616,15 @@ const ProjectDbContext = createContext<ProjectDbContextType | undefined>(
 
 // Provider Component
 export function ProjectDbProvider({ children }: { children: ReactNode }) {
-  const [projects, setProjects] = useState<Project[]>(initialProjects);
+  const [projects, setProjects] = useState<ProjectType[]>(initialProjects);
 
   // Helper function to generate unique IDs
   const generateId = (prefix: string): string => {
     return `${prefix}${Date.now()}${Math.random().toString(36).substr(2, 9)}`;
   };
 
-  const createProject = (input: CreateProjectInput): Project => {
-    const newProject: Project = {
+  const createProject = (input: CreateProjectInputType): ProjectType => {
+    const newProject: ProjectType = {
       ...input,
       id: generateId("p"),
       progressPercentage: 0,
@@ -664,9 +642,9 @@ export function ProjectDbProvider({ children }: { children: ReactNode }) {
 
   const updateProject = (
     id: string,
-    input: UpdateProjectInput
-  ): Project | null => {
-    let updatedProject: Project | null = null;
+    input: UpdateProjectInputType
+  ): ProjectType | null => {
+    let updatedProject: ProjectType | null = null;
 
     setProjects((prev) =>
       prev.map((project) => {
@@ -697,8 +675,8 @@ export function ProjectDbProvider({ children }: { children: ReactNode }) {
     userName: string,
     content: string,
     isAdmin?: boolean
-  ): Comment | null => {
-    let newComment: Comment | null = null;
+  ): CommentType | null => {
+    let newComment: CommentType | null = null;
 
     setProjects((prev) =>
       prev.map((project) => {
@@ -735,8 +713,8 @@ export function ProjectDbProvider({ children }: { children: ReactNode }) {
     userName: string,
     content: string,
     isAdmin?: boolean
-  ): Reply | null => {
-    let newReply: Reply | null = null;
+  ): ReplyType | null => {
+    let newReply: ReplyType | null = null;
 
     setProjects((prev) =>
       prev.map((project) => {
@@ -799,7 +777,7 @@ export function ProjectDbProvider({ children }: { children: ReactNode }) {
       neutral: 'Community engagement is moderate. Residents are monitoring the project development.'
     };
 
-    const communitySentiment: CommunitySentiment = {
+    const communitySentiment: CommunitySentimentType = {
       sentiment,
       summary: summaries[sentiment]
     };

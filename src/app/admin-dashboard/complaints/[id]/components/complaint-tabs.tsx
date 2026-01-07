@@ -8,10 +8,10 @@ import { ComplaintDetailsTab } from "./complaint-details-tab";
 import { ComplaintLocationTab } from "./complaint-location-tab";
 import { ComplaintEngagementTab } from "./complaint-engagement-tab";
 import { ComplaintAIAnalysisTab } from "./complaint-ai-analysis-tab";
-import { Complaint } from "@/types/complaint";
+import { ComplaintType } from "@/types/complaint";
 
 interface ComplaintTabsProps {
-  complaint: Complaint;
+  complaint: ComplaintType;
 }
 
 export function ComplaintTabs({ complaint }: ComplaintTabsProps) {

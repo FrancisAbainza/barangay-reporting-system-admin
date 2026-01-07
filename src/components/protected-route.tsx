@@ -6,22 +6,14 @@ import { useEffect } from "react";
 import { Spinner } from "@/components/ui/spinner";
 
 export function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useAuth();
+  const { user } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (!user) {
       router.push("/");
     }
-  }, [user, loading, router]);
-
-  if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <Spinner size="lg" />
-      </div>
-    );
-  }
+  }, [user, router]);
 
   if (!user) {
     return null;
