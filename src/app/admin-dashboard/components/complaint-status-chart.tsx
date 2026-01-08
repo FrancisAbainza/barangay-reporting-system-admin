@@ -2,11 +2,11 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartConfig } from "@/components/ui/chart";
-import { useComplaintDb } from "@/contexts/complaint-db-context";
+import { getStatusColor } from "@/lib/complaint-helpers";
+import { ComplaintType } from "@/types/complaint";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
-export function ComplaintStatusChart() {
-  const { complaints } = useComplaintDb();
+export function ComplaintStatusChart({ complaints }: { complaints: ComplaintType[] }) {
 
   const statusCounts = complaints.reduce((acc, complaint) => {
     acc[complaint.status] = (acc[complaint.status] || 0) + 1;
@@ -28,27 +28,27 @@ export function ComplaintStatusChart() {
     },
     submitted: {
       label: "Submitted",
-      color: "hsl(217 91% 60%)",
+      color: getStatusColor("submitted"),
     },
     underReview: {
       label: "Under Review",
-      color: "hsl(199 89% 48%)",
+      color: getStatusColor("under_review"),
     },
     scheduled: {
       label: "Scheduled",
-      color: "hsl(48 96% 53%)",
+      color: getStatusColor("scheduled"),
     },
     inProgress: {
       label: "In Progress",
-      color: "hsl(25 95% 53%)",
+      color: getStatusColor("in_progress"),
     },
     resolved: {
       label: "Resolved",
-      color: "hsl(142 76% 36%)",
+      color: getStatusColor("resolved"),
     },
     dismissed: {
       label: "Dismissed",
-      color: "hsl(215 14% 34%)",
+      color: getStatusColor("dismissed"),
     },
   } satisfies ChartConfig;
 

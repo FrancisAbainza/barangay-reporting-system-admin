@@ -2,12 +2,11 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartConfig } from "@/components/ui/chart";
-import { useComplaintDb } from "@/contexts/complaint-db-context";
+import { getCategoryColor } from "@/lib/complaint-helpers";
+import { ComplaintType } from "@/types/complaint";
 import { Pie, PieChart } from "recharts";
 
-export function ComplaintCategoryChart() {
-  const { complaints } = useComplaintDb();
-
+export function ComplaintCategoryChart({complaints}: {complaints: ComplaintType[]}) {
   const categoryCounts = complaints.reduce((acc, complaint) => {
     acc[complaint.category] = (acc[complaint.category] || 0) + 1;
     return acc;
@@ -37,39 +36,39 @@ export function ComplaintCategoryChart() {
     },
     noise: {
       label: "Noise",
-      color: "hsl(221.2 83.2% 53.3%)",
+      color: getCategoryColor("noise"),
     },
     sanitation: {
       label: "Sanitation",
-      color: "hsl(212 95% 68%)",
+      color: getCategoryColor("sanitation"),
     },
     public_safety: {
       label: "Public Safety",
-      color: "hsl(24 95% 53%)",
+      color: getCategoryColor("public_safety"),
     },
     traffic: {
       label: "Traffic",
-      color: "hsl(142 71% 45%)",
+      color: getCategoryColor("traffic"),
     },
     infrastructure: {
       label: "Infrastructure",
-      color: "hsl(280 85% 60%)",
+      color: getCategoryColor("infrastructure"),
     },
     water_electricity: {
       label: "Water/Electricity",
-      color: "hsl(173 58% 39%)",
+      color: getCategoryColor("water_electricity"),
     },
     domestic: {
       label: "Domestic",
-      color: "hsl(43 96% 56%)",
+      color: getCategoryColor("domestic"),
     },
     environment: {
       label: "Environment",
-      color: "hsl(142 76% 36%)",
+      color: getCategoryColor("environment"),
     },
     others: {
       label: "Others",
-      color: "hsl(240 5% 65%)",
+      color: getCategoryColor("others"),
     },
   } satisfies ChartConfig;
 

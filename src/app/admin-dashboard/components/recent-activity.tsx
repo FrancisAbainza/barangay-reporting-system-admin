@@ -15,35 +15,35 @@ export function RecentActivity() {
   const recentComplaints = complaints
     .slice()
     .sort((a, b) => {
-      const dateA = a.createdAt instanceof Date ? a.createdAt : new Date(a.createdAt);
-      const dateB = b.createdAt instanceof Date ? b.createdAt : new Date(b.createdAt);
+      const dateA = a.createdAt;
+      const dateB = b.createdAt;
       return dateB.getTime() - dateA.getTime();
     })
-    .slice(0, 5)
+    .slice(0, 8)
     .map((c) => ({
       type: "complaint" as const,
       id: c.id,
       title: c.title,
       status: c.status,
       category: c.category,
-      date: c.createdAt instanceof Date ? c.createdAt : new Date(c.createdAt),
+      date: c.createdAt,
     }));
 
   const recentProjects = projects
     .slice()
     .sort((a, b) => {
-      const dateA = a.startDate instanceof Date ? a.startDate : new Date(a.startDate);
-      const dateB = b.startDate instanceof Date ? b.startDate : new Date(b.startDate);
+      const dateA = a.createdAt;
+      const dateB = b.createdAt;
       return dateB.getTime() - dateA.getTime();
     })
-    .slice(0, 5)
+    .slice(0, 8)
     .map((p) => ({
       type: "project" as const,
       id: p.id,
       title: p.title,
       status: p.status,
       category: p.category,
-      date: p.startDate instanceof Date ? p.startDate : new Date(p.startDate),
+      date: p.createdAt,
     }));
 
   const recentItems = [...recentComplaints, ...recentProjects]
@@ -104,9 +104,8 @@ export function RecentActivity() {
                 className="flex items-start gap-3 rounded-lg border border-border p-3 transition-colors hover:bg-muted/50"
               >
                 <div
-                  className={`mt-1 rounded-full p-2 ${
-                    item.type === "complaint" ? "bg-blue-50" : "bg-purple-50"
-                  }`}
+                  className={`mt-1 rounded-full p-2 ${item.type === "complaint" ? "bg-blue-50" : "bg-purple-50"
+                    }`}
                 >
                   {item.type === "complaint" ? (
                     <AlertCircle className="h-4 w-4 text-blue-500" />

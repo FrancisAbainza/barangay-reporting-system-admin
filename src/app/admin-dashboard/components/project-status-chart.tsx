@@ -2,12 +2,11 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartConfig } from "@/components/ui/chart";
-import { useProjectDb } from "@/contexts/project-db-context";
+import { getStatusColor } from "@/lib/project-helpers";
+import { ProjectType } from "@/types/project";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
-export function ProjectStatusChart() {
-  const { projects } = useProjectDb();
-
+export function ProjectStatusChart({projects}: {projects: ProjectType[]}) {
   const statusCounts = projects.reduce((acc, project) => {
     acc[project.status] = (acc[project.status] || 0) + 1;
     return acc;
@@ -28,27 +27,27 @@ export function ProjectStatusChart() {
     },
     planned: {
       label: "Planned",
-      color: "hsl(217 91% 60%)",
+      color: getStatusColor("planned"),
     },
     approved: {
       label: "Approved",
-      color: "hsl(199 89% 48%)",
+      color: getStatusColor("approved"),
     },
     ongoing: {
       label: "Ongoing",
-      color: "hsl(25 95% 53%)",
+      color: getStatusColor("ongoing"),
     },
     onHold: {
       label: "On Hold",
-      color: "hsl(48 96% 53%)",
+      color: getStatusColor("on_hold"),
     },
     completed: {
       label: "Completed",
-      color: "hsl(142 76% 36%)",
+      color: getStatusColor("completed"),
     },
     cancelled: {
       label: "Cancelled",
-      color: "hsl(215 14% 34%)",
+      color: getStatusColor("cancelled"),
     },
   } satisfies ChartConfig;
 
@@ -67,6 +66,9 @@ export function ProjectStatusChart() {
               tickLine={false}
               tickMargin={10}
               axisLine={false}
+              angle={-45}
+              textAnchor="end"
+              height={100}
             />
             <YAxis />
             <ChartTooltip content={<ChartTooltipContent />} />

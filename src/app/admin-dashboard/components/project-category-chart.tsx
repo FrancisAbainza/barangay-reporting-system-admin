@@ -2,12 +2,10 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartConfig } from "@/components/ui/chart";
-import { useProjectDb } from "@/contexts/project-db-context";
+import { ProjectType } from "@/types/project";
 import { Pie, PieChart } from "recharts";
 
-export function ProjectCategoryChart() {
-  const { projects } = useProjectDb();
-
+export function ProjectCategoryChart({ projects }: { projects: ProjectType[] }) {
   const categoryCounts = projects.reduce((acc, project) => {
     acc[project.category] = (acc[project.category] || 0) + 1;
     return acc;

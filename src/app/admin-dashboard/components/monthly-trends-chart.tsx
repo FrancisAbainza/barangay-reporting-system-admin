@@ -2,12 +2,10 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartConfig } from "@/components/ui/chart";
-import { useComplaintDb } from "@/contexts/complaint-db-context";
+import { ComplaintType } from "@/types/complaint";
 import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
 
-export function MonthlyTrendsChart() {
-  const { complaints } = useComplaintDb();
-
+export function MonthlyTrendsChart({complaints}: {complaints: ComplaintType[]}) {
   // Get last 6 months
   const months = [];
   const now = new Date();

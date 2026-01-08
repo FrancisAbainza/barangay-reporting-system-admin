@@ -1,21 +1,12 @@
-"use client";
-
 import StatCard from "@/components/stat-card";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useComplaintDb } from "@/contexts/complaint-db-context";
-import { useProjectDb } from "@/contexts/project-db-context";
 import { AlertCircle, FolderKanban } from "lucide-react";
 
-export function StatsCards() {
-  const { complaints } = useComplaintDb();
-  const { projects } = useProjectDb();
+type StatsCardsProps = {
+  totalComplaints: number;
+  totalProjects: number;
+};
 
-  // Complaint stats (matching complaint-stats.tsx)
-  const totalComplaints = complaints.length;
-
-  // Project stats (matching project-stats.tsx)
-  const totalProjects = projects.length;
-
+export function StatsCards({ totalComplaints, totalProjects }: StatsCardsProps) {
   const stats = [
     {
       title: "Total Complaints",
