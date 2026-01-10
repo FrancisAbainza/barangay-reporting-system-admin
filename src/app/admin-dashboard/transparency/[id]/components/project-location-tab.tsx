@@ -13,6 +13,7 @@ interface ProjectLocationTabProps {
 
 export default function ProjectLocationTab({ project }: ProjectLocationTabProps) {
   const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "";
+  const googleMapsMapId = process.env.NEXT_PUBLIC_GOOGLE_MAP_ID || "";
 
   if (!project.location) {
     return (
@@ -32,7 +33,7 @@ export default function ProjectLocationTab({ project }: ProjectLocationTabProps)
       
       <InfoCard icon={MapPin} title="Map View">
         <div className="w-full h-150 rounded-lg overflow-hidden border">
-          {googleMapsApiKey ? (
+          {(googleMapsApiKey && googleMapsMapId) ? (
             <APIProvider apiKey={googleMapsApiKey}>
               <Map
                 defaultCenter={{
@@ -40,7 +41,7 @@ export default function ProjectLocationTab({ project }: ProjectLocationTabProps)
                   lng: project.location!.longitude,
                 }}
                 defaultZoom={16}
-                mapId="project-location-map"
+                mapId={googleMapsMapId}
                 gestureHandling="greedy"
                 disableDefaultUI={false}
               >
@@ -55,7 +56,7 @@ export default function ProjectLocationTab({ project }: ProjectLocationTabProps)
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-muted">
               <p className="text-sm text-muted-foreground">
-                Google Maps API key not configured
+                Google Maps API key or Map ID not configured
               </p>
             </div>
           )}

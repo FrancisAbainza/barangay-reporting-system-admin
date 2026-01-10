@@ -1,10 +1,12 @@
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Trash2 } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import UpdateProgressButton from "./update-progress-button";
 import EditProjectButton from "./edit-project-button";
 import { ProjectType } from "@/types/project";
 import { useProjectDb } from "@/contexts/project-db-context";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import DeleteButton from "@/components/delete-button";
 
 interface ProjectHeaderProps {
   project: ProjectType;
@@ -17,10 +19,9 @@ export default function ProjectHeader({
   const { deleteProject } = useProjectDb();
 
   const handleDeleteProject = () => {
-    if (confirm("Are you sure you want to delete this project?")) {
-      deleteProject(project.id);
-      router.push("/admin-dashboard/transparency");
-    }
+    deleteProject(project.id);
+    toast.success("Project deleted successfully");
+    router.push("/admin-dashboard/transparency");
   };
 
   return (
@@ -37,14 +38,12 @@ export default function ProjectHeader({
       <div className="flex gap-2">
         <EditProjectButton project={project} />
         <UpdateProgressButton project={project} />
-        <Button
-          variant="destructive"
-          onClick={handleDeleteProject}
-          className="gap-2"
-        >
-          <Trash2 className="h-4 w-4" />
-          Delete
-        </Button>
+        <DeleteButton
+          onDelete={handleDeleteProject}
+          title="Delete this project?"
+          description="This action cannot be undone. This will permanently delete the project and remove it from the system."
+          buttonClassName="gap-2"
+        />
       </div>
     </div>
   );

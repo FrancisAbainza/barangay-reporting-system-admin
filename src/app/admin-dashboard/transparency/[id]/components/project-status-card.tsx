@@ -1,8 +1,8 @@
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle2, Clock, Pause, XCircle } from "lucide-react";
 import type { ProjectStatusType, ProjectCategoryType } from "@/types/project";
-import { getStatusBadge, getCategoryLabel, getCategoryBadge } from "@/lib/project-helpers";
+import StatusBadge from "@/components/status-badge";
+import CategoryBadge from "@/components/category-badge";
 
 interface ProjectStatusCardProps {
   status: ProjectStatusType;
@@ -38,12 +38,8 @@ export default function ProjectStatusCard({
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex flex-wrap gap-2 items-center">
-          <Badge className={getStatusBadge(status).className}>
-            {getStatusBadge(status).label}
-          </Badge>
-          <Badge className={getCategoryBadge(category)}>
-            {getCategoryLabel(category)}
-          </Badge>
+          <StatusBadge type="project" status={status} />
+          <CategoryBadge type="project" category={category} />
         </div>
 
         {/* Progress Bar */}

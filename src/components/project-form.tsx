@@ -66,15 +66,11 @@ export default function ProjectForm({
     defaultValues: combinedDefaultValues,
   });
 
-  const onSubmit = (values: ProjectFormValues) => {
-    handleSubmit(values);
-  };
-
   const statusValue = form.watch("status");
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
+      <form onSubmit={form.handleSubmit(handleSubmit)}>
         <fieldset disabled={form.formState.isSubmitting} className="space-y-4">
           {/* Title */}
           <FormField

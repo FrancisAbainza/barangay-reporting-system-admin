@@ -1,11 +1,12 @@
 import { TabsContent } from "@/components/ui/tabs";
 import { FileText, Calendar, DollarSign, Briefcase, Wallet, ImageIcon, TrendingUp, X } from "lucide-react";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogClose } from "@/components/ui/dialog";
 import InfoCard from "@/components/ui/info-card";
 import { useState } from "react";
 import type { ProjectType } from "@/types/project";
 import { formatBudget } from "@/lib/project-helpers";
 import { formatDate } from "@/lib/date-formatter";
+import Image from "next/image";
 
 interface ProjectDetailsTabProps {
   project: ProjectType;
@@ -67,10 +68,11 @@ export default function ProjectDetailsTab({ project }: ProjectDetailsTabProps) {
                   onClick={() => setSelectedImage(img.uri)}
                   className="group relative aspect-square border rounded-lg overflow-hidden cursor-pointer transition-all hover:shadow-lg hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary"
                 >
-                  <img
+                  <Image
                     src={img.uri}
                     alt={`Project image ${idx + 1}`}
-                    className="w-full h-full object-cover transition-transform group-hover:scale-110"
+                    fill
+                    className="object-cover transition-transform group-hover:scale-110"
                   />
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
                 </button>
@@ -95,10 +97,11 @@ export default function ProjectDetailsTab({ project }: ProjectDetailsTabProps) {
                       onClick={() => setSelectedImage(update.image!.uri)}
                       className="mt-2 relative w-full max-w-xs aspect-video border rounded-lg overflow-hidden cursor-pointer transition-all hover:shadow-lg hover:scale-105"
                     >
-                      <img
+                      <Image
                         src={update.image.uri}
                         alt="Progress update"
-                        className="w-full h-full object-cover"
+                        fill
+                        className="object-cover"
                       />
                     </button>
                   )}
@@ -110,19 +113,18 @@ export default function ProjectDetailsTab({ project }: ProjectDetailsTabProps) {
       </div>
 
       <Dialog open={selectedImage !== null} onOpenChange={() => setSelectedImage(null)}>
-        <DialogContent className="sm:max-w-4xl w-full p-0 overflow-hidden border-0">
+        <DialogContent className="sm:max-w-4xl w-full p-0 overflow-hidden border-0 ">
           <DialogTitle className="sr-only">Project Image</DialogTitle>
           <div className="relative">
-            <button
-              onClick={() => setSelectedImage(null)}
-              className="absolute top-2 right-2 z-10 p-2 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors focus:outline-none focus:ring-2 focus:ring-white"
-            >
+            <DialogClose className="absolute top-1.5 right-1.5 z-10 p-2 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors focus:outline-none focus:ring-2 focus:ring-white">
               <X className="h-5 w-5" />
-            </button>
+            </DialogClose>
             {selectedImage && (
-              <img
+              <Image
                 src={selectedImage}
                 alt="Full size preview"
+                width={1280}
+                height={720}
                 className="w-full h-auto max-h-[85vh] object-contain"
               />
             )}
