@@ -56,7 +56,7 @@ export default function ProjectStatusChart({projects}: {projects: ProjectType[]}
         <CardDescription>Current status of all projects</CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="h-[300px] w-full">
+        <ChartContainer config={chartConfig} className="h-75 w-full">
           <BarChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis

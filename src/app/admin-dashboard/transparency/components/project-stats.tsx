@@ -1,8 +1,6 @@
-"use client";
-
 import { useMemo } from "react";
 import type { ProjectType } from "@/types/project";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import StatCard from "@/components/stat-card";
 import { BarChart3, CheckCircle2, Clock, FolderKanban } from "lucide-react";
 
 interface ProjectStatsProps {
@@ -10,7 +8,7 @@ interface ProjectStatsProps {
 }
 
 export default function ProjectStats({ projects }: ProjectStatsProps) {
-  const stats = useMemo(() => {
+  const statValues = useMemo(() => {
     return {
       total: projects.length,
       planned: projects.filter((p) => p.status === "planned").length,
@@ -21,51 +19,47 @@ export default function ProjectStats({ projects }: ProjectStatsProps) {
       cancelled: projects.filter((p) => p.status === "cancelled").length,
     };
   }, [projects]);
+
+  const stats = [
+    {
+      title: "Total Projects",
+      value: statValues.total,
+      icon: FolderKanban,
+      description: "All projects in system",
+      color: "text-purple-500",
+      bgColor: "bg-purple-50 dark:bg-purple-950",
+    },
+    {
+      title: "Planned",
+      value: statValues.planned,
+      icon: BarChart3,
+      description: "Awaiting approval",
+      color: "text-yellow-500",
+      bgColor: "bg-yellow-50 dark:bg-yellow-950",
+    },
+    {
+      title: "Confirmed",
+      value: statValues.approved + statValues.ongoing + statValues.onHold,
+      icon: Clock,
+      description: "Approved projects",
+      color: "text-orange-500",
+      bgColor: "bg-orange-50 dark:bg-orange-950",
+    },
+    {
+      title: "Completed",
+      value: statValues.completed,
+      icon: CheckCircle2,
+      description: "Successfully finished",
+      color: "text-green-500",
+      bgColor: "bg-green-50 dark:bg-green-950",
+    },
+  ];
+
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Total Projects</CardTitle>
-          <FolderKanban className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{stats.total}</div>
-          <p className="text-xs text-muted-foreground">All projects in system</p>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Planned</CardTitle>
-          <BarChart3 className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{stats.planned}</div>
-          <p className="text-xs text-muted-foreground">Awaiting approval</p>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Confirmed</CardTitle>
-          <Clock className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{stats.approved + stats.ongoing + stats.onHold}</div>
-          <p className="text-xs text-muted-foreground">Approved projects</p>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Completed</CardTitle>
-          <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{stats.completed}</div>
-          <p className="text-xs text-muted-foreground">Successfully finished</p>
-        </CardContent>
-      </Card>
+      {stats.map((stat) => (
+        <StatCard key={stat.title} stat={stat} />
+      ))}
     </div>
   );
 }

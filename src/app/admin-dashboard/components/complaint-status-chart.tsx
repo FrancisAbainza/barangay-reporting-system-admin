@@ -57,7 +57,7 @@ export default function ComplaintStatusChart({ complaints }: { complaints: Compl
         <CardDescription>Breakdown of complaints by current status</CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="h-[300px] w-full">
+        <ChartContainer config={chartConfig} className="h-75 w-full">
           <BarChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis

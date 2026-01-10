@@ -41,7 +41,7 @@ export default function ComplaintStatusSelect({ complaint }: ComplaintStatusSele
   return (
     <>
       <Select value={complaint.status} onValueChange={handleStatusChange}>
-        <SelectTrigger className="w-[180px]">
+        <SelectTrigger className="w-45">
           <SelectValue placeholder="Update status" />
         </SelectTrigger>
         <SelectContent>

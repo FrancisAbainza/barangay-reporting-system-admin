@@ -77,7 +77,7 @@ export default function ComplaintCategoryChart({complaints}: {complaints: Compla
         <CardDescription>Distribution of complaint types</CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="h-[300px] w-full">
+        <ChartContainer config={chartConfig} className="h-75 w-full">
           <PieChart>
             <ChartTooltip content={<ChartTooltipContent hideLabel />} />
             <Pie

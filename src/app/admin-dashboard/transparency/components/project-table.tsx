@@ -3,7 +3,6 @@
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -16,10 +15,12 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreVertical, ThumbsUp, MessageSquare, Trash2 } from "lucide-react";
+import { MoreVertical, ThumbsUp, MessageSquare, ThumbsDown } from "lucide-react";
+import { toast } from "sonner";
 import {
   Pagination,
   PaginationContent,
@@ -29,11 +30,15 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { Progress } from "@/components/ui/progress";
 import type { ProjectType } from "@/types/project";
-import { formatBudget, getStatusBadge, getCategoryLabel, getCategoryBadge } from "@/lib/project-helpers";
+import { formatBudget } from "@/lib/project-helpers";
 import { formatDate } from "@/lib/date-formatter";
 import EditProjectMenuItem from "./edit-project-menu-item";
 import UpdateProgressMenuItem from "./update-progress-menu-item";
+import DeleteMenuItem from "@/app/admin-dashboard/complaints/components/delete-menu-item";
+import CategoryBadge from "@/components/category-badge";
+import StatusBadge from "@/components/status-badge";
 import { useProjectDb } from "@/contexts/project-db-context";
 
 interface ProjectTableProps {
@@ -51,9 +56,8 @@ export default function ProjectTable({
   const itemsPerPage = 10;
 
   const handleDeleteProject = (projectId: string) => {
-    if (confirm("Are you sure you want to delete this project?")) {
-      deleteProject(projectId);
-    }
+    deleteProject(projectId);
+    toast.success("Project deleted successfully");
   };
 
   // Sort by createdAt (newest first) and paginate
@@ -101,24 +105,15 @@ export default function ProjectTable({
                   <div className="truncate max-w-62.5">{project.title}</div>
                 </TableCell>
                 <TableCell>
-                  <Badge className={getCategoryBadge(project.category)}>
-                    {getCategoryLabel(project.category)}
-                  </Badge>
+                  <CategoryBadge type="project" category={project.category} />
                 </TableCell>
                 <TableCell>
-                  <Badge className={getStatusBadge(project.status).className}>
-                    {getStatusBadge(project.status).label}
-                  </Badge>
+                  <StatusBadge type="project" status={project.status} />
                 </TableCell>
                 <TableCell>{formatBudget(project.budget)}</TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
-                    <div className="h-2 w-20 overflow-hidden rounded-full bg-muted">
-                      <div
-                        className="h-full bg-primary transition-all"
-                        style={{ width: `${project.progressPercentage}%` }}
-                      />
-                    </div>
+                    <Progress value={project.progressPercentage} className="w-20" />
                     <span className="text-sm text-muted-foreground">
                       {project.progressPercentage}%
                     </span>
@@ -134,6 +129,10 @@ export default function ProjectTable({
                       {project.likes?.length || 0}
                     </span>
                     <span className="flex items-center gap-1">
+                      <ThumbsDown className="h-3 w-3" />
+                      {project.dislikes?.length || 0}
+                    </span>
+                    <span className="flex items-center gap-1">
                       <MessageSquare className="h-3 w-3" />
                       {project.comments?.length || 0}
                     </span>
@@ -147,16 +146,14 @@ export default function ProjectTable({
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
+                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
                       <UpdateProgressMenuItem project={project} />
                       <EditProjectMenuItem project={project} />
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem
-                        className="text-destructive"
-                        onClick={() => handleDeleteProject(project.id)}
-                      >
-                        <Trash2 className="h-4 w-4 mr-2" />
-                        Delete
-                      </DropdownMenuItem>
+                      <DeleteMenuItem
+                        onDelete={() => handleDeleteProject(project.id)}
+                        description="This action cannot be undone. This will permanently delete the project and remove it from the system."
+                      />
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>

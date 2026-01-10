@@ -58,7 +58,7 @@ export default function ProjectManagementCard({ projects }: ProjectManagementCar
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          <ProjectFilters onFilterChange={setFilters} />
+          <ProjectFilters filters={filters} onFilterChange={setFilters} />
 
           {/* Results count */}
           <p className="text-sm text-muted-foreground">

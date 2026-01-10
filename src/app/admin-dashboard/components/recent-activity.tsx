@@ -1,11 +1,11 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDistanceToNow } from "@/lib/date-formatter";
-import DataIcon from "@/components/data-icon";
 import StatusBadge from "@/components/status-badge";
 import { ProjectType } from "@/types/project";
 import { ComplaintType } from "@/types/complaint";
+import { AlertCircle, FolderKanban } from "lucide-react";
 
-export default function RecentActivity({projects, complaints}: {projects: ProjectType[], complaints: ComplaintType[]}) {
+export default function RecentActivity({ projects, complaints }: { projects: ProjectType[], complaints: ComplaintType[] }) {
   // Combine and sort recent items
   const recentComplaints = complaints
     .slice()
@@ -45,6 +45,21 @@ export default function RecentActivity({projects, complaints}: {projects: Projec
     .sort((a, b) => b.date.getTime() - a.date.getTime())
     .slice(0, 8);
 
+  function getDataIcon(type: "complaint" | "project") {
+    return (
+      <div
+        className={`mt-1 rounded-full p-2 ${type === "complaint" ? "bg-blue-50 dark:bg-blue-950" : "bg-purple-50 dark:bg-purple-950"
+          }`}
+      >
+        {type === "complaint" ? (
+          <AlertCircle className="h-4 w-4 text-blue-500" />
+        ) : (
+          <FolderKanban className="h-4 w-4 text-purple-500" />
+        )}
+      </div>
+    );
+  }
+
   return (
     <Card>
       <CardHeader>
@@ -63,7 +78,7 @@ export default function RecentActivity({projects, complaints}: {projects: Projec
                 key={`${item.type}-${item.id}`}
                 className="flex items-start gap-3 rounded-lg border border-border p-3 transition-colors hover:bg-muted/50"
               >
-                <DataIcon type={item.type} />
+                {getDataIcon(item.type)}
                 <div className="flex-1 space-y-1">
                   <p className="text-sm font-medium leading-none">
                     {item.title}
