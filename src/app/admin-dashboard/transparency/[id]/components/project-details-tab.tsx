@@ -87,7 +87,9 @@ export default function ProjectDetailsTab({ project }: ProjectDetailsTabProps) {
                   <p className="text-sm text-muted-foreground mb-1">
                     {formatDate(update.createdAt)}
                   </p>
-                  <p className="text-sm">{update.description}</p>
+                  {update.description && (
+                    <p className="text-sm">{update.description}</p>
+                  )}
                   {update.image && (
                     <button
                       onClick={() => setSelectedImage(update.image!.uri)}
@@ -106,7 +108,7 @@ export default function ProjectDetailsTab({ project }: ProjectDetailsTabProps) {
           </InfoCard>
         )}
       </div>
-      
+
       <Dialog open={selectedImage !== null} onOpenChange={() => setSelectedImage(null)}>
         <DialogContent className="sm:max-w-4xl w-full p-0 overflow-hidden border-0">
           <DialogTitle className="sr-only">Project Image</DialogTitle>

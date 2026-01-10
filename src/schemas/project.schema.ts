@@ -51,7 +51,7 @@ export const projectFormSchema = z.object({
 
 export type ProjectFormValues = z.infer<typeof projectFormSchema>;
 
-export const updateStatusSchema = z.object({
+export const updateProgressSchema = z.object({
   status: z.enum([
     "planned",
     "approved",
@@ -62,11 +62,7 @@ export const updateStatusSchema = z.object({
   ]),
   progressPercentage: z.number().min(0).max(100),
   progressUpdateDescription: z.string().optional(),
-  progressUpdateImage: z
-    .object({
-      uri: z.string(),
-    })
-    .optional(),
+  progressUpdateImage: z.instanceof(File).optional(),
 });
 
-export type UpdateStatusFormValues = z.infer<typeof updateStatusSchema>;
+export type UpdateProgressFormValues = z.infer<typeof updateProgressSchema>;

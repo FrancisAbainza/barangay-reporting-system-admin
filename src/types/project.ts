@@ -26,7 +26,7 @@ export interface ProjectLocationType {
 }
 
 export interface ProgressUpdateType {
-  description: string;
+  description?: string;
   image?: { uri: string };
   createdAt: Date;
 }

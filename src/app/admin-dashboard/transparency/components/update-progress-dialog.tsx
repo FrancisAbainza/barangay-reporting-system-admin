@@ -33,12 +33,12 @@ import {
 import MultiImageUploader, { type FileUploadType } from "@/components/multi-image-uploader";
 import type { ProjectType, ProjectStatusType, ProgressUpdateType } from "@/types/project";
 import { formatDate } from "@/lib/date-formatter";
-import { updateStatusSchema, type UpdateStatusFormValues } from "@/schemas/project.schema";
+import { updateProgressSchema, type UpdateProgressFormValues } from "@/schemas/project.schema";
 
 interface UpdateStatusDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (data: UpdateStatusFormValues & { deletedProgressUpdateIndices?: number[] }) => void;
+  onSubmit: (data: UpdateProgressFormValues & { deletedProgressUpdateIndices?: number[] }) => void;
   project: ProjectType | null;
 }
 
@@ -57,11 +57,10 @@ export default function UpdateStatusDialog({
   onSubmit,
   project,
 }: UpdateStatusDialogProps) {
-  const [progressImages, setProgressImages] = useState<FileUploadType[]>([]);
   const [deletedProgressUpdateIndices, setDeletedProgressUpdateIndices] = useState<number[]>([]);
   
-  const form = useForm<UpdateStatusFormValues>({
-    resolver: zodResolver(updateStatusSchema),
+  const form = useForm<UpdateProgressFormValues>({
+    resolver: zodResolver(updateProgressSchema),
     defaultValues: {
       status: "planned",
       progressPercentage: 0,
@@ -79,7 +78,6 @@ export default function UpdateStatusDialog({
         progressUpdateDescription: "",
         progressUpdateImage: undefined,
       });
-      setProgressImages([]);
       setDeletedProgressUpdateIndices([]);
     }
   }, [project, open, form]);
@@ -103,13 +101,9 @@ export default function UpdateStatusDialog({
     }
   }, [currentStatus, project, open]);
 
-  const handleSubmit = (values: UpdateStatusFormValues) => {
+  const handleSubmit = (values: UpdateProgressFormValues) => {
     const submitData = {
       ...values,
-      progressUpdateImage: 
-        progressImages.length > 0
-          ? { uri: progressImages[0] instanceof File ? URL.createObjectURL(progressImages[0]) : progressImages[0] }
-          : undefined,
       deletedProgressUpdateIndices: deletedProgressUpdateIndices.length > 0 ? deletedProgressUpdateIndices : undefined,
     };
     onSubmit(submitData);
@@ -122,16 +116,6 @@ export default function UpdateStatusDialog({
 
   const isProgressUpdateDeleted = (index: number) => {
     return deletedProgressUpdateIndices.includes(index);
-  };
-
-  const handleImageUpload = (images: FileUploadType[]) => {
-    setProgressImages(images.slice(0, 1)); // Limit to 1 image
-    if (images.length > 0) {
-      const imageUri = images[0] instanceof File ? URL.createObjectURL(images[0]) : images[0];
-      form.setValue("progressUpdateImage", { uri: imageUri });
-    } else {
-      form.setValue("progressUpdateImage", undefined);
-    }
   };
 
   return (
@@ -264,13 +248,24 @@ export default function UpdateStatusDialog({
             />
 
             {/* Progress Update Image */}
-            <div className="space-y-2">
-              <FormLabel>Progress Update Image (Optional)</FormLabel>
-              <MultiImageUploader
-                images={progressImages}
-                onImagesChange={handleImageUpload}
-              />
-            </div>
+            <FormField
+              control={form.control}
+              name="progressUpdateImage"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Progress Update Image (Optional)</FormLabel>
+                  <FormControl>
+                    <MultiImageUploader
+                      images={field.value ? [field.value] : []}
+                      onImagesChange={(newImages) => {
+                        field.onChange(newImages.length > 0 ? newImages[0] : undefined);
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>

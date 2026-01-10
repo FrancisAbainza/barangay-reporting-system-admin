@@ -3,7 +3,7 @@ import { ImageType, CommentType, CommunitySentimentType } from './shared';
 export interface ResolutionDetailType {
   description: string;
   budget?: number;
-  images?: ImageType[];
+  image?: ImageType;
 }
 
 export type ComplaintCategoryType =

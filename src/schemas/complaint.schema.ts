@@ -3,7 +3,7 @@ import { z } from "zod";
 export const resolutionSchema = z.object({
   description: z.string().min(1, "Resolution description is required"),
   budget: z.string().optional(),
-  images: z.array(z.any()).max(1, "Maximum 1 image allowed").optional(),
+  image: z.instanceof(File).optional(),
 });
 
 export type ResolutionFormValues = z.infer<typeof resolutionSchema>;

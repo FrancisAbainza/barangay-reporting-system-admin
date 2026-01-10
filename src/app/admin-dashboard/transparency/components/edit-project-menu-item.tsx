@@ -1,49 +1,414 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useProjectDb } from "@/contexts/project-db-context";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
-import ProjectFormDialog from "./project-form-dialog";
+import { Dialog, DialogContent, DialogTitle, DialogTrigger, DialogClose, DialogHeader, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import MultiImageUploader, { type FileUploadType } from "@/components/multi-image-uploader";
+import MapLocationPicker from "@/components/map-location-picker";
+import { projectFormSchema, type ProjectFormValues } from "@/schemas/project.schema";
 import { Pencil } from "lucide-react";
-import type { ProjectType, CreateProjectInputType } from "@/types/project";
+import type { ProjectType, CreateProjectInputType, ProjectCategoryType, ProjectStatusType } from "@/types/project";
+import { toast } from "sonner";
 
 interface EditProjectMenuItemProps {
   project: ProjectType;
-  onOpenChange?: (open: boolean) => void;
 }
 
-export default function EditProjectMenuItem({ project, onOpenChange }: EditProjectMenuItemProps) {
+const categoryOptions: { value: ProjectCategoryType; label: string }[] = [
+  { value: "infrastructure", label: "Infrastructure" },
+  { value: "health", label: "Health" },
+  { value: "education", label: "Education" },
+  { value: "environment", label: "Environment" },
+  { value: "livelihood", label: "Livelihood" },
+  { value: "disaster_preparedness", label: "Disaster Preparedness" },
+  { value: "social_services", label: "Social Services" },
+  { value: "sports_culture", label: "Sports & Culture" },
+  { value: "others", label: "Others" },
+];
+
+const statusOptions: { value: ProjectStatusType; label: string }[] = [
+  { value: "planned", label: "Planned" },
+  { value: "approved", label: "Approved" },
+  { value: "ongoing", label: "Ongoing" },
+  { value: "on_hold", label: "On Hold" },
+  { value: "completed", label: "Completed" },
+  { value: "cancelled", label: "Cancelled" },
+];
+
+const formatDateForInput = (date: Date | undefined) => {
+  if (!date) return "";
+  const d = new Date(date);
+  return d.toISOString().split("T")[0];
+};
+
+export default function EditProjectMenuItem({ project }: EditProjectMenuItemProps) {
   const { updateProject } = useProjectDb();
+  const closeRef = useRef<HTMLButtonElement>(null);
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleOpenChange = (open: boolean) => {
-    setIsOpen(open);
-    onOpenChange?.(open);
+  const form = useForm<ProjectFormValues>({
+    resolver: zodResolver(projectFormSchema),
+    defaultValues: {
+      title: project.title,
+      description: project.description,
+      category: project.category,
+      status: project.status,
+      startDate: formatDateForInput(project.startDate),
+      expectedCompletionDate: formatDateForInput(project.expectedCompletionDate),
+      actualCompletionDate: formatDateForInput(project.actualCompletionDate),
+      budget: project.budget?.toString() || "",
+      contractor: project.contractor || "",
+      sourceOfFunds: project.sourceOfFunds || "",
+      progressPercentage: project.progressPercentage.toString(),
+      location: project.location || null,
+      images: project.images?.map((img) => img.uri) || [],
+    },
+  });
+
+  // Reset form when dialog opens
+  useEffect(() => {
+    if (isOpen) {
+      form.reset({
+        title: project.title,
+        description: project.description,
+        category: project.category,
+        status: project.status,
+        startDate: formatDateForInput(project.startDate),
+        expectedCompletionDate: formatDateForInput(project.expectedCompletionDate),
+        actualCompletionDate: formatDateForInput(project.actualCompletionDate),
+        budget: project.budget?.toString() || "",
+        contractor: project.contractor || "",
+        sourceOfFunds: project.sourceOfFunds || "",
+        progressPercentage: project.progressPercentage.toString(),
+        location: project.location || null,
+        images: project.images?.map((img) => img.uri) || [],
+      });
+    }
+  }, [isOpen, project, form]);
+
+  const handleSubmit = (values: ProjectFormValues) => {
+    try {
+      const formData: CreateProjectInputType = {
+        title: values.title,
+        description: values.description,
+        category: values.category,
+        status: values.status,
+        startDate: new Date(values.startDate),
+        expectedCompletionDate: values.expectedCompletionDate
+          ? new Date(values.expectedCompletionDate)
+          : undefined,
+        actualCompletionDate: values.actualCompletionDate
+          ? new Date(values.actualCompletionDate)
+          : undefined,
+        budget: values.budget ? parseFloat(values.budget) : undefined,
+        contractor: values.contractor || undefined,
+        sourceOfFunds: values.sourceOfFunds || undefined,
+        progressPercentage: parseInt(values.progressPercentage),
+        location: values.location || undefined,
+        images: values.images?.map((img) => ({
+          uri: typeof img === "string" ? img : URL.createObjectURL(img),
+        })),
+      };
+
+      updateProject(project.id, formData);
+      toast.success("Success!", {
+        description: "Project updated successfully",
+      });
+      closeRef.current?.click();
+    } catch (error: unknown) {
+      toast.error((error as Error).message);
+    }
   };
 
-  const handleSubmit = (data: CreateProjectInputType) => {
-    updateProject(project.id, data);
-    setIsOpen(false);
-  };
-
-  const handleSelect = (e: Event) => {
-    e.preventDefault();
-    setIsOpen(true);
-  };
+  const statusValue = form.watch("status");
 
   return (
-    <>
-      <DropdownMenuItem onSelect={handleSelect}>
-        <Pencil className="h-4 w-4 mr-2" />
-        Edit Project
-      </DropdownMenuItem>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+          <Pencil className="h-4 w-4 mr-2" />
+          Edit Project
+        </DropdownMenuItem>
+      </DialogTrigger>
 
-      <ProjectFormDialog
-        open={isOpen}
-        onOpenChange={handleOpenChange}
-        onSubmit={handleSubmit}
-        project={project}
-      />
-    </>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Edit Project</DialogTitle>
+          <DialogDescription>
+            Update the project details
+          </DialogDescription>
+        </DialogHeader>
+
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+            {/* Title */}
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Title <span className="text-destructive">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter project title" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Description */}
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Description <span className="text-destructive">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Enter project description"
+                      rows={4}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Category and Status Row */}
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="category"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Category <span className="text-destructive">*</span>
+                    </FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select category" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {categoryOptions.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="status"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Status <span className="text-destructive">*</span>
+                    </FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select status" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {statusOptions.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {/* Start Date and Expected Completion Date Row */}
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="startDate"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Start Date <span className="text-destructive">*</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input type="date" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="expectedCompletionDate"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Expected Completion Date</FormLabel>
+                    <FormControl>
+                      <Input type="date" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {/* Budget and Progress Percentage Row */}
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="budget"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Budget (₱)</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        placeholder="0.00"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="progressPercentage"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Progress Percentage <span className="text-destructive">*</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input type="number" min="0" max="100" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {/* Contractor */}
+            <FormField
+              control={form.control}
+              name="contractor"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Contractor</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter contractor name" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Source of Funds */}
+            <FormField
+              control={form.control}
+              name="sourceOfFunds"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Source of Funds</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter source of funds" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Actual Completion Date (for completed projects) */}
+            {statusValue === "completed" && (
+              <FormField
+                control={form.control}
+                name="actualCompletionDate"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Actual Completion Date</FormLabel>
+                    <FormControl>
+                      <Input type="date" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+
+            {/* Location */}
+            <FormField
+              control={form.control}
+              name="location"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Project Location</FormLabel>
+                  <FormControl>
+                    <MapLocationPicker
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Images */}
+            <FormField
+              control={form.control}
+              name="images"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Project Images</FormLabel>
+                  <FormControl>
+                    <MultiImageUploader
+                      images={field.value as FileUploadType[] || []}
+                      onImagesChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => closeRef.current?.click()}>
+                Cancel
+              </Button>
+              <Button type="submit">Save Changes</Button>
+            </DialogFooter>
+          </form>
+        </Form>
+        <DialogClose ref={closeRef} className="hidden" />
+      </DialogContent>
+    </Dialog>
   );
 }

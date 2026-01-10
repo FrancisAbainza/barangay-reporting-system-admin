@@ -17,47 +17,25 @@ export default function ResolveStatusMenuItem({ complaint }: ResolveComplaintMen
   const { updateComplaintStatus } = useComplaintDb();
   const closeRef = useRef<HTMLButtonElement>(null);
 
-  const convertFileToDataURL = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-  };
-
   async function handleSubmit(data: ResolutionFormValues) {
-    try {
-      const budget = data.budget ? parseFloat(data.budget) : undefined;
-      
-      // Convert File objects to data URLs
-      let images;
-      if (data.images && data.images.length > 0) {
-        const imagePromises = data.images.map(async (img) => {
-          if (img instanceof File) {
-            const dataUrl = await convertFileToDataURL(img);
-            return { uri: dataUrl };
-          }
-          return { uri: img };
-        });
-        images = await Promise.all(imagePromises);
-      }
-      
-      const resolutionDetails = {
-        description: data.description,
-        budget,
-        images,
-      };
+    const budget = data.budget ? parseFloat(data.budget) : undefined;
 
-      updateComplaintStatus(complaint.id, "resolved", undefined, resolutionDetails);
-    } catch (error: unknown) {
-      toast.error((error as Error).message);
-      return;
-    }
+    let image = data.image
+      ? {uri: URL.createObjectURL(data.image)}
+      : undefined;
+
+    const resolutionDetails = {
+      description: data.description,
+      budget,
+      image,
+    };
+
+    updateComplaintStatus(complaint.id, "resolved", undefined, resolutionDetails);
 
     toast.success("Success!", {
       description: "Complaint marked as resolved",
     });
+
     closeRef.current?.click();
   }
 

@@ -74,15 +74,15 @@ export default function ComplaintDetailsTab({ complaint }: ComplaintDetailsTabPr
                 Budget: ₱{complaint.resolutionDetails.budget.toLocaleString()}
               </p>
             )}
-            {complaint.resolutionDetails.images && complaint.resolutionDetails.images.length > 0 && (
+            {complaint.resolutionDetails.image && (
               <div className="mt-3">
                 <p className="text-sm font-medium mb-2">Resolution Image:</p>
                 <button
-                  onClick={() => setSelectedImage(complaint.resolutionDetails!.images![0].uri)}
+                  onClick={() => setSelectedImage(complaint.resolutionDetails!.image!.uri)}
                   className="group relative aspect-square w-48 border rounded-lg overflow-hidden cursor-pointer transition-all hover:shadow-lg hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary"
                 >
                   <Image
-                    src={complaint.resolutionDetails.images[0].uri}
+                    src={complaint.resolutionDetails.image.uri}
                     alt="Resolution image"
                     fill
                     className="object-cover transition-transform group-hover:scale-110"

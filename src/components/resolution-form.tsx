@@ -26,7 +26,7 @@ export default function ResolutionForm({ handleSubmit, defaultValues }: Resoluti
   const combinedDefaultValues: ResolutionFormValues = {
     description: "",
     budget: "",
-    images: [],
+    image: undefined,
     ...defaultValues,
   };
 
@@ -34,8 +34,6 @@ export default function ResolutionForm({ handleSubmit, defaultValues }: Resoluti
     resolver: zodResolver(resolutionSchema),
     defaultValues: combinedDefaultValues,
   });
-
-  const [images, setImages] = useState<FileUploadType[]>(defaultValues?.images || []);
 
   return (
     <Form {...form}>
@@ -81,18 +79,15 @@ export default function ResolutionForm({ handleSubmit, defaultValues }: Resoluti
 
           <FormField
             control={form.control}
-            name="images"
+            name="image"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Resolution Image (Optional)</FormLabel>
                 <FormControl>
                   <MultiImageUploader
-                    images={images}
+                    images={field.value ? [field.value] : []}
                     onImagesChange={(newImages) => {
-                      if (newImages.length <= 1) {
-                        setImages(newImages);
-                        field.onChange(newImages);
-                      }
+                      field.onChange(newImages[0]);
                     }}
                   />
                 </FormControl>
@@ -101,7 +96,7 @@ export default function ResolutionForm({ handleSubmit, defaultValues }: Resoluti
               </FormItem>
             )}
           />
-          
+
           <Button type="submit">Mark as Resolved</Button>
         </fieldset>
       </form>
