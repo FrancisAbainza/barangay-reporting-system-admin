@@ -32,9 +32,9 @@ import {
 import type { ComplaintType } from "@/types/complaint";
 import { formatDate } from "@/lib/date-formatter";
 import { useComplaintDb } from "@/contexts/complaint-db-context";
-import ResolveComplaintMenuItem from "./resolve-complaint-menu-item";
-import ScheduleComplaintMenuItem from "./schedule-complaint-menu-item";
-import DeleteMenuItem from "@/components/delete-menu-item";
+import ResolveStatusMenuItem from "./resolve-status-menu-item";
+import ScheduleStatusMenuItem from "./schedule-status-menu-item";
+import DeleteMenuItem from "@/app/admin-dashboard/complaints/components/delete-menu-item";
 import CategoryBadge from "@/components/category-badge";
 import StatusBadge from "@/components/status-badge";
 import PriorityBadge from "@/components/priority-badge";
@@ -148,13 +148,13 @@ export default function ComplaintTable({
                         >
                           Under Review
                         </DropdownMenuItem>
-                        <ScheduleComplaintMenuItem complaint={complaint} />
+                        <ScheduleStatusMenuItem complaint={complaint} />
                         <DropdownMenuItem
                           onClick={() => updateComplaintStatus(complaint.id, "in_progress")}
                         >
                           In Progress
                         </DropdownMenuItem>
-                        <ResolveComplaintMenuItem complaint={complaint} />
+                        <ResolveStatusMenuItem complaint={complaint} />
                         <DropdownMenuItem
                           onClick={() => updateComplaintStatus(complaint.id, "dismissed")}
                         >

@@ -1,10 +1,15 @@
 "use client";
 
 import { createContext, useContext, useState, ReactNode } from "react";
-import { UserType } from "./user-db-context";
+
+type AuthUserType = {
+  id: string,
+  email: string,
+  name: string,
+}
 
 interface AuthContextType {
-  user: UserType | null;
+  user: AuthUserType | null;
   login: (email: string, password: string) => Promise<void>;
   signup: (email: string, password: string, name: string) => Promise<void>;
   logout: () => void;
@@ -13,7 +18,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export default function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<UserType | null>(null);
+  const [user, setUser] = useState<AuthUserType | null>(null);
   const login = async (email: string, password: string) => {
     // Simulated login - for demonstration purposes
     await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -23,8 +28,6 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
       id: "1",
       email,
       name: "Demo User",
-      status: "active",
-      createdAt: new Date(),
     });
   };
 
@@ -37,8 +40,6 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
       id: "1",
       email,
       name,
-      status: "active",
-      createdAt: new Date(),
     });
   };
 

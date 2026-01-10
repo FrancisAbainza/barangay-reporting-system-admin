@@ -4,7 +4,7 @@ import { useRef } from "react";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger, DialogClose, DialogHeader, DialogDescription } from "@/components/ui/dialog";
 import { useComplaintDb } from "@/contexts/complaint-db-context";
-import ResolutionForm from "./resolution-form";
+import ResolutionForm from "@/components/resolution-form";
 import { type ResolutionFormValues } from "@/schemas/complaint.schema";
 import type { ComplaintType } from "@/types/complaint";
 import { toast } from "sonner";
@@ -13,7 +13,7 @@ interface ResolveComplaintMenuItemProps {
   complaint: ComplaintType;
 }
 
-export default function ResolveComplaintMenuItem({ complaint }: ResolveComplaintMenuItemProps) {
+export default function ResolveStatusMenuItem({ complaint }: ResolveComplaintMenuItemProps) {
   const { updateComplaintStatus } = useComplaintDb();
   const closeRef = useRef<HTMLButtonElement>(null);
 
@@ -38,7 +38,7 @@ export default function ResolveComplaintMenuItem({ complaint }: ResolveComplaint
             const dataUrl = await convertFileToDataURL(img);
             return { uri: dataUrl };
           }
-          return typeof img === 'string' ? { uri: img } : img;
+          return { uri: img };
         });
         images = await Promise.all(imagePromises);
       }

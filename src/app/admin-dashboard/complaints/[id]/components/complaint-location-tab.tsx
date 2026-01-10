@@ -13,44 +13,32 @@ interface ComplaintLocationTabProps {
 
 export default function ComplaintLocationTab({ complaint }: ComplaintLocationTabProps) {
   const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "";
-
-  if (!complaint.location) {
-    return (
-      <TabsContent value="location" className="space-y-4 p-6">
-        <div className="flex flex-col items-center justify-center py-12 text-center">
-          <MapPin className="h-12 w-12 text-muted-foreground mb-4" />
-          <p className="text-sm text-muted-foreground">No location information available for this complaint.</p>
-        </div>
-      </TabsContent>
-    );
-  }
+  const googleMapsMapId = process.env.NEXT_PUBLIC_GOOGLE_MAP_ID || "";
 
   return (
     <TabsContent value="location" className="space-y-4 p-6">
-      {complaint.location!.address && (
-        <InfoCard icon={Navigation} title="Address">
-          <p className="text-sm text-muted-foreground">{complaint.location!.address}</p>
-        </InfoCard>
-      )}
-      
+      <InfoCard icon={Navigation} title="Address">
+        <p className="text-sm text-muted-foreground">{complaint.location.address}</p>
+      </InfoCard>
+
       <InfoCard icon={MapPin} title="Map View">
         <div className="w-full h-150 rounded-lg overflow-hidden border">
-          {googleMapsApiKey ? (
+          {(googleMapsApiKey && googleMapsMapId) ? (
             <APIProvider apiKey={googleMapsApiKey}>
               <Map
                 defaultCenter={{
-                  lat: complaint.location!.latitude,
-                  lng: complaint.location!.longitude,
+                  lat: complaint.location.latitude,
+                  lng: complaint.location.longitude,
                 }}
                 defaultZoom={16}
-                mapId="complaint-location-map"
+                mapId={googleMapsMapId}
                 gestureHandling="greedy"
                 disableDefaultUI={false}
               >
                 <AdvancedMarker
                   position={{
-                    lat: complaint.location!.latitude,
-                    lng: complaint.location!.longitude,
+                    lat: complaint.location.latitude,
+                    lng: complaint.location.longitude,
                   }}
                 />
               </Map>
@@ -58,20 +46,20 @@ export default function ComplaintLocationTab({ complaint }: ComplaintLocationTab
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-muted">
               <p className="text-sm text-muted-foreground">
-                Google Maps API key not configured
+                Google Maps API key or Map ID not configured
               </p>
             </div>
           )}
         </div>
       </InfoCard>
-      
+
       <InfoCard icon={MapPin} title="Coordinates">
         <div className="space-y-2">
           <p className="text-sm">
-            <span className="font-medium">Latitude:</span> {complaint.location!.latitude}
+            <span className="font-medium">Latitude:</span> {complaint.location.latitude}
           </p>
           <p className="text-sm">
-            <span className="font-medium">Longitude:</span> {complaint.location!.longitude}
+            <span className="font-medium">Longitude:</span> {complaint.location.longitude}
           </p>
           <Button
             variant="outline"
@@ -79,7 +67,7 @@ export default function ComplaintLocationTab({ complaint }: ComplaintLocationTab
             className="mt-2 gap-2"
             onClick={() => {
               window.open(
-                `https://www.google.com/maps?q=${complaint.location!.latitude},${complaint.location!.longitude}`,
+                `https://www.google.com/maps?q=${complaint.location.latitude},${complaint.location.longitude}`,
                 "_blank"
               );
             }}

@@ -4,7 +4,7 @@ import { useRef } from "react";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger, DialogClose, DialogHeader, DialogDescription } from "@/components/ui/dialog";
 import { useComplaintDb } from "@/contexts/complaint-db-context";
-import ScheduleForm from "./schedule-form";
+import ScheduleForm from "@/components/schedule-form";
 import { type ScheduledFormValues } from "@/schemas/complaint.schema";
 import type { ComplaintType } from "@/types/complaint";
 import { toast } from "sonner";
@@ -13,7 +13,7 @@ interface ScheduleComplaintMenuItemProps {
   complaint: ComplaintType;
 }
 
-export default function ScheduleComplaintMenuItem({ complaint }: ScheduleComplaintMenuItemProps) {
+export default function ScheduleStatusMenuItem({ complaint }: ScheduleComplaintMenuItemProps) {
   const { updateComplaintStatus } = useComplaintDb();
   const closeRef = useRef<HTMLButtonElement>(null);
 

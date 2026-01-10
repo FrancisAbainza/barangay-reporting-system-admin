@@ -27,7 +27,9 @@ export interface CommentType {
   updatedAt: Date;
 }
 
+export type SentimentType = 'supportive' | 'positive' | 'negative' | 'neutral';
+
 export interface CommunitySentimentType {
-  sentiment: 'supportive' | 'positive' | 'negative' | 'neutral';
+  sentiment: SentimentType;
   summary: string;
 }

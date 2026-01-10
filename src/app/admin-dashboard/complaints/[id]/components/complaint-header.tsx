@@ -1,10 +1,11 @@
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Trash2 } from "lucide-react";
-import GenerateAIButton from "./generate-ai-button";
+import { ArrowLeft } from "lucide-react";
 import ComplaintStatusSelect from "./complaint-status-select";
 import { ComplaintType } from "@/types/complaint";
 import { useComplaintDb } from "@/contexts/complaint-db-context";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import DeleteButton from "@/components/delete-button";
 
 interface ComplaintHeaderProps {
   complaint: ComplaintType;
@@ -17,10 +18,9 @@ export default function ComplaintHeader({
   const { deleteComplaint } = useComplaintDb();
 
   const handleDeleteComplaint = () => {
-    if (confirm("Are you sure you want to delete this complaint?")) {
-      deleteComplaint(complaint.id);
-      router.push("/admin-dashboard/complaints");
-    }
+    deleteComplaint(complaint.id);
+    toast.success("Complaint deleted successfully");
+    router.push("/admin-dashboard/complaints");
   };
 
   return (
@@ -36,14 +36,12 @@ export default function ComplaintHeader({
       </div>
       <div className="flex gap-2">
         <ComplaintStatusSelect complaint={complaint} />
-        <Button
-          variant="destructive"
-          onClick={handleDeleteComplaint}
-          className="gap-2"
-        >
-          <Trash2 className="h-4 w-4" />
-          Delete
-        </Button>
+        <DeleteButton
+          onDelete={handleDeleteComplaint}
+          title="Delete this complaint?"
+          description="This action cannot be undone. This will permanently delete the complaint and remove it from the system."
+          buttonClassName="gap-2"
+        />
       </div>
     </div>
   );

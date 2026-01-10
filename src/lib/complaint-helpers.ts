@@ -1,4 +1,5 @@
 import type { ComplaintStatusType, ComplaintCategoryType } from "@/types/complaint";
+import { AlertCircle, CheckCircle2, Clock, XCircle } from "lucide-react";
 
 export function getStatusBadge(status: ComplaintStatusType) {
   const variants: Record<ComplaintStatusType, { className: string; label: string }> = {

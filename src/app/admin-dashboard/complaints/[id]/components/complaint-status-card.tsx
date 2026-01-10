@@ -1,12 +1,13 @@
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertCircle, CheckCircle2, Clock, XCircle } from "lucide-react";
-import type { ComplaintStatusType, ComplaintCategoryType } from "@/types/complaint";
-import { getStatusBadge, getPriorityBadge, getCategoryLabel, getCategoryBadge } from "@/lib/complaint-helpers";
+import type { ComplaintStatusType, ComplaintCategoryType, ComplaintPriorityType } from "@/types/complaint";
+import StatusBadge from "@/components/status-badge";
+import PriorityBadge from "@/components/priority-badge";
+import CategoryBadge from "@/components/category-badge";
 
 interface ComplaintStatusCardProps {
   status: ComplaintStatusType;
-  priority: string;
+  priority: ComplaintPriorityType;
   category: ComplaintCategoryType;
 }
 
@@ -40,15 +41,9 @@ export default function ComplaintStatusCard({
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex flex-wrap gap-2 items-center">
-          <Badge className={getStatusBadge(status).className}>
-            {getStatusBadge(status).label}
-          </Badge>
-          <Badge className={getPriorityBadge(priority)}>
-            {priority.toUpperCase()}
-          </Badge>
-          <Badge className={getCategoryBadge(category)}>
-            {getCategoryLabel(category)}
-          </Badge>
+          <StatusBadge type="complaint" status={status} />
+          <PriorityBadge priority={priority} />
+          <CategoryBadge type="complaint" category={category} />
         </div>
       </CardContent>
     </Card>
