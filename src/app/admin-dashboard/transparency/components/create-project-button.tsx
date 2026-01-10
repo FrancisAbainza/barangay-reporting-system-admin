@@ -3,11 +3,11 @@
 import { useState } from "react";
 import { useProjectDb } from "@/contexts/project-db-context";
 import { Button } from "@/components/ui/button";
-import { ProjectFormDialog } from "./project-form-dialog";
+import ProjectFormDialog from "./project-form-dialog";
 import { Plus } from "lucide-react";
 import type { CreateProjectInputType } from "@/types/project";
 
-export function CreateProjectButton() {
+export default function CreateProjectButton() {
   const { createProject } = useProjectDb();
   const [isOpen, setIsOpen] = useState(false);
 

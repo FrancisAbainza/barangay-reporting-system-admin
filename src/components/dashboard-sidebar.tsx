@@ -55,7 +55,7 @@ const menuItems = [
   },
 ];
 
-export function DashboardSidebar({ className }: { className?: string }) {
+export default function DashboardSidebar({ className }: { className?: string }) {
   const pathname = usePathname();
   const { user, logout } = useAuth();
   const { state } = useSidebar();

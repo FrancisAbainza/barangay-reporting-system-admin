@@ -25,6 +25,12 @@ export type ComplaintStatusType =
   | "resolved"
   | "dismissed";
 
+  export type ComplaintPriorityType =
+  | "low"
+  | "medium"
+  | "high"
+  | "urgent";
+
 export interface ComplaintAiAnalysisType {
   // --- Existing Logic ---
   summary: string;
@@ -56,7 +62,7 @@ export interface ComplaintType {
   description: string;
   category: ComplaintCategoryType;
   status: ComplaintStatusType;
-  priority: "low" | "medium" | "high" | "urgent";
+  priority: ComplaintPriorityType;
   complainantName: string;
   complainantId: string;
   location: ComplaintLocationType;

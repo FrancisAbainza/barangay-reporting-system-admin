@@ -23,7 +23,7 @@ interface ProjectFiltersProps {
   }) => void;
 }
 
-export function ProjectFilters({ onFilterChange }: ProjectFiltersProps) {
+export default function ProjectFilters({ onFilterChange }: ProjectFiltersProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilters, setStatusFilters] = useState<ProjectStatusType[]>([]);
   const [categoryFilters, setCategoryFilters] = useState<ProjectCategoryType[]>([]);

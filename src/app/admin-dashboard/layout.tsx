@@ -1,6 +1,6 @@
-import { ProtectedRoute } from "@/components/protected-route";
-import { DashboardSidebar } from "@/components/dashboard-sidebar";
-import { MobileHeader } from "@/components/mobile-header";
+import ProtectedRoute from "@/components/protected-route";
+import DashboardSidebar from "@/components/dashboard-sidebar";
+import MobileHeader from "@/components/mobile-header";
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 
 export default function DashboardLayout({

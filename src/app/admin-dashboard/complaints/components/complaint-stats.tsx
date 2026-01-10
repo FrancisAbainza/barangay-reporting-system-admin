@@ -1,16 +1,14 @@
-"use client";
-
 import { useMemo } from "react";
 import type { ComplaintType } from "@/types/complaint";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import StatCard from "@/components/stat-card";
 import { AlertCircle, CheckCircle2, Clock, AlertTriangle } from "lucide-react";
 
 interface ComplaintStatsProps {
   complaints: ComplaintType[];
 }
 
-export function ComplaintStats({ complaints }: ComplaintStatsProps) {
-  const stats = useMemo(() => {
+export default function ComplaintStats({ complaints }: ComplaintStatsProps) {
+  const statValues = useMemo(() => {
     return {
       total: complaints.length,
       submitted: complaints.filter((c) => c.status === "submitted").length,
@@ -18,54 +16,49 @@ export function ComplaintStats({ complaints }: ComplaintStatsProps) {
       scheduled: complaints.filter((c) => c.status === "scheduled").length,
       inProgress: complaints.filter((c) => c.status === "in_progress").length,
       resolved: complaints.filter((c) => c.status === "resolved").length,
-      urgent: complaints.filter((c) => c.priority === "urgent").length,
     };
   }, [complaints]);
+
+  const stats = [
+    {
+      title: "Total Complaints",
+      value: statValues.total,
+      icon: AlertCircle,
+      description: "All time",
+      color: "text-blue-500",
+      bgColor: "bg-blue-50 dark:bg-blue-950",
+    },
+    {
+      title: "Pending Review",
+      value: statValues.submitted + statValues.underReview,
+      icon: Clock,
+      description: "Awaiting action",
+      color: "text-yellow-500",
+      bgColor: "bg-yellow-50 dark:bg-yellow-950",
+    },
+    {
+      title: "In Progress",
+      value: statValues.scheduled + statValues.inProgress,
+      icon: AlertTriangle,
+      description: "Being resolved",
+      color: "text-orange-500",
+      bgColor: "bg-orange-50 dark:bg-orange-950",
+    },
+    {
+      title: "Resolved",
+      value: statValues.resolved,
+      icon: CheckCircle2,
+      description: "Completed",
+      color: "text-green-500",
+      bgColor: "bg-green-50 dark:bg-green-950",
+    },
+  ];
+
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Total Complaints</CardTitle>
-          <AlertCircle className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{stats.total}</div>
-          <p className="text-xs text-muted-foreground">All time</p>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Pending Review</CardTitle>
-          <Clock className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{stats.submitted + stats.underReview}</div>
-          <p className="text-xs text-muted-foreground">Awaiting action</p>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">In Progress</CardTitle>
-          <AlertTriangle className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{stats.scheduled + stats.inProgress}</div>
-          <p className="text-xs text-muted-foreground">Being resolved</p>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Resolved</CardTitle>
-          <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{stats.resolved}</div>
-          <p className="text-xs text-muted-foreground">Completed</p>
-        </CardContent>
-      </Card>
+      {stats.map((stat) => (
+        <StatCard key={stat.title} stat={stat} />
+      ))}
     </div>
   );
 }

@@ -11,7 +11,7 @@ interface AdminCommentFormProps {
   placeholder?: string;
 }
 
-export function AdminCommentForm({
+export default function AdminCommentForm({
   onSubmit,
   disabled = false,
   placeholder = "Type your comment as admin...",

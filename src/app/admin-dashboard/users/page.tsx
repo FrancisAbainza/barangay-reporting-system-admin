@@ -1,13 +1,14 @@
 "use client";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CreateAdminForm } from "./components/create-admin-form";
-import { AdminTable } from "./components/admin-table";
-import { UsersTable } from "./components/users-table";
-import { UserStats } from "./components/user-stats";
+import CreateAdminForm from "./components/create-admin-form";
+import AdminTable from "./components/admin-table";
+import UsersTable from "./components/users-table";
+import UserStats from "./components/user-stats";
 import { useAdminDb } from "@/contexts/admin-db-context";
 import { useUserDb } from "@/contexts/user-db-context";
 import { Users } from "lucide-react";
+import PageHeader from "@/components/page-header";
 
 export default function UsersPage() {
   const { admins, deleteAdmin } = useAdminDb();
@@ -40,20 +41,12 @@ export default function UsersPage() {
   };
 
   return (
-    <div className="container space-y-6 p-6">
-      <div>
-        <div className="flex items-center gap-3 mb-2">
-          <div className="p-2 bg-primary/10 rounded-lg">
-            <Users className="h-6 w-6 text-primary" />
-          </div>
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">User Management</h1>
-            <p className="text-muted-foreground">
-              Manage users, roles, and permissions
-            </p>
-          </div>
-        </div>
-      </div>
+    <div className="container p-6 space-y-6">
+      <PageHeader
+        title="User Management"
+        subtitle="Manage users, roles, and permissions"
+        icon={<Users className="h-6 w-6 text-primary" />}
+      />
 
       <UserStats {...stats} />
 

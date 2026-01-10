@@ -19,7 +19,7 @@ type ScheduledFormProps = {
   defaultValues?: ScheduledFormValues;
 };
 
-export function ScheduledForm({ handleSubmit, defaultValues }: ScheduledFormProps) {
+export default function ScheduleForm({ handleSubmit, defaultValues }: ScheduledFormProps) {
   const combinedDefaultValues: ScheduledFormValues = {
     scheduledDate: "",
     ...defaultValues,

@@ -13,7 +13,7 @@ interface CommentsListProps {
   onSubmitReply: (commentId: string, content: string) => void;
 }
 
-export function CommentsList({ comments, onSubmitReply }: CommentsListProps) {
+export default function CommentsList({ comments, onSubmitReply }: CommentsListProps) {
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [replyText, setReplyText] = useState("");
 

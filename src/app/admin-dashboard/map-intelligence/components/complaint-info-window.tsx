@@ -23,7 +23,7 @@ const priorityVariant = (priority: string) => {
   }
 };
 
-export function ComplaintInfoWindow({ complaint }: ComplaintInfoWindowProps) {
+export default function ComplaintInfoWindow({ complaint }: ComplaintInfoWindowProps) {
   const statusBadge = getStatusBadge(complaint.status);
   
   return (

@@ -10,7 +10,7 @@ interface InfoCardProps {
   className?: string;
 }
 
-export function InfoCard({
+export default function InfoCard({
   icon: Icon,
   iconClassName = "text-primary",
   title,

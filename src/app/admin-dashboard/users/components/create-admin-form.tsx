@@ -31,7 +31,7 @@ import { Button } from "@/components/ui/button";
 import { UserPlus } from "lucide-react";
 import { createAdminSchema, type CreateAdminFormValues } from "@/schemas/admin.schema";
 
-export function CreateAdminForm() {
+export default function CreateAdminForm() {
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<CreateAdminFormValues>({

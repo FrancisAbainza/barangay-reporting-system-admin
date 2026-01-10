@@ -38,7 +38,7 @@ interface AdminTableProps {
   onDeleteAdmin: (adminId: string) => void;
 }
 
-export function AdminTable({ admins, onDeleteAdmin }: AdminTableProps) {
+export default function AdminTable({ admins, onDeleteAdmin }: AdminTableProps) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedAdmin, setSelectedAdmin] = useState<AdminType | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);

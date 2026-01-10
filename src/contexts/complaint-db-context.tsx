@@ -530,7 +530,7 @@ const ComplaintDbContext = createContext<ComplaintDbContextType | undefined>(
 );
 
 // Provider Component
-export function ComplaintDbProvider({ children }: { children: ReactNode }) {
+export default function ComplaintDbProvider({ children }: { children: ReactNode }) {
   const [complaints, setComplaints] = useState<ComplaintType[]>(initialComplaints);
 
   // Helper function to generate unique IDs

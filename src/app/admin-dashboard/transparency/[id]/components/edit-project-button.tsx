@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useProjectDb } from "@/contexts/project-db-context";
 import { Button } from "@/components/ui/button";
-import { ProjectFormDialog } from "../../components/project-form-dialog";
+import ProjectFormDialog from "../../components/project-form-dialog";
 import { Pencil } from "lucide-react";
 import type { ProjectType, CreateProjectInputType } from "@/types/project";
 
@@ -11,7 +11,7 @@ interface EditProjectButtonProps {
   project: ProjectType;
 }
 
-export function EditProjectButton({ project }: EditProjectButtonProps) {
+export default function EditProjectButton({ project }: EditProjectButtonProps) {
   const { updateProject } = useProjectDb();
   const [isOpen, setIsOpen] = useState(false);
 

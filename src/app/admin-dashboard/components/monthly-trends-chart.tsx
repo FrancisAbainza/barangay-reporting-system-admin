@@ -1,11 +1,9 @@
-"use client";
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartConfig } from "@/components/ui/chart";
 import { ComplaintType } from "@/types/complaint";
 import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
 
-export function MonthlyTrendsChart({complaints}: {complaints: ComplaintType[]}) {
+export default function MonthlyTrendsChart({complaints}: {complaints: ComplaintType[]}) {
   // Get last 6 months
   const months = [];
   const now = new Date();

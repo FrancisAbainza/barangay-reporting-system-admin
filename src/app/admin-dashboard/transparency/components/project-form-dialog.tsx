@@ -29,10 +29,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { MultiImageUploader } from "@/components/multi-image-uploader";
-import { MapLocationPicker } from "@/components/map-location-picker";
+import MultiImageUploader, { type FileUploadType } from "@/components/multi-image-uploader";
+import MapLocationPicker from "@/components/map-location-picker";
 import type { ProjectType, ProjectCategoryType, ProjectStatusType, CreateProjectInputType, ProjectLocationType } from "@/types/project";
-import type { FileUploadType } from "@/types/files";
 import { projectFormSchema, type ProjectFormValues } from "@/schemas/project.schema";
 
 interface ProjectFormDialogProps {
@@ -69,7 +68,7 @@ const formatDateForInput = (date: Date | undefined) => {
   return d.toISOString().split("T")[0];
 };
 
-export function ProjectFormDialog({
+export default function ProjectFormDialog({
   open,
   onOpenChange,
   onSubmit,

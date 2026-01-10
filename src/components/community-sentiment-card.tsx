@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { InfoCard } from "@/components/ui/info-card";
+import InfoCard from "@/components/ui/info-card";
 import { Spinner } from "@/components/ui/spinner";
 import { MessageSquare, TrendingUp, Sparkles } from "lucide-react";
 import type { ComplaintType } from "@/types/complaint";
@@ -14,7 +14,7 @@ interface CommunitySentimentCardProps {
   onGenerate: (itemId: string) => Promise<void>;
 }
 
-export function CommunitySentimentCard({
+export default function CommunitySentimentCard({
   item,
   onGenerate,
 }: CommunitySentimentCardProps) {

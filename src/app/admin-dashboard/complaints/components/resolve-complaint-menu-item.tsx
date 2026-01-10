@@ -1,28 +1,21 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
-import { Dialog, DialogContent, DialogTitle, DialogClose, DialogHeader, DialogDescription } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogTrigger, DialogClose, DialogHeader, DialogDescription } from "@/components/ui/dialog";
 import { useComplaintDb } from "@/contexts/complaint-db-context";
-import { ResolutionForm } from "./resolution-form";
+import ResolutionForm from "./resolution-form";
 import { type ResolutionFormValues } from "@/schemas/complaint.schema";
 import type { ComplaintType } from "@/types/complaint";
 import { toast } from "sonner";
 
 interface ResolveComplaintMenuItemProps {
   complaint: ComplaintType;
-  onOpenChange?: (open: boolean) => void;
 }
 
-export function ResolveComplaintMenuItem({ complaint, onOpenChange }: ResolveComplaintMenuItemProps) {
+export default function ResolveComplaintMenuItem({ complaint }: ResolveComplaintMenuItemProps) {
   const { updateComplaintStatus } = useComplaintDb();
   const closeRef = useRef<HTMLButtonElement>(null);
-  const [isOpen, setIsOpen] = useState(false);
-
-  const handleOpenChange = (open: boolean) => {
-    setIsOpen(open);
-    onOpenChange?.(open);
-  };
 
   const convertFileToDataURL = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
@@ -68,29 +61,24 @@ export function ResolveComplaintMenuItem({ complaint, onOpenChange }: ResolveCom
     closeRef.current?.click();
   }
 
-  const handleSelect = (e: Event) => {
-    e.preventDefault();
-    setIsOpen(true);
-  };
-
   return (
-    <>
-      <DropdownMenuItem onSelect={handleSelect}>
-        Mark as Resolved
-      </DropdownMenuItem>
+    <Dialog>
+      <DialogTrigger asChild>
+        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+          Mark as Resolved
+        </DropdownMenuItem>
+      </DialogTrigger>
 
-      <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Mark as Resolved</DialogTitle>
-            <DialogDescription>
-              Provide details about how this complaint was resolved
-            </DialogDescription>
-          </DialogHeader>
-          <ResolutionForm handleSubmit={handleSubmit} />
-          <DialogClose ref={closeRef} className="hidden" />
-        </DialogContent>
-      </Dialog>
-    </>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>Mark as Resolved</DialogTitle>
+          <DialogDescription>
+            Provide details about how this complaint was resolved
+          </DialogDescription>
+        </DialogHeader>
+        <ResolutionForm handleSubmit={handleSubmit} />
+        <DialogClose ref={closeRef} className="hidden" />
+      </DialogContent>
+    </Dialog>
   );
 }

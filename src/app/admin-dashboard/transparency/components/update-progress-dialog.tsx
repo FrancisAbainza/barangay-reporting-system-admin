@@ -30,9 +30,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { MultiImageUploader } from "@/components/multi-image-uploader";
+import MultiImageUploader, { type FileUploadType } from "@/components/multi-image-uploader";
 import type { ProjectType, ProjectStatusType, ProgressUpdateType } from "@/types/project";
-import type { FileUploadType } from "@/types/files";
 import { formatDate } from "@/lib/date-formatter";
 import { updateStatusSchema, type UpdateStatusFormValues } from "@/schemas/project.schema";
 
@@ -52,7 +51,7 @@ const statusOptions: { value: ProjectStatusType; label: string }[] = [
   { value: "cancelled", label: "Cancelled" },
 ];
 
-export function UpdateStatusDialog({
+export default function UpdateStatusDialog({
   open,
   onOpenChange,
   onSubmit,

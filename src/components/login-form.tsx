@@ -19,7 +19,7 @@ import { Input } from "@/components/ui/input";
 import { loginSchema, type LoginFormValues } from "@/schemas/auth.schema";
 import { toast } from "sonner";
 
-export function LoginForm() {
+export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   const { login } = useAuth();

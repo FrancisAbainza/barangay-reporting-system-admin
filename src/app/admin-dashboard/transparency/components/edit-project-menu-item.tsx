@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useProjectDb } from "@/contexts/project-db-context";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
-import { ProjectFormDialog } from "./project-form-dialog";
+import ProjectFormDialog from "./project-form-dialog";
 import { Pencil } from "lucide-react";
 import type { ProjectType, CreateProjectInputType } from "@/types/project";
 
@@ -12,7 +12,7 @@ interface EditProjectMenuItemProps {
   onOpenChange?: (open: boolean) => void;
 }
 
-export function EditProjectMenuItem({ project, onOpenChange }: EditProjectMenuItemProps) {
+export default function EditProjectMenuItem({ project, onOpenChange }: EditProjectMenuItemProps) {
   const { updateProject } = useProjectDb();
   const [isOpen, setIsOpen] = useState(false);
 

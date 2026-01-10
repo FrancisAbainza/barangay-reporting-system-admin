@@ -2,9 +2,9 @@
 
 import { use } from "react";
 import { useComplaintDb } from "@/contexts/complaint-db-context";
-import { ComplaintHeader } from "./components/complaint-header";
-import { ComplaintStatusCard } from "./components/complaint-status-card";
-import { ComplaintTabs } from "./components/complaint-tabs";
+import ComplaintHeader from "./components/complaint-header";
+import ComplaintStatusCard from "./components/complaint-status-card";
+import ComplaintTabs from "./components/complaint-tabs";
 
 // In production, this would be a Server Component with:
 // const complaint = await fetchComplaint(params.id);

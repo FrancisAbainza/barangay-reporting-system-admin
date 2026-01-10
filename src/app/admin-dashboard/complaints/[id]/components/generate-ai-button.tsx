@@ -10,7 +10,7 @@ interface GenerateAIButtonProps {
   complaint: ComplaintType;
 }
 
-export function GenerateAIButton({ complaint }: GenerateAIButtonProps) {
+export default function GenerateAIButton({ complaint }: GenerateAIButtonProps) {
   const { generateAIAnalysis } = useComplaintDb();
   const [isGenerating, setIsGenerating] = useState(false);
 

@@ -4,17 +4,17 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FileText, MapPin, MessageSquare, Sparkles } from "lucide-react";
-import { ComplaintDetailsTab } from "./complaint-details-tab";
-import { ComplaintLocationTab } from "./complaint-location-tab";
-import { ComplaintEngagementTab } from "./complaint-engagement-tab";
-import { ComplaintAIAnalysisTab } from "./complaint-ai-analysis-tab";
+import ComplaintDetailsTab from "./complaint-details-tab";
+import ComplaintLocationTab from "./complaint-location-tab";
+import ComplaintEngagementTab from "./complaint-engagement-tab";
+import ComplaintAIAnalysisTab from "./complaint-ai-analysis-tab";
 import { ComplaintType } from "@/types/complaint";
 
 interface ComplaintTabsProps {
   complaint: ComplaintType;
 }
 
-export function ComplaintTabs({ complaint }: ComplaintTabsProps) {
+export default function ComplaintTabs({ complaint }: ComplaintTabsProps) {
   const [activeTab, setActiveTab] = useState("details");
 
   return (

@@ -8,7 +8,7 @@ interface UserStatsProps {
   totalAdmins: number;
 }
 
-export function UserStats({
+export default function UserStats({
   totalUsers,
   totalAdmins,
 }: UserStatsProps) {

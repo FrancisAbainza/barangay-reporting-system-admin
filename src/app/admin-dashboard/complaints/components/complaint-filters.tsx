@@ -1,36 +1,38 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Search, Filter, ChevronDown, CalendarIcon, Tag, Flag } from "lucide-react";
-import type { ComplaintStatusType, ComplaintCategoryType } from "@/types/complaint";
+import { Search, CalendarIcon, ChevronDown, Filter, Tag, Flag } from "lucide-react";
+import type { ComplaintStatusType, ComplaintCategoryType, ComplaintPriorityType } from "@/types/complaint";
 import { getStatusBadge, getCategoryLabel } from "@/lib/complaint-helpers";
+import FilterPopover from "../../../../components/filter-popover";
 
 interface ComplaintFiltersProps {
+  filters: {
+    searchQuery: string;
+    statusFilters: ComplaintStatusType[];
+    categoryFilters: ComplaintCategoryType[];
+    priorityFilters: ComplaintPriorityType[];
+    dateFrom: string;
+    dateTo: string;
+  };
   onFilterChange: (filters: {
     searchQuery: string;
     statusFilters: ComplaintStatusType[];
     categoryFilters: ComplaintCategoryType[];
-    priorityFilters: string[];
+    priorityFilters: ComplaintPriorityType[];
     dateFrom: string;
     dateTo: string;
   }) => void;
 }
 
-export function ComplaintFilters({ onFilterChange }: ComplaintFiltersProps) {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilters, setStatusFilters] = useState<ComplaintStatusType[]>([]);
-  const [categoryFilters, setCategoryFilters] = useState<ComplaintCategoryType[]>([]);
-  const [priorityFilters, setPriorityFilters] = useState<string[]>([]);
-  const [dateFrom, setDateFrom] = useState("");
-  const [dateTo, setDateTo] = useState("");
+export default function ComplaintFilters({ filters, onFilterChange }: ComplaintFiltersProps) {
+  const { searchQuery, statusFilters, categoryFilters, priorityFilters, dateFrom, dateTo } = filters;
 
   const hasActiveFilters = searchQuery || statusFilters.length > 0 || categoryFilters.length > 0 || priorityFilters.length > 0 || dateFrom || dateTo;
 
@@ -38,36 +40,17 @@ export function ComplaintFilters({ onFilterChange }: ComplaintFiltersProps) {
     searchQuery: string;
     statusFilters: ComplaintStatusType[];
     categoryFilters: ComplaintCategoryType[];
-    priorityFilters: string[];
+    priorityFilters: ComplaintPriorityType[];
     dateFrom: string;
     dateTo: string;
   }>) => {
-    const newFilters = {
-      searchQuery: updates.searchQuery ?? searchQuery,
-      statusFilters: updates.statusFilters ?? statusFilters,
-      categoryFilters: updates.categoryFilters ?? categoryFilters,
-      priorityFilters: updates.priorityFilters ?? priorityFilters,
-      dateFrom: updates.dateFrom ?? dateFrom,
-      dateTo: updates.dateTo ?? dateTo,
-    };
-
-    if (updates.searchQuery !== undefined) setSearchQuery(updates.searchQuery);
-    if (updates.statusFilters !== undefined) setStatusFilters(updates.statusFilters);
-    if (updates.categoryFilters !== undefined) setCategoryFilters(updates.categoryFilters);
-    if (updates.priorityFilters !== undefined) setPriorityFilters(updates.priorityFilters);
-    if (updates.dateFrom !== undefined) setDateFrom(updates.dateFrom);
-    if (updates.dateTo !== undefined) setDateTo(updates.dateTo);
-
-    onFilterChange(newFilters);
+    onFilterChange({
+      ...filters,
+      ...updates,
+    });
   };
 
   const clearAllFilters = () => {
-    setSearchQuery("");
-    setStatusFilters([]);
-    setCategoryFilters([]);
-    setPriorityFilters([]);
-    setDateFrom("");
-    setDateTo("");
     onFilterChange({
       searchQuery: "",
       statusFilters: [],
@@ -81,171 +64,71 @@ export function ComplaintFilters({ onFilterChange }: ComplaintFiltersProps) {
   return (
     <div className="space-y-4">
       {/* Search */}
-      <div className="flex items-center gap-2">
-        <div className="relative flex-1">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search complaints..."
-            className="pl-8"
-            value={searchQuery}
-            onChange={(e) => updateFilters({ searchQuery: e.target.value })}
-          />
-        </div>
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          placeholder="Search complaints..."
+          className="pl-10"
+          value={searchQuery}
+          onChange={(e) => updateFilters({ searchQuery: e.target.value })}
+        />
       </div>
+
 
       {/* Filters */}
       <div className="flex flex-col gap-4">
-        <div className="flex flex-wrap gap-2">
+        <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:flex lg:flex-wrap">
           {/* Status Filter */}
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" className="w-full sm:w-auto">
-                <Filter className="h-4 w-4 mr-2" />
-                Status
-                {statusFilters.length > 0 && (
-                  <Badge variant="secondary" className="ml-2">
-                    {statusFilters.length}
-                  </Badge>
-                )}
-                <ChevronDown className="h-4 w-4 ml-2" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-64" align="start">
-              <div className="space-y-3">
-                <h4 className="font-medium text-sm">Filter by Status</h4>
-                <div className="space-y-2">
-                  {[
-                    { value: "submitted" as ComplaintStatusType, label: "Submitted" },
-                    { value: "under_review" as ComplaintStatusType, label: "Under Review" },
-                    { value: "scheduled" as ComplaintStatusType, label: "Scheduled" },
-                    { value: "in_progress" as ComplaintStatusType, label: "In Progress" },
-                    { value: "resolved" as ComplaintStatusType, label: "Resolved" },
-                    { value: "dismissed" as ComplaintStatusType, label: "Dismissed" },
-                  ].map((status) => (
-                    <div key={status.value} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={`status-${status.value}`}
-                        checked={statusFilters.includes(status.value)}
-                        onCheckedChange={(checked: boolean) => {
-                          const newFilters = checked
-                            ? [...statusFilters, status.value]
-                            : statusFilters.filter((s) => s !== status.value);
-                          updateFilters({ statusFilters: newFilters });
-                        }}
-                      />
-                      <Label
-                        htmlFor={`status-${status.value}`}
-                        className="text-sm font-normal cursor-pointer"
-                      >
-                        {status.label}
-                      </Label>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </PopoverContent>
-          </Popover>
+          <FilterPopover<ComplaintStatusType>
+            icon={Filter}
+            label="Status"
+            title="Filter by Status"
+            options={[
+              { value: "submitted", label: "Submitted" },
+              { value: "under_review", label: "Under Review" },
+              { value: "scheduled", label: "Scheduled" },
+              { value: "in_progress", label: "In Progress" },
+              { value: "resolved", label: "Resolved" },
+              { value: "dismissed", label: "Dismissed" },
+            ]}
+            selectedFilters={statusFilters}
+            onFilterChange={(filters) => updateFilters({ statusFilters: filters })}
+          />
 
           {/* Category Filter */}
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" className="w-full sm:w-auto">
-                <Tag className="h-4 w-4 mr-2" />
-                Category
-                {categoryFilters.length > 0 && (
-                  <Badge variant="secondary" className="ml-2">
-                    {categoryFilters.length}
-                  </Badge>
-                )}
-                <ChevronDown className="h-4 w-4 ml-2" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-64" align="start">
-              <div className="space-y-3">
-                <h4 className="font-medium text-sm">Filter by Category</h4>
-                <div className="space-y-2 max-h-64 overflow-y-auto">
-                  {[
-                    { value: "noise" as ComplaintCategoryType, label: "Noise" },
-                    { value: "sanitation" as ComplaintCategoryType, label: "Sanitation" },
-                    { value: "public_safety" as ComplaintCategoryType, label: "Public Safety" },
-                    { value: "traffic" as ComplaintCategoryType, label: "Traffic" },
-                    { value: "infrastructure" as ComplaintCategoryType, label: "Infrastructure" },
-                    { value: "water_electricity" as ComplaintCategoryType, label: "Water/Electricity" },
-                    { value: "domestic" as ComplaintCategoryType, label: "Domestic" },
-                    { value: "environment" as ComplaintCategoryType, label: "Environment" },
-                    { value: "others" as ComplaintCategoryType, label: "Others" },
-                  ].map((category) => (
-                    <div key={category.value} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={`category-${category.value}`}
-                        checked={categoryFilters.includes(category.value)}
-                        onCheckedChange={(checked: boolean) => {
-                          const newFilters = checked
-                            ? [...categoryFilters, category.value]
-                            : categoryFilters.filter((c) => c !== category.value);
-                          updateFilters({ categoryFilters: newFilters });
-                        }}
-                      />
-                      <Label
-                        htmlFor={`category-${category.value}`}
-                        className="text-sm font-normal cursor-pointer"
-                      >
-                        {category.label}
-                      </Label>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </PopoverContent>
-          </Popover>
+          <FilterPopover<ComplaintCategoryType>
+            icon={Tag}
+            label="Category"
+            title="Filter by Category"
+            options={[
+              { value: "noise", label: "Noise" },
+              { value: "sanitation", label: "Sanitation" },
+              { value: "public_safety", label: "Public Safety" },
+              { value: "traffic", label: "Traffic" },
+              { value: "infrastructure", label: "Infrastructure" },
+              { value: "water_electricity", label: "Water/Electricity" },
+              { value: "domestic", label: "Domestic" },
+              { value: "environment", label: "Environment" },
+              { value: "others", label: "Others" },
+            ]}
+            selectedFilters={categoryFilters}
+            onFilterChange={(filters) => updateFilters({ categoryFilters: filters })}
+          />
 
           {/* Priority Filter */}
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" className="w-full sm:w-auto">
-                <Flag className="h-4 w-4 mr-2" />
-                Priority
-                {priorityFilters.length > 0 && (
-                  <Badge variant="secondary" className="ml-2">
-                    {priorityFilters.length}
-                  </Badge>
-                )}
-                <ChevronDown className="h-4 w-4 ml-2" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-64" align="start">
-              <div className="space-y-3">
-                <h4 className="font-medium text-sm">Filter by Priority</h4>
-                <div className="space-y-2">
-                  {[
-                    { value: "low", label: "Low" },
-                    { value: "medium", label: "Medium" },
-                    { value: "high", label: "High" },
-                    { value: "urgent", label: "Urgent" },
-                  ].map((priority) => (
-                    <div key={priority.value} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={`priority-${priority.value}`}
-                        checked={priorityFilters.includes(priority.value)}
-                        onCheckedChange={(checked: boolean) => {
-                          const newFilters = checked
-                            ? [...priorityFilters, priority.value]
-                            : priorityFilters.filter((p) => p !== priority.value);
-                          updateFilters({ priorityFilters: newFilters });
-                        }}
-                      />
-                      <Label
-                        htmlFor={`priority-${priority.value}`}
-                        className="text-sm font-normal cursor-pointer"
-                      >
-                        {priority.label}
-                      </Label>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </PopoverContent>
-          </Popover>
+          <FilterPopover<ComplaintPriorityType>
+            icon={Flag}
+            label="Priority"
+            title="Filter by Priority"
+            options={[
+              { value: "low", label: "Low" },
+              { value: "medium", label: "Medium" },
+              { value: "high", label: "High" },
+              { value: "urgent", label: "Urgent" },
+            ]}
+            selectedFilters={priorityFilters}
+            onFilterChange={(filters) => updateFilters({ priorityFilters: filters })}
+          />
 
           {/* Date Range Filter */}
           <Popover>
@@ -290,7 +173,6 @@ export function ComplaintFilters({ onFilterChange }: ComplaintFiltersProps) {
           {hasActiveFilters && (
             <Button
               variant="ghost"
-              className="w-full sm:w-auto"
               onClick={clearAllFilters}
             >
               Clear All

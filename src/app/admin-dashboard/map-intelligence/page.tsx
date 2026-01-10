@@ -3,14 +3,15 @@
 import { useState, useMemo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
-import { MapDisplay } from "./components/map-display";
-import { MapFilters } from "./components/map-filters";
-import { MapStats } from "./components/map-stats";
+import MapDisplay from "./components/map-display";
+import MapFilters from "./components/map-filters";
+import MapStats from "./components/map-stats";
 import { useComplaintDb } from "@/contexts/complaint-db-context";
 import { useProjectDb } from "@/contexts/project-db-context";
 import type { ComplaintStatusType, ComplaintCategoryType } from "@/types/complaint";
 import type { ProjectStatusType, ProjectCategoryType } from "@/types/project";
 import { Map, Eye, MessageSquareWarning } from "lucide-react";
+import PageHeader from "@/components/page-header";
 
 export default function MapIntelligencePage() {
   const { complaints } = useComplaintDb();
@@ -133,19 +134,11 @@ export default function MapIntelligencePage() {
   return (
     <div className="container p-6 space-y-6">
       {/* Header */}
-      <div>
-        <div className="flex items-center gap-3 mb-2">
-          <div className="p-2 bg-primary/10 rounded-lg">
-            <Map className="h-6 w-6 text-primary" />
-          </div>
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Map Intelligence</h1>
-            <p className="text-muted-foreground">
-              Geographic visualization and analysis of complaints and projects
-            </p>
-          </div>
-        </div>
-      </div>
+      <PageHeader
+        title="Map Intelligence"
+        subtitle="Geographic visualization and analysis of complaints and projects"
+        icon={<Map className="h-6 w-6 text-primary" />}
+      />
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "complaints" | "transparency")}>

@@ -1,7 +1,7 @@
 import { TabsContent } from "@/components/ui/tabs";
 import { FileText, Calendar, DollarSign, Briefcase, Wallet, ImageIcon, TrendingUp, X } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { InfoCard } from "@/components/ui/info-card";
+import InfoCard from "@/components/ui/info-card";
 import { useState } from "react";
 import type { ProjectType } from "@/types/project";
 import { formatBudget } from "@/lib/project-helpers";
@@ -11,7 +11,7 @@ interface ProjectDetailsTabProps {
   project: ProjectType;
 }
 
-export function ProjectDetailsTab({ project }: ProjectDetailsTabProps) {
+export default function ProjectDetailsTab({ project }: ProjectDetailsTabProps) {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   return (

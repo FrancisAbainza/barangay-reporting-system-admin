@@ -11,7 +11,7 @@ interface MapStatsProps {
   type: "complaints" | "transparency";
 }
 
-export function MapStats({ complaints, projects, type }: MapStatsProps) {
+export default function MapStats({ complaints, projects, type }: MapStatsProps) {
   if (type === "complaints" && complaints) {
     const stats = {
       total: complaints.length,

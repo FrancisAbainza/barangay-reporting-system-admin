@@ -32,8 +32,8 @@ import {
 import type { ProjectType } from "@/types/project";
 import { formatBudget, getStatusBadge, getCategoryLabel, getCategoryBadge } from "@/lib/project-helpers";
 import { formatDate } from "@/lib/date-formatter";
-import { EditProjectMenuItem } from "./edit-project-menu-item";
-import { UpdateProgressMenuItem } from "./update-progress-menu-item";
+import EditProjectMenuItem from "./edit-project-menu-item";
+import UpdateProgressMenuItem from "./update-progress-menu-item";
 import { useProjectDb } from "@/contexts/project-db-context";
 
 interface ProjectTableProps {
@@ -42,7 +42,7 @@ interface ProjectTableProps {
 
 
 
-export function ProjectTable({
+export default function ProjectTable({
   projects,
 }: ProjectTableProps) {
   const router = useRouter();

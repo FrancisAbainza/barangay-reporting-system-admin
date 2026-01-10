@@ -36,7 +36,7 @@ const initialAdmins: AdminType[] = [
 const AdminDbContext = createContext<AdminDbContextType | undefined>(undefined);
 
 // Provider Component
-export function AdminDbProvider({ children }: { children: ReactNode }) {
+export default function AdminDbProvider({ children }: { children: ReactNode }) {
   const [admins, setAdmins] = useState<AdminType[]>(initialAdmins);
 
   const deleteAdmin = (id: string): boolean => {

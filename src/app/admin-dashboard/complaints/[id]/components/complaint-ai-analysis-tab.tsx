@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/ui/spinner";
-import { InfoCard } from "@/components/ui/info-card";
+import InfoCard from "@/components/ui/info-card";
 import { 
   Sparkles, 
   RefreshCw, 
@@ -26,7 +26,7 @@ interface ComplaintAIAnalysisTabProps {
   complaint: ComplaintType;
 }
 
-export function ComplaintAIAnalysisTab({ complaint }: ComplaintAIAnalysisTabProps) {
+export default function ComplaintAIAnalysisTab({ complaint }: ComplaintAIAnalysisTabProps) {
   const { generateAIAnalysis } = useComplaintDb();
   const [isGenerating, setIsGenerating] = useState(false);
 

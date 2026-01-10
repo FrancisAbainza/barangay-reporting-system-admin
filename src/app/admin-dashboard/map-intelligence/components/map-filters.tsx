@@ -29,7 +29,7 @@ interface MapFiltersProps {
   }) => void;
 }
 
-export function MapFilters({ type, onFilterChange }: MapFiltersProps) {
+export default function MapFilters({ type, onFilterChange }: MapFiltersProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilters, setStatusFilters] = useState<(ComplaintStatusType | ProjectStatusType)[]>([]);
   const [categoryFilters, setCategoryFilters] = useState<(ComplaintCategoryType | ProjectCategoryType)[]>([]);

@@ -2,9 +2,9 @@
 
 import { useProjectDb } from "@/contexts/project-db-context";
 import { TabsContent } from "@/components/ui/tabs";
-import { AdminCommentForm } from "@/components/admin-comment-form";
-import { CommentsList } from "@/components/comments-list";
-import { CommunitySentimentCard } from "@/components/community-sentiment-card";
+import AdminCommentForm from "@/components/admin-comment-form";
+import CommentsList from "@/components/comments-list";
+import CommunitySentimentCard from "@/components/community-sentiment-card";
 import { ThumbsUp, ThumbsDown, MessageSquare } from "lucide-react";
 import type { ProjectType } from "@/types/project";
 
@@ -12,7 +12,7 @@ interface ProjectEngagementTabProps {
   project: ProjectType;
 }
 
-export function ProjectEngagementTab({ project }: ProjectEngagementTabProps) {
+export default function ProjectEngagementTab({ project }: ProjectEngagementTabProps) {
   const { addProjectComment, addReply, generateCommunitySentiment } = useProjectDb();
 
   const handleSubmitComment = (content: string) => {

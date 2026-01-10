@@ -10,7 +10,7 @@ interface ProjectStatusCardProps {
   progressPercentage: number;
 }
 
-export function ProjectStatusCard({
+export default function ProjectStatusCard({
   status,
   category,
   progressPercentage,

@@ -9,7 +9,7 @@ interface ProjectStatsProps {
   projects: ProjectType[];
 }
 
-export function ProjectStats({ projects }: ProjectStatsProps) {
+export default function ProjectStats({ projects }: ProjectStatsProps) {
   const stats = useMemo(() => {
     return {
       total: projects.length,

@@ -615,7 +615,7 @@ const ProjectDbContext = createContext<ProjectDbContextType | undefined>(
 );
 
 // Provider Component
-export function ProjectDbProvider({ children }: { children: ReactNode }) {
+export default function ProjectDbProvider({ children }: { children: ReactNode }) {
   const [projects, setProjects] = useState<ProjectType[]>(initialProjects);
 
   // Helper function to generate unique IDs

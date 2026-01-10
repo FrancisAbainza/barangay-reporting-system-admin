@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Trash2 } from "lucide-react";
-import { GenerateAIButton } from "./generate-ai-button";
-import { ComplaintStatusSelect } from "./complaint-status-select";
+import GenerateAIButton from "./generate-ai-button";
+import ComplaintStatusSelect from "./complaint-status-select";
 import { ComplaintType } from "@/types/complaint";
 import { useComplaintDb } from "@/contexts/complaint-db-context";
 import { useRouter } from "next/navigation";
@@ -10,7 +10,7 @@ interface ComplaintHeaderProps {
   complaint: ComplaintType;
 }
 
-export function ComplaintHeader({
+export default function ComplaintHeader({
   complaint,
 }: ComplaintHeaderProps) {
   const router = useRouter();

@@ -2,9 +2,9 @@
 
 import { use } from "react";
 import { useProjectDb } from "@/contexts/project-db-context";
-import { ProjectHeader } from "./components/project-header";
-import { ProjectStatusCard } from "./components/project-status-card";
-import { ProjectTabs } from "./components/project-tabs";
+import ProjectHeader from "./components/project-header";
+import ProjectStatusCard from "./components/project-status-card";
+import ProjectTabs from "./components/project-tabs";
 
 // In production, this would be a Server Component with:
 // const project = await fetchProject(params.id);

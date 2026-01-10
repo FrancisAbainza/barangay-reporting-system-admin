@@ -18,8 +18,8 @@ import {
 } from "@/components/ui/dialog";
 import { ComplaintType, ComplaintStatusType } from "@/types/complaint";
 import { useComplaintDb } from "@/contexts/complaint-db-context";
-import { ScheduledForm } from "../../components/scheduled-form";
-import { ResolutionForm } from "../../components/resolution-form";
+import ScheduleForm from "../../components/schedule-form";
+import ResolutionForm from "../../components/resolution-form";
 import { type ScheduledFormValues, type ResolutionFormValues } from "@/schemas/complaint.schema";
 import { toast } from "sonner";
 
@@ -27,7 +27,7 @@ interface ComplaintStatusSelectProps {
   complaint: ComplaintType;
 }
 
-export function ComplaintStatusSelect({ complaint }: ComplaintStatusSelectProps) {
+export default function ComplaintStatusSelect({ complaint }: ComplaintStatusSelectProps) {
   const { updateComplaintStatus } = useComplaintDb();
   const [isScheduleDialogOpen, setIsScheduleDialogOpen] = useState(false);
   const [isResolveDialogOpen, setIsResolveDialogOpen] = useState(false);
@@ -123,7 +123,7 @@ export function ComplaintStatusSelect({ complaint }: ComplaintStatusSelectProps)
               Set the date when this complaint is scheduled to be addressed
             </DialogDescription>
           </DialogHeader>
-          <ScheduledForm handleSubmit={handleScheduleSubmit} />
+          <ScheduleForm handleSubmit={handleScheduleSubmit} />
           <DialogClose ref={scheduleCloseRef} className="hidden" />
         </DialogContent>
       </Dialog>

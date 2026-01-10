@@ -5,9 +5,9 @@ import { GoogleMap, Marker, InfoWindow, useJsApiLoader } from "@react-google-map
 import { Card, CardContent } from "@/components/ui/card";
 import type { ComplaintType } from "@/types/complaint";
 import type { ProjectType } from "@/types/project";
-import { ComplaintInfoWindow } from "./complaint-info-window";
-import { ProjectInfoWindow } from "./project-info-window";
-import { HeatmapOverlay } from "./heatmap-overlay";
+import ComplaintInfoWindow from "./complaint-info-window";
+import ProjectInfoWindow from "./project-info-window";
+import HeatmapOverlay from "./heatmap-overlay";
 
 interface MapDisplayProps {
   complaints?: ComplaintType[];
@@ -38,7 +38,7 @@ const mapOptions: google.maps.MapOptions = {
   fullscreenControl: true,
 };
 
-export function MapDisplay({ complaints, projects, type, showHeatmap = false }: MapDisplayProps) {
+export default function MapDisplay({ complaints, projects, type, showHeatmap = false }: MapDisplayProps) {
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
   const [selectedMarker, setSelectedMarker] = useState<string | null>(null);
   const [map, setMap] = useState<google.maps.Map | null>(null);

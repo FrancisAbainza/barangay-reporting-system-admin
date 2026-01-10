@@ -10,7 +10,7 @@ interface ProjectInfoWindowProps {
   project: ProjectType;
 }
 
-export function ProjectInfoWindow({ project }: ProjectInfoWindowProps) {
+export default function ProjectInfoWindow({ project }: ProjectInfoWindowProps) {
   const statusBadge = getStatusBadge(project.status);
   
   return (

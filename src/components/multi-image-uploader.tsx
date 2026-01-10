@@ -3,14 +3,15 @@ import { useDropzone } from "react-dropzone";
 import Image from "next/image";
 import { Badge } from "./ui/badge";
 import { XIcon } from "lucide-react";
-import { FileUploadType } from "@/types/files";
+
+export type FileUploadType = File | string;
 
 type Props = {
   onImagesChange: (images: FileUploadType[]) => void;
   images: FileUploadType[];
 }
 
-export function MultiImageUploader({ onImagesChange, images }: Props) {
+export default function MultiImageUploader({ onImagesChange, images }: Props) {
   const onDrop = useCallback((acceptedFiles: File[]) => {
     onImagesChange([...images, ...acceptedFiles]);
   }, [images, onImagesChange]);

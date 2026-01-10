@@ -51,7 +51,7 @@ const Logo = () => (
   </div>
 );
 
-export function MobileHeader({ className }: { className?: string }) {
+export default function MobileHeader({ className }: { className?: string }) {
   const pathname = usePathname();
   const { user, logout } = useAuth();
   const [open, setOpen] = useState(false);

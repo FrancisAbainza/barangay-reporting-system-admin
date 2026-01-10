@@ -41,7 +41,7 @@ interface UsersTableProps {
   onUnbanUser: (userId: string) => void;
 }
 
-export function UsersTable({ users, onBanUser, onUnbanUser }: UsersTableProps) {
+export default function UsersTable({ users, onBanUser, onUnbanUser }: UsersTableProps) {
   const [banDialogOpen, setBanDialogOpen] = useState(false);
   const [unbanDialogOpen, setUnbanDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UserType | null>(null);

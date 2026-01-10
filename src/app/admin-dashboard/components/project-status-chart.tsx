@@ -1,12 +1,10 @@
-"use client";
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartConfig } from "@/components/ui/chart";
 import { getStatusColor } from "@/lib/project-helpers";
 import { ProjectType } from "@/types/project";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
-export function ProjectStatusChart({projects}: {projects: ProjectType[]}) {
+export default function ProjectStatusChart({projects}: {projects: ProjectType[]}) {
   const statusCounts = projects.reduce((acc, project) => {
     acc[project.status] = (acc[project.status] || 0) + 1;
     return acc;

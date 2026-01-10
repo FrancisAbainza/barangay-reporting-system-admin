@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Trash2 } from "lucide-react";
-import { UpdateProgressButton } from "./update-progress-button";
-import { EditProjectButton } from "./edit-project-button";
+import UpdateProgressButton from "./update-progress-button";
+import EditProjectButton from "./edit-project-button";
 import { ProjectType } from "@/types/project";
 import { useProjectDb } from "@/contexts/project-db-context";
 import { useRouter } from "next/navigation";
@@ -10,7 +10,7 @@ interface ProjectHeaderProps {
   project: ProjectType;
 }
 
-export function ProjectHeader({
+export default function ProjectHeader({
   project,
 }: ProjectHeaderProps) {
   const router = useRouter();

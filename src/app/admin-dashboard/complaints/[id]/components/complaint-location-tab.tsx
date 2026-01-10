@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { TabsContent } from "@/components/ui/tabs";
-import { InfoCard } from "@/components/ui/info-card";
+import InfoCard from "@/components/ui/info-card";
 import { MapPin, ExternalLink, Navigation } from "lucide-react";
 import { APIProvider, Map, AdvancedMarker } from "@vis.gl/react-google-maps";
 import type { ComplaintType } from "@/types/complaint";
@@ -11,7 +11,7 @@ interface ComplaintLocationTabProps {
   complaint: ComplaintType;
 }
 
-export function ComplaintLocationTab({ complaint }: ComplaintLocationTabProps) {
+export default function ComplaintLocationTab({ complaint }: ComplaintLocationTabProps) {
   const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "";
 
   if (!complaint.location) {

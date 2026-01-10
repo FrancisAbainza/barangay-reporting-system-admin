@@ -14,8 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { MultiImageUploader } from "@/components/multi-image-uploader";
-import { FileUploadType } from "@/types/files";
+import MultiImageUploader, { FileUploadType } from "@/components/multi-image-uploader";
 import { resolutionSchema, type ResolutionFormValues } from "@/schemas/complaint.schema";
 
 type ResolutionFormProps = {
@@ -23,7 +22,7 @@ type ResolutionFormProps = {
   defaultValues?: ResolutionFormValues;
 };
 
-export function ResolutionForm({ handleSubmit, defaultValues }: ResolutionFormProps) {
+export default function ResolutionForm({ handleSubmit, defaultValues }: ResolutionFormProps) {
   const combinedDefaultValues: ResolutionFormValues = {
     description: "",
     budget: "",

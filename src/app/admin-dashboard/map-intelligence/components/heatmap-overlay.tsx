@@ -8,7 +8,7 @@ interface HeatmapOverlayProps {
   show: boolean;
 }
 
-export function HeatmapOverlay({ map, data, show }: HeatmapOverlayProps) {
+export default function HeatmapOverlay({ map, data, show }: HeatmapOverlayProps) {
   const heatmapRef = useRef<google.maps.visualization.HeatmapLayer | null>(null);
 
   useEffect(() => {

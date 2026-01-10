@@ -1,7 +1,7 @@
 import { TabsContent } from "@/components/ui/tabs";
 import { FileText, User, Calendar, CheckCircle, ImageIcon, Receipt, X } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { InfoCard } from "@/components/ui/info-card";
+import InfoCard from "@/components/ui/info-card";
 import { useState } from "react";
 import type { ComplaintType } from "@/types/complaint";
 import { formatDate } from "@/lib/date-formatter";
@@ -10,7 +10,7 @@ interface ComplaintDetailsTabProps {
   complaint: ComplaintType;
 }
 
-export function ComplaintDetailsTab({ complaint }: ComplaintDetailsTabProps) {
+export default function ComplaintDetailsTab({ complaint }: ComplaintDetailsTabProps) {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   return (

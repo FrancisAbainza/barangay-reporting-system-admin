@@ -4,16 +4,16 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FileText, MapPin, MessageSquare } from "lucide-react";
-import { ProjectDetailsTab } from "./project-details-tab";
-import { ProjectLocationTab } from "./project-location-tab";
-import { ProjectEngagementTab } from "./project-engagement-tab";
+import ProjectDetailsTab from "./project-details-tab";
+import ProjectLocationTab from "./project-location-tab";
+import ProjectEngagementTab from "./project-engagement-tab";
 import { ProjectType } from "@/types/project";
 
 interface ProjectTabsProps {
   project: ProjectType;
 }
 
-export function ProjectTabs({ project }: ProjectTabsProps) {
+export default function ProjectTabs({ project }: ProjectTabsProps) {
   const [activeTab, setActiveTab] = useState("details");
 
   return (

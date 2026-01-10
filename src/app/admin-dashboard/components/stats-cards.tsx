@@ -6,7 +6,7 @@ type StatsCardsProps = {
   totalProjects: number;
 };
 
-export function StatsCards({ totalComplaints, totalProjects }: StatsCardsProps) {
+export default function StatsCards({ totalComplaints, totalProjects }: StatsCardsProps) {
   const stats = [
     {
       title: "Total Complaints",

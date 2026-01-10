@@ -2,21 +2,21 @@
 
 import { useState, useMemo } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import type { ComplaintStatusType, ComplaintCategoryType, ComplaintType } from "@/types/complaint";
-import { ComplaintFilters } from "./complaint-filters";
-import { ComplaintTable } from "./complaint-table";
+import type { ComplaintStatusType, ComplaintCategoryType, ComplaintType, ComplaintPriorityType } from "@/types/complaint";
+import ComplaintFilters from "./complaint-filters";
+import ComplaintTable from "./complaint-table";
 
 interface ComplaintManagementCardProps {
   complaints: ComplaintType[];
 }
 
 // Client Component - Receives data as prop, uses context for CRUD operations
-export function ComplaintManagementCard({ complaints }: ComplaintManagementCardProps) {
+export default function ComplaintManagementCard({ complaints }: ComplaintManagementCardProps) {
   const [filters, setFilters] = useState({
     searchQuery: "",
     statusFilters: [] as ComplaintStatusType[],
     categoryFilters: [] as ComplaintCategoryType[],
-    priorityFilters: [] as string[],
+    priorityFilters: [] as ComplaintPriorityType[],
     dateFrom: "",
     dateTo: "",
   });
@@ -55,7 +55,7 @@ export function ComplaintManagementCard({ complaints }: ComplaintManagementCardP
         <CardDescription>View and manage all submitted complaints</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <ComplaintFilters onFilterChange={setFilters} />
+        <ComplaintFilters filters={filters} onFilterChange={setFilters} />
 
         {/* Results count */}
         <p className="text-sm text-muted-foreground">

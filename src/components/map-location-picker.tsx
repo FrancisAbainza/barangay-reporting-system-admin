@@ -22,7 +22,7 @@ const MapPickerComponent = dynamic(() => import("@/components/map-picker-compone
   ),
 });
 
-export function MapLocationPicker({ value, onChange }: MapLocationPickerProps) {
+export default function MapLocationPicker({ value, onChange }: MapLocationPickerProps) {
   const [isGeocoding, setIsGeocoding] = useState(false);
 
   const fetchAddress = async (lat: number, lng: number) => {

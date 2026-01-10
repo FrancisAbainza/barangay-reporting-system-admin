@@ -10,7 +10,7 @@ interface ComplaintStatusCardProps {
   category: ComplaintCategoryType;
 }
 
-export function ComplaintStatusCard({
+export default function ComplaintStatusCard({
   status,
   priority,
   category,

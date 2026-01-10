@@ -1,12 +1,10 @@
-"use client";
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartConfig } from "@/components/ui/chart";
 import { getStatusColor } from "@/lib/complaint-helpers";
 import { ComplaintType } from "@/types/complaint";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
-export function ComplaintStatusChart({ complaints }: { complaints: ComplaintType[] }) {
+export default function ComplaintStatusChart({ complaints }: { complaints: ComplaintType[] }) {
 
   const statusCounts = complaints.reduce((acc, complaint) => {
     acc[complaint.status] = (acc[complaint.status] || 0) + 1;

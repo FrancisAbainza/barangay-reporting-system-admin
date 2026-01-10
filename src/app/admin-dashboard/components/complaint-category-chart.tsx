@@ -1,12 +1,10 @@
-"use client";
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartConfig } from "@/components/ui/chart";
 import { getCategoryColor } from "@/lib/complaint-helpers";
 import { ComplaintType } from "@/types/complaint";
 import { Pie, PieChart } from "recharts";
 
-export function ComplaintCategoryChart({complaints}: {complaints: ComplaintType[]}) {
+export default function ComplaintCategoryChart({complaints}: {complaints: ComplaintType[]}) {
   const categoryCounts = complaints.reduce((acc, complaint) => {
     acc[complaint.category] = (acc[complaint.category] || 0) + 1;
     return acc;

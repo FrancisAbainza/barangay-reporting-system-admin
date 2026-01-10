@@ -43,7 +43,7 @@ const initialUsers: UserType[] = [
 const UserDbContext = createContext<UserDbContextType | undefined>(undefined);
 
 // Provider Component
-export function UserDbProvider({ children }: { children: ReactNode }) {
+export default function UserDbProvider({ children }: { children: ReactNode }) {
   const [users, setUsers] = useState<UserType[]>(initialUsers);
 
   const updateUser = (

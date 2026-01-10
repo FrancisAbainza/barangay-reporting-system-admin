@@ -2,9 +2,9 @@
 
 import { useComplaintDb } from "@/contexts/complaint-db-context";
 import { TabsContent } from "@/components/ui/tabs";
-import { AdminCommentForm } from "@/components/admin-comment-form";
-import { CommentsList } from "@/components/comments-list";
-import { CommunitySentimentCard } from "@/components/community-sentiment-card";
+import AdminCommentForm from "@/components/admin-comment-form";
+import CommentsList from "@/components/comments-list";
+import CommunitySentimentCard from "@/components/community-sentiment-card";
 import { ThumbsUp, ThumbsDown, MessageSquare } from "lucide-react";
 import type { ComplaintType } from "@/types/complaint";
 
@@ -12,7 +12,7 @@ interface ComplaintEngagementTabProps {
   complaint: ComplaintType;
 }
 
-export function ComplaintEngagementTab({ complaint }: ComplaintEngagementTabProps) {
+export default function ComplaintEngagementTab({ complaint }: ComplaintEngagementTabProps) {
   const { addComplaintComment, addReply, generateCommunitySentiment } = useComplaintDb();
 
   const handleSubmitComment = (content: string) => {

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useProjectDb } from "@/contexts/project-db-context";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
-import { UpdateStatusDialog } from "./update-progress-dialog";
+import UpdateStatusDialog from "./update-progress-dialog";
 import { type UpdateStatusFormValues } from "@/schemas/project.schema";
 import { RefreshCw } from "lucide-react";
 import type { ProjectType } from "@/types/project";
@@ -13,7 +13,7 @@ interface UpdateProgressMenuItemProps {
   onOpenChange?: (open: boolean) => void;
 }
 
-export function UpdateProgressMenuItem({ project, onOpenChange }: UpdateProgressMenuItemProps) {
+export default function UpdateProgressMenuItem({ project, onOpenChange }: UpdateProgressMenuItemProps) {
   const { updateProject } = useProjectDb();
   const [isOpen, setIsOpen] = useState(false);
 
