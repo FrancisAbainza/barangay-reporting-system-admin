@@ -1,12 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useRef } from "react";
 import { useProjectDb } from "@/contexts/project-db-context";
 import { Button } from "@/components/ui/button";
-import UpdateStatusDialog from "../../components/update-progress-dialog";
+import { Dialog, DialogContent, DialogTitle, DialogTrigger, DialogClose, DialogHeader, DialogDescription } from "@/components/ui/dialog";
+import UpdateProgressForm from "@/components/update-progress-form";
 import { type UpdateProgressFormValues } from "@/schemas/project.schema";
 import { RefreshCw } from "lucide-react";
-import type { ProjectType, ProgressUpdateType } from "@/types/project";
+import type { ProgressUpdateType, ProjectType, UpdateProjectInputType } from "@/types/project";
+import { toast } from "sonner";
 
 interface UpdateProgressButtonProps {
   project: ProjectType;
@@ -14,10 +16,13 @@ interface UpdateProgressButtonProps {
 
 export default function UpdateProgressButton({ project }: UpdateProgressButtonProps) {
   const { updateProject } = useProjectDb();
-  const [isOpen, setIsOpen] = useState(false);
+  const closeRef = useRef<HTMLButtonElement>(null);
 
-  const handleSubmit = (data: UpdateProgressFormValues & { deletedProgressUpdateIndices?: number[] }) => {
-    const updateData: Partial<ProjectType> = {
+  const handleSubmit = (
+    data: UpdateProgressFormValues,
+    deletedProgressUpdateIndices: number[]
+  ) => {
+    const updateData: UpdateProjectInputType = {
       status: data.status,
       progressPercentage: data.progressPercentage,
     };
@@ -28,49 +33,61 @@ export default function UpdateProgressButton({ project }: UpdateProgressButtonPr
       updateData.actualCompletionDate = undefined;
     }
 
-    if (data.progressUpdateDescription) {
-      const newProgressUpdate: ProgressUpdateType = {
-        description: data.progressUpdateDescription,
-        createdAt: new Date(),
-      };
-      
-      if (data.progressUpdateImage) {
-        const imageUri = data.progressUpdateImage instanceof File 
-          ? URL.createObjectURL(data.progressUpdateImage) 
-          : data.progressUpdateImage;
-        newProgressUpdate.image = { uri: imageUri };
-      }
-      
-      updateData.progressUpdates = [
-        ...(project.progressUpdates || []),
-        newProgressUpdate,
-      ];
-    }
+    // Add new progress updates
+    const description = data.progressUpdateDescription
+      ? data.progressUpdateDescription
+      : undefined;
+
+    const image = data.progressUpdateImage
+      ? { uri: URL.createObjectURL(data.progressUpdateImage) }
+      : undefined;
+
+    const newProgressUpdate: ProgressUpdateType = {
+      description: description,
+      image,
+      createdAt: new Date(),
+    };
+
+    updateData.progressUpdates = [
+      ...(project.progressUpdates || []),
+      newProgressUpdate,
+    ];
 
     // Handle deleted progress updates
-    if (data.deletedProgressUpdateIndices && data.deletedProgressUpdateIndices.length > 0) {
+    if (deletedProgressUpdateIndices.length > 0) {
       updateData.progressUpdates = (project.progressUpdates || []).filter(
-        (_, index) => !data.deletedProgressUpdateIndices!.includes(index)
+        (_, index) => !deletedProgressUpdateIndices.includes(index)
       );
     }
 
     updateProject(project.id, updateData);
-    setIsOpen(false);
+
+    toast.success("Success!", {
+      description: "Project progress updated successfully",
+    });
+
+    closeRef.current?.click();
   };
 
   return (
-    <>
-      <Button onClick={() => setIsOpen(true)} variant="default">
-        <RefreshCw className="mr-2 h-4 w-4" />
-        Update Progress
-      </Button>
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="default">
+          <RefreshCw className="mr-2 h-4 w-4" />
+          Update Progress
+        </Button>
+      </DialogTrigger>
 
-      <UpdateStatusDialog
-        open={isOpen}
-        onOpenChange={setIsOpen}
-        onSubmit={handleSubmit}
-        project={project}
-      />
-    </>
+      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Update Project Progress</DialogTitle>
+          <DialogDescription>
+            Update the status and progress of the project
+          </DialogDescription>
+        </DialogHeader>
+        <UpdateProgressForm handleSubmit={handleSubmit} project={project} />
+        <DialogClose ref={closeRef} className="hidden" />
+      </DialogContent>
+    </Dialog>
   );
 }

@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogTitle, DialogTrigger, DialogClose, DialogH
 import UpdateProgressForm from "@/components/update-progress-form";
 import { type UpdateProgressFormValues } from "@/schemas/project.schema";
 import { RefreshCw } from "lucide-react";
-import type { ProgressUpdateType, ProjectType } from "@/types/project";
+import type { ProgressUpdateType, ProjectType, UpdateProjectInputType } from "@/types/project";
 import { toast } from "sonner";
 
 interface UpdateProgressMenuItemProps {
@@ -22,7 +22,7 @@ export default function UpdateProgressMenuItem({ project }: UpdateProgressMenuIt
     data: UpdateProgressFormValues,
     deletedProgressUpdateIndices: number[]
   ) => {
-    const updateData: Partial<ProjectType> = {
+    const updateData: UpdateProjectInputType = {
       status: data.status,
       progressPercentage: data.progressPercentage,
     };
