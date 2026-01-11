@@ -10,7 +10,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { useComplaintDb } from "@/contexts/complaint-db-context";
-import ScheduleForm from "@/components/schedule-form";
+import ScheduleForm from "@/components/forms/schedule-form";
 import { type ScheduledFormValues } from "@/schemas/complaint.schema";
 import type { ComplaintType } from "@/types/complaint";
 import { toast } from "sonner";

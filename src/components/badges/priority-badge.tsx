@@ -1,6 +1,6 @@
 
 import { ComplaintPriorityType } from "@/types/complaint";
-import { Badge } from "./ui/badge";
+import { Badge } from "@/components/ui/badge";
 
 type StatusBadgeProps = {
   priority: ComplaintPriorityType;

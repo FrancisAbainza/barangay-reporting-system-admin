@@ -35,9 +35,9 @@ import { useComplaintDb } from "@/contexts/complaint-db-context";
 import ResolveStatusMenuItem from "./resolve-status-menu-item";
 import ScheduleStatusMenuItem from "./schedule-status-menu-item";
 import DeleteMenuItem from "@/app/admin-dashboard/complaints/components/delete-menu-item";
-import CategoryBadge from "@/components/category-badge";
-import StatusBadge from "@/components/status-badge";
-import PriorityBadge from "@/components/priority-badge";
+import CategoryBadge from "@/components/badges/category-badge";
+import StatusBadge from "@/components/badges/status-badge";
+import PriorityBadge from "@/components/badges/priority-badge";
 
 interface ComplaintTableProps {
   complaints: ComplaintType[];

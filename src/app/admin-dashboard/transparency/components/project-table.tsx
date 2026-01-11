@@ -37,8 +37,8 @@ import { formatDate } from "@/lib/date-formatter";
 import EditProjectMenuItem from "./edit-project-menu-item";
 import UpdateProgressMenuItem from "./update-progress-menu-item";
 import DeleteMenuItem from "@/app/admin-dashboard/complaints/components/delete-menu-item";
-import CategoryBadge from "@/components/category-badge";
-import StatusBadge from "@/components/status-badge";
+import CategoryBadge from "@/components/badges/category-badge";
+import StatusBadge from "@/components/badges/status-badge";
 import { useProjectDb } from "@/contexts/project-db-context";
 
 interface ProjectTableProps {

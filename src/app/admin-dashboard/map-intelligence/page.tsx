@@ -1,18 +1,19 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent } from "@/components/ui/card";
-import MapDisplay from "./components/map-display";
-import MapFilters from "./components/map-filters";
-import MapStats from "./components/map-stats";
 import { useComplaintDb } from "@/contexts/complaint-db-context";
 import { useProjectDb } from "@/contexts/project-db-context";
-import type { ComplaintStatusType, ComplaintCategoryType } from "@/types/complaint";
-import type { ProjectStatusType, ProjectCategoryType } from "@/types/project";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import MapManagementCard from "./components/map-management-card";
+import MapStats from "./components/map-stats";
 import { Map, Eye, MessageSquareWarning } from "lucide-react";
 import PageHeader from "@/components/page-header";
+import type { ComplaintStatusType, ComplaintCategoryType } from "@/types/complaint";
+import type { ProjectStatusType, ProjectCategoryType } from "@/types/project";
 
+// In production, this would be a Server Component with:
+// const complaints = await fetchComplaints();
+// const projects = await fetchProjects();
 export default function MapIntelligencePage() {
   const { complaints } = useComplaintDb();
   const { projects } = useProjectDb();
@@ -133,7 +134,6 @@ export default function MapIntelligencePage() {
 
   return (
     <div className="container p-6 space-y-6">
-      {/* Header */}
       <PageHeader
         title="Map Intelligence"
         subtitle="Geographic visualization and analysis of complaints and projects"
@@ -159,25 +159,13 @@ export default function MapIntelligencePage() {
           <MapStats complaints={filteredComplaints} type="complaints" />
 
           {/* Filters and Map */}
-          <Card className="py-0">
-            <CardContent className="p-4 space-y-4">
-              <MapFilters
-                type="complaints"
-                onFilterChange={(filters) =>
-                  setComplaintFilters({
-                    searchQuery: filters.searchQuery,
-                    statusFilters: filters.statusFilters as ComplaintStatusType[],
-                    categoryFilters: filters.categoryFilters as ComplaintCategoryType[],
-                    priorityFilters: filters.priorityFilters || [],
-                    dateFrom: filters.dateFrom || "",
-                    dateTo: filters.dateTo || "",
-                    showHeatmap: filters.showHeatmap || false,
-                  })
-                }
-              />
-              <MapDisplay complaints={filteredComplaints} type="complaints" showHeatmap={complaintFilters.showHeatmap} />
-            </CardContent>
-          </Card>
+          <MapManagementCard
+            type="complaints"
+            complaints={complaints}
+            filteredComplaints={filteredComplaints}
+            filters={complaintFilters}
+            onFilterChange={setComplaintFilters}
+          />
         </TabsContent>
 
         {/* Projects Tab */}
@@ -186,24 +174,13 @@ export default function MapIntelligencePage() {
           <MapStats projects={filteredProjects} type="transparency" />
 
           {/* Filters and Map */}
-          <Card className="py-0">
-            <CardContent className="p-4 space-y-4">
-              <MapFilters
-                type="transparency"
-                onFilterChange={(filters) =>
-                  setProjectFilters({
-                    searchQuery: filters.searchQuery,
-                    statusFilters: filters.statusFilters as ProjectStatusType[],
-                    categoryFilters: filters.categoryFilters as ProjectCategoryType[],
-                    dateFrom: filters.dateFrom || "",
-                    dateTo: filters.dateTo || "",
-                    showHeatmap: filters.showHeatmap || false,
-                  })
-                }
-              />
-              <MapDisplay projects={filteredProjects} type="transparency" showHeatmap={projectFilters.showHeatmap} />
-            </CardContent>
-          </Card>
+          <MapManagementCard
+            type="transparency"
+            projects={projects}
+            filteredProjects={filteredProjects}
+            filters={projectFilters}
+            onFilterChange={setProjectFilters}
+          />
         </TabsContent>
       </Tabs>
     </div>

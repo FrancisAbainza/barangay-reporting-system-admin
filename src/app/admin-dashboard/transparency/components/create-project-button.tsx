@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import { useProjectDb } from "@/contexts/project-db-context";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogDescription, DialogTitle, DialogClose } from "@/components/ui/dialog";
-import ProjectForm from "@/components/project-form";
+import ProjectForm from "@/components/forms/project-form";
 import { type ProjectFormValues } from "@/schemas/project.schema";
 import { Plus } from "lucide-react";
 import type { CreateProjectInputType } from "@/types/project";

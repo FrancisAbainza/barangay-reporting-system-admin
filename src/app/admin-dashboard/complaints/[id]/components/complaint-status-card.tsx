@@ -1,9 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertCircle, CheckCircle2, Clock, XCircle } from "lucide-react";
 import type { ComplaintStatusType, ComplaintCategoryType, ComplaintPriorityType } from "@/types/complaint";
-import StatusBadge from "@/components/status-badge";
-import PriorityBadge from "@/components/priority-badge";
-import CategoryBadge from "@/components/category-badge";
+import StatusBadge from "@/components/badges/status-badge";
+import PriorityBadge from "@/components/badges/priority-badge";
+import CategoryBadge from "@/components/badges/category-badge";
 
 interface ComplaintStatusCardProps {
   status: ComplaintStatusType;

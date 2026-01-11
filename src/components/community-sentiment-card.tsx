@@ -7,7 +7,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { MessageSquare, Sparkles } from "lucide-react";
 import type { ComplaintType } from "@/types/complaint";
 import type { ProjectType } from "@/types/project";
-import SentimentBadge from "./sentiment-badge";
+import SentimentBadge from "./badges/sentiment-badge";
 import { toast } from "sonner";
 
 interface CommunitySentimentCardProps {

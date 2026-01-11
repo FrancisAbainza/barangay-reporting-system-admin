@@ -1,6 +1,6 @@
 import { SentimentType } from "@/types/shared";
 import { TrendingUp } from "lucide-react";
-import { Badge } from "./ui/badge";
+import { Badge } from "@/components/ui/badge";
 
 export default function SentimentBadge({ sentiment }: { sentiment: SentimentType }) {
   const getSentimentBadge = (sentiment: SentimentType) => {

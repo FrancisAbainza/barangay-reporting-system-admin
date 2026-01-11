@@ -1,16 +1,18 @@
-import { ComplaintCategoryType } from "@/types/complaint";
-import { ProjectCategoryType } from "@/types/project";
-import { Badge } from "./ui/badge";
+import { X } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import type { ComplaintCategoryType } from "@/types/complaint";
+import type { ProjectCategoryType } from "@/types/project";
 
-type StatusBadgeProps = {
+type CategoryFilterBadgeProps = {
   type: "complaint" | "project";
   category: ComplaintCategoryType | ProjectCategoryType;
+  onRemove: () => void;
 };
 
-export function getCategoryBadge(
+const getCategoryColor = (
   category: ComplaintCategoryType | ProjectCategoryType,
   type: "complaint" | "project"
-): string {
+): string => {
   if (type === "complaint") {
     const colors: Record<ComplaintCategoryType, string> = {
       noise: "bg-secondary/10 text-secondary",
@@ -38,12 +40,12 @@ export function getCategoryBadge(
     others: "bg-muted text-muted-foreground",
   };
   return colors[category as ProjectCategoryType];
-}
+};
 
-export function getCategoryLabel(
+const getCategoryLabel = (
   category: ComplaintCategoryType | ProjectCategoryType,
   type: "complaint" | "project"
-): string {
+): string => {
   if (type === "complaint") {
     const labels: Record<ComplaintCategoryType, string> = {
       noise: "Noise",
@@ -71,12 +73,22 @@ export function getCategoryLabel(
     others: "Others",
   };
   return labels[category as ProjectCategoryType];
-}
+};
 
-export default function CategoryBadge({ type, category }: StatusBadgeProps) {
+export default function CategoryFilterBadge({ type, category, onRemove }: CategoryFilterBadgeProps) {
   return (
-    <Badge className={getCategoryBadge(category, type)}>
+    <Badge
+      className={`${getCategoryColor(category, type)} flex items-center gap-1 pr-1`}
+    >
       {getCategoryLabel(category, type)}
+      <button
+        onClick={onRemove}
+        className="ml-1 hover:bg-background/20 rounded-full p-0.5 transition-colors"
+        aria-label={`Remove ${category} category filter`}
+        type="button"
+      >
+        <X className="h-3 w-3" />
+      </button>
     </Badge>
   );
 }

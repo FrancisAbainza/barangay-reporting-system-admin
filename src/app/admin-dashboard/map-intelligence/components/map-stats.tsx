@@ -1,6 +1,7 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useMemo } from "react";
+import StatCard from "@/components/stat-card";
 import { AlertCircle, CheckCircle2, Clock, AlertTriangle, FolderKanban, BarChart3 } from "lucide-react";
 import type { ComplaintType } from "@/types/complaint";
 import type { ProjectType } from "@/types/project";
@@ -12,124 +13,102 @@ interface MapStatsProps {
 }
 
 export default function MapStats({ complaints, projects, type }: MapStatsProps) {
-  if (type === "complaints" && complaints) {
+  const complaintStats = useMemo(() => {
+    if (!complaints) return null;
+
+    return [
+      {
+        title: "Total Complaints",
+        value: complaints.length,
+        icon: AlertCircle,
+        description: "All time",
+        color: "text-blue-500",
+        bgColor: "bg-blue-50 dark:bg-blue-950",
+      },
+      {
+        title: "Pending Review",
+        value: complaints.filter((c) => c.status === "submitted" || c.status === "under_review").length,
+        icon: Clock,
+        description: "Awaiting action",
+        color: "text-yellow-500",
+        bgColor: "bg-yellow-50 dark:bg-yellow-950",
+      },
+      {
+        title: "In Progress",
+        value: complaints.filter((c) => c.status === "scheduled" || c.status === "in_progress").length,
+        icon: AlertTriangle,
+        description: "Being resolved",
+        color: "text-orange-500",
+        bgColor: "bg-orange-50 dark:bg-orange-950",
+      },
+      {
+        title: "Resolved",
+        value: complaints.filter((c) => c.status === "resolved").length,
+        icon: CheckCircle2,
+        description: "Completed",
+        color: "text-green-500",
+        bgColor: "bg-green-50 dark:bg-green-950",
+      },
+    ];
+  }, [complaints]);
+
+  const projectStats = useMemo(() => {
+    if (!projects) return null;
+
     const stats = {
-      total: complaints.length,
-      submitted: complaints.filter((c) => c.status === "submitted").length,
-      underReview: complaints.filter((c) => c.status === "under_review").length,
-      scheduled: complaints.filter((c) => c.status === "scheduled").length,
-      inProgress: complaints.filter((c) => c.status === "in_progress").length,
-      resolved: complaints.filter((c) => c.status === "resolved").length,
-    };
-
-    return (
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Complaints</CardTitle>
-            <AlertCircle className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.total}</div>
-            <p className="text-xs text-muted-foreground">All time</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending Review</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.submitted + stats.underReview}</div>
-            <p className="text-xs text-muted-foreground">Awaiting action</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">In Progress</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.scheduled + stats.inProgress}</div>
-            <p className="text-xs text-muted-foreground">Being resolved</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Resolved</CardTitle>
-            <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.resolved}</div>
-            <p className="text-xs text-muted-foreground">Completed</p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  if (type === "transparency" && projects) {
-    const stats = {
-      total: projects.length,
       planned: projects.filter((p) => p.status === "planned").length,
       approved: projects.filter((p) => p.status === "approved").length,
       ongoing: projects.filter((p) => p.status === "ongoing").length,
       onHold: projects.filter((p) => p.status === "on_hold").length,
       completed: projects.filter((p) => p.status === "completed").length,
-      cancelled: projects.filter((p) => p.status === "cancelled").length,
     };
 
-    return (
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Projects</CardTitle>
-            <FolderKanban className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.total}</div>
-            <p className="text-xs text-muted-foreground">All projects in system</p>
-          </CardContent>
-        </Card>
+    return [
+      {
+        title: "Total Projects",
+        value: projects.length,
+        icon: FolderKanban,
+        description: "All projects in system",
+        color: "text-blue-500",
+        bgColor: "bg-blue-50 dark:bg-blue-950",
+      },
+      {
+        title: "Planned",
+        value: stats.planned,
+        icon: BarChart3,
+        description: "Awaiting approval",
+        color: "text-yellow-500",
+        bgColor: "bg-yellow-50 dark:bg-yellow-950",
+      },
+      {
+        title: "Confirmed",
+        value: stats.approved + stats.ongoing + stats.onHold,
+        icon: Clock,
+        description: "Approved projects",
+        color: "text-orange-500",
+        bgColor: "bg-orange-50 dark:bg-orange-950",
+      },
+      {
+        title: "Completed",
+        value: stats.completed,
+        icon: CheckCircle2,
+        description: "Successfully finished",
+        color: "text-green-500",
+        bgColor: "bg-green-50 dark:bg-green-950",
+      },
+    ];
+  }, [projects]);
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Planned</CardTitle>
-            <BarChart3 className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.planned}</div>
-            <p className="text-xs text-muted-foreground">Awaiting approval</p>
-          </CardContent>
-        </Card>
+  const stats = type === "complaints" ? complaintStats : projectStats;
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Confirmed</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.approved + stats.ongoing + stats.onHold}</div>
-            <p className="text-xs text-muted-foreground">Approved projects</p>
-          </CardContent>
-        </Card>
+  if (!stats) return null;
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Completed</CardTitle>
-            <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.completed}</div>
-            <p className="text-xs text-muted-foreground">Successfully finished</p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  return null;
+  return (
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      {stats.map((stat, index) => (
+        <StatCard key={index} stat={stat} />
+      ))}
+    </div>
+  );
 }
+

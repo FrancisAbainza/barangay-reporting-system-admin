@@ -193,7 +193,7 @@ export default function MapDisplay({ complaints, projects, type, showHeatmap = f
                       }}
                       onCloseClick={() => setSelectedMarker(null)}
                       options={{
-                        pixelOffset: new google.maps.Size(0, -40),
+                        pixelOffset: new google.maps.Size(0, -10),
                       }}
                     >
                       <ComplaintInfoWindow complaint={complaint} />
@@ -223,7 +223,7 @@ export default function MapDisplay({ complaints, projects, type, showHeatmap = f
                       }}
                       onCloseClick={() => setSelectedMarker(null)}
                       options={{
-                        pixelOffset: new google.maps.Size(0, -40),
+                        pixelOffset: new google.maps.Size(0, -10),
                       }}
                     >
                       <ProjectInfoWindow project={project} />

@@ -9,8 +9,10 @@ import {
 } from "@/components/ui/popover";
 import { Search, CalendarIcon, ChevronDown, Filter, Tag } from "lucide-react";
 import type { ProjectStatusType, ProjectCategoryType } from "@/types/project";
-import { getStatusBadge, getCategoryLabel } from "@/lib/project-helpers";
-import FilterPopover from "../../../../components/filter-popover";
+import FilterPopover from "@/components/filter-popover";
+import StatusFilterBadge from "@/components/badges/status-filter-badge";
+import CategoryFilterBadge from "@/components/badges/category-filter-badge";
+import DateFilterBadge from "@/components/badges/date-filter-badge";
 
 interface ProjectFiltersProps {
   filters: {
@@ -165,37 +167,26 @@ export default function ProjectFilters({ filters, onFilterChange }: ProjectFilte
         {(statusFilters.length > 0 || categoryFilters.length > 0 || dateFrom || dateTo) && (
           <div className="flex flex-wrap gap-2">
             {statusFilters.map((status) => (
-              <Badge key={status} variant="secondary" className="gap-1">
-                Status: {getStatusBadge(status).label}
-                <button
-                  onClick={() => updateFilters({ statusFilters: statusFilters.filter((s) => s !== status) })}
-                  className="ml-1 hover:bg-secondary-foreground/20 rounded-full p-0.5"
-                >
-                  ×
-                </button>
-              </Badge>
+              <StatusFilterBadge
+                key={status}
+                type="project"
+                status={status}
+                onRemove={() => updateFilters({ statusFilters: statusFilters.filter((s) => s !== status) })}
+              />
             ))}
             {categoryFilters.map((category) => (
-              <Badge key={category} variant="secondary" className="gap-1">
-                {getCategoryLabel(category)}
-                <button
-                  onClick={() => updateFilters({ categoryFilters: categoryFilters.filter((c) => c !== category) })}
-                  className="ml-1 hover:bg-secondary-foreground/20 rounded-full p-0.5"
-                >
-                  ×
-                </button>
-              </Badge>
+              <CategoryFilterBadge
+                key={category}
+                type="project"
+                category={category}
+                onRemove={() => updateFilters({ categoryFilters: categoryFilters.filter((c) => c !== category) })}
+              />
             ))}
             {(dateFrom || dateTo) && (
-              <Badge variant="secondary" className="gap-1">
-                {dateFrom && dateTo ? `${dateFrom} to ${dateTo}` : dateFrom ? `From ${dateFrom}` : `Until ${dateTo}`}
-                <button
-                  onClick={() => updateFilters({ dateFrom: "", dateTo: "" })}
-                  className="ml-1 hover:bg-secondary-foreground/20 rounded-full p-0.5"
-                >
-                  ×
-                </button>
-              </Badge>
+              <DateFilterBadge
+                dateRange={dateFrom && dateTo ? `${dateFrom} to ${dateTo}` : dateFrom ? `From ${dateFrom}` : `Until ${dateTo}`}
+                onRemove={() => updateFilters({ dateFrom: "", dateTo: "" })}
+              />
             )}
           </div>
         )}

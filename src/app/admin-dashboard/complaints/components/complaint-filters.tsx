@@ -9,8 +9,11 @@ import {
 } from "@/components/ui/popover";
 import { Search, CalendarIcon, ChevronDown, Filter, Tag, Flag } from "lucide-react";
 import type { ComplaintStatusType, ComplaintCategoryType, ComplaintPriorityType } from "@/types/complaint";
-import { getStatusBadge, getCategoryLabel } from "@/lib/complaint-helpers";
-import FilterPopover from "../../../../components/filter-popover";
+import FilterPopover from "@/components/filter-popover";
+import StatusFilterBadge from "@/components/badges/status-filter-badge";
+import CategoryFilterBadge from "@/components/badges/category-filter-badge";
+import PriorityFilterBadge from "@/components/badges/priority-filter-badge";
+import DateFilterBadge from "@/components/badges/date-filter-badge";
 
 interface ComplaintFiltersProps {
   filters: {
@@ -184,48 +187,33 @@ export default function ComplaintFilters({ filters, onFilterChange }: ComplaintF
         {(statusFilters.length > 0 || categoryFilters.length > 0 || priorityFilters.length > 0 || dateFrom || dateTo) && (
           <div className="flex flex-wrap gap-2">
             {statusFilters.map((status) => (
-              <Badge key={status} variant="secondary" className="gap-1">
-                Status: {getStatusBadge(status).label}
-                <button
-                  onClick={() => updateFilters({ statusFilters: statusFilters.filter((s) => s !== status) })}
-                  className="ml-1 hover:bg-secondary-foreground/20 rounded-full p-0.5"
-                >
-                  ×
-                </button>
-              </Badge>
+              <StatusFilterBadge
+                key={status}
+                type="complaint"
+                status={status}
+                onRemove={() => updateFilters({ statusFilters: statusFilters.filter((s) => s !== status) })}
+              />
             ))}
             {categoryFilters.map((category) => (
-              <Badge key={category} variant="secondary" className="gap-1">
-                {getCategoryLabel(category)}
-                <button
-                  onClick={() => updateFilters({ categoryFilters: categoryFilters.filter((c) => c !== category) })}
-                  className="ml-1 hover:bg-secondary-foreground/20 rounded-full p-0.5"
-                >
-                  ×
-                </button>
-              </Badge>
+              <CategoryFilterBadge
+                key={category}
+                type="complaint"
+                category={category}
+                onRemove={() => updateFilters({ categoryFilters: categoryFilters.filter((c) => c !== category) })}
+              />
             ))}
             {priorityFilters.map((priority) => (
-              <Badge key={priority} variant="secondary" className="gap-1">
-                Priority: {priority.charAt(0).toUpperCase() + priority.slice(1)}
-                <button
-                  onClick={() => updateFilters({ priorityFilters: priorityFilters.filter((p) => p !== priority) })}
-                  className="ml-1 hover:bg-secondary-foreground/20 rounded-full p-0.5"
-                >
-                  ×
-                </button>
-              </Badge>
+              <PriorityFilterBadge
+                key={priority}
+                priority={priority}
+                onRemove={() => updateFilters({ priorityFilters: priorityFilters.filter((p) => p !== priority) })}
+              />
             ))}
             {(dateFrom || dateTo) && (
-              <Badge variant="secondary" className="gap-1">
-                {dateFrom && dateTo ? `${dateFrom} to ${dateTo}` : dateFrom ? `From ${dateFrom}` : `Until ${dateTo}`}
-                <button
-                  onClick={() => updateFilters({ dateFrom: "", dateTo: "" })}
-                  className="ml-1 hover:bg-secondary-foreground/20 rounded-full p-0.5"
-                >
-                  ×
-                </button>
-              </Badge>
+              <DateFilterBadge
+                dateRange={dateFrom && dateTo ? `${dateFrom} to ${dateTo}` : dateFrom ? `From ${dateFrom}` : `Until ${dateTo}`}
+                onRemove={() => updateFilters({ dateFrom: "", dateTo: "" })}
+              />
             )}
           </div>
         )}

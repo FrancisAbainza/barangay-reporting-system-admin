@@ -3,7 +3,7 @@
 import { useProjectDb } from "@/contexts/project-db-context";
 import { useAuth } from "@/contexts/auth-context";
 import { TabsContent } from "@/components/ui/tabs";
-import AdminCommentForm from "@/components/admin-comment-form";
+import AdminCommentForm from "@/components/forms/admin-comment-form";
 import CommentsList from "@/components/comments-list";
 import CommunitySentimentCard from "@/components/community-sentiment-card";
 import { ThumbsUp, ThumbsDown, MessageSquare } from "lucide-react";

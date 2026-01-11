@@ -1,5 +1,5 @@
 import { ComplaintStatusType } from "@/types/complaint";
-import { Badge } from "./ui/badge";
+import { Badge } from "@/components/ui/badge";
 import { ProjectStatusType } from "@/types/project";
 
 type StatusBadgeProps = {

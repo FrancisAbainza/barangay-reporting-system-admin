@@ -4,7 +4,7 @@ import { useRef } from "react";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger, DialogClose, DialogHeader, DialogDescription } from "@/components/ui/dialog";
 import { useComplaintDb } from "@/contexts/complaint-db-context";
-import ResolutionForm from "@/components/resolution-form";
+import ResolutionForm from "@/components/forms/resolution-form";
 import { type ResolutionFormValues } from "@/schemas/complaint.schema";
 import type { ComplaintType } from "@/types/complaint";
 import { toast } from "sonner";

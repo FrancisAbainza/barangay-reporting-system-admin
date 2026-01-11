@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDistanceToNow } from "@/lib/date-formatter";
-import StatusBadge from "@/components/status-badge";
+import StatusBadge from "@/components/badges/status-badge";
 import { ProjectType } from "@/types/project";
 import { ComplaintType } from "@/types/complaint";
 import { AlertCircle, FolderKanban } from "lucide-react";

@@ -2,8 +2,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { CheckCircle2, Clock, Pause, XCircle } from "lucide-react";
 import type { ProjectStatusType, ProjectCategoryType } from "@/types/project";
-import StatusBadge from "@/components/status-badge";
-import CategoryBadge from "@/components/category-badge";
+import StatusBadge from "@/components/badges/status-badge";
+import CategoryBadge from "@/components/badges/category-badge";
 
 interface ProjectStatusCardProps {
   status: ProjectStatusType;
