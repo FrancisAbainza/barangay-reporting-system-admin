@@ -37,7 +37,7 @@ export default function LoginForm() {
       await login(data.employeeId, data.password);
       toast.success("Login successful!");
       router.push("/admin-dashboard");
-    } catch (error) {
+    } catch {
       toast.error("Login failed. Please try again.");
     }
   }

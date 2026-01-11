@@ -49,7 +49,7 @@ export default function MapManagementCard(props: MapManagementCardProps) {
   const { type, filters, onFilterChange } = props;
 
   if (type === "complaints") {
-    const { complaints, filteredComplaints } = props;
+    const { filteredComplaints } = props;
     
     return (
       <Card className="py-0">
@@ -65,7 +65,7 @@ export default function MapManagementCard(props: MapManagementCardProps) {
     );
   }
 
-  const { projects, filteredProjects } = props;
+  const { filteredProjects } = props;
   
   return (
     <Card className="py-0">

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import StatusBadge from "@/components/badges/status-badge";
 import PriorityBadge from "@/components/badges/priority-badge";
@@ -17,10 +18,11 @@ export default function ComplaintInfoWindow({ complaint }: ComplaintInfoWindowPr
       {/* Image Section */}
       {complaint.images && complaint.images.length > 0 && (
         <div className="relative h-40 w-full mb-2 rounded-lg overflow-hidden">
-          <img
+          <Image
             src={complaint.images[0].uri}
             alt={complaint.title}
-            className="w-full h-full object-cover"
+            fill
+            className="object-cover"
           />
           <div className="absolute inset-0 bg-linear-to-t from-black/20 to-transparent" />
         </div>

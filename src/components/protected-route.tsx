@@ -3,7 +3,6 @@
 import { useAuth } from "@/contexts/auth-context";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { Spinner } from "@/components/ui/spinner";
 
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();

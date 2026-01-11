@@ -32,7 +32,7 @@ export default function ResolveStatusDialog({
   async function handleSubmit(data: ResolutionFormValues) {
     const budget = data.budget ? parseFloat(data.budget) : undefined;
 
-    let image = data.image
+    const image = data.image
       ? { uri: URL.createObjectURL(data.image) }
       : undefined;
 

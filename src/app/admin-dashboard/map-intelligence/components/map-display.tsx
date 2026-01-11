@@ -89,7 +89,7 @@ export default function MapDisplay({ complaints, projects, type, showHeatmap = f
         map.fitBounds(bounds);
         
         // Ensure minimum zoom level
-        const listener = google.maps.event.addListenerOnce(map, 'bounds_changed', () => {
+        google.maps.event.addListenerOnce(map, 'bounds_changed', () => {
           const zoom = map.getZoom();
           if (zoom && zoom > 16) {
             map.setZoom(16);
@@ -155,9 +155,6 @@ export default function MapDisplay({ complaints, projects, type, showHeatmap = f
       </Card>
     );
   }
-
-  const items = type === "complaints" ? complaints : projects;
-  const validItems = items?.filter((item) => item.location) || [];
 
   return (
     <div className="rounded-lg overflow-hidden border border-input">

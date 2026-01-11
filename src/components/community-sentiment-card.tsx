@@ -25,7 +25,7 @@ export default function CommunitySentimentCard({
     setIsGenerating(true);
     try {
       await onGenerate(item.id);
-    } catch (error) {
+    } catch {
       toast.error("Failed to generate community sentiment. Please try again.");
     } finally {
       setIsGenerating(false);

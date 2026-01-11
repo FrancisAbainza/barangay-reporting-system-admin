@@ -19,7 +19,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export default function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUserType | null>(null);
-  const login = async (email: string, password: string) => {
+  const login = async (email: string) => {
     // Simulated login - for demonstration purposes
     await new Promise((resolve) => setTimeout(resolve, 1000));
 

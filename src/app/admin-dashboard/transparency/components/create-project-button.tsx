@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { useProjectDb } from "@/contexts/project-db-context";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogDescription, DialogTitle, DialogClose } from "@/components/ui/dialog";

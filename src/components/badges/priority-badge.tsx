@@ -13,9 +13,8 @@ export default function PriorityBadge({ priority }: StatusBadgeProps) {
   return (
     <Badge
       style={{
-        backgroundColor: color.replace('hsl(', 'hsl(').replace(')', ' / 0.25)'),
+        backgroundColor: color.replace('hsl(', 'hsl(').replace(')', ' / 0.15)'),
         color: color,
-        borderColor: color.replace('hsl(', 'hsl(').replace(')', ' / 0.4)'),
       }}
     >
       {priority.charAt(0).toUpperCase() + priority.slice(1)}

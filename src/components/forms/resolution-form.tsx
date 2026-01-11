@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -14,7 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import MultiImageUploader, { FileUploadType } from "@/components/multi-image-uploader";
+import MultiImageUploader from "@/components/multi-image-uploader";
 import { resolutionSchema, type ResolutionFormValues } from "@/schemas/complaint.schema";
 
 type ResolutionFormProps = {

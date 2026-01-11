@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import dynamic from "next/dynamic";
 import { MapPin, Navigation, X, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";

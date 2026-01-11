@@ -171,7 +171,7 @@ const initialComplaints: ComplaintType[] = [
     resolutionDetails: {
       description: "Replaced the damaged section of the main water pipe. Repairs completed successfully.",
       budget: 15000,
-      images: [{ uri: `https://picsum.photos/seed/${Math.random()}/1280/720` }],
+      image: { uri: `https://picsum.photos/seed/${Math.random()}/1280/720` },
     },
     resolvedAt: new Date("2025-08-21T16:30:00"),
     likes: ["user1", "user2"],
@@ -424,7 +424,7 @@ const initialComplaints: ComplaintType[] = [
     resolutionDetails: {
       description: "Cleared fallen branch and cleaned area.",
       budget: 1000,
-      images: [{ uri: `https://picsum.photos/seed/${Math.random()}/1280/720` }],
+      image: { uri: `https://picsum.photos/seed/${Math.random()}/1280/720` },
     },
     resolvedAt: new Date("2025-12-07T15:00:00"),
     createdAt: new Date("2025-12-07T10:00:00"),
@@ -555,7 +555,7 @@ export default function ComplaintDbProvider({ children }: { children: ReactNode 
     setComplaints((prev) =>
       prev.map((complaint) => {
         if (complaint.id === id) {
-          const updateData: any = { status };
+          const updateData: Partial<ComplaintType> = { status };
 
           // Set resolvedAt timestamp and resolutionDetails when marking as resolved
           if (status === "resolved") {
@@ -564,10 +564,9 @@ export default function ComplaintDbProvider({ children }: { children: ReactNode 
               updateData.resolutionDetails = resolutionDetails;
             }
           } else if (complaint.status === "resolved") {
-            // Clear resolvedAt, resolutionDetails, and actualCompletionDate if changing from resolved to another status
+            // Clear resolvedAt and resolutionDetails if changing from resolved to another status
             updateData.resolvedAt = undefined;
             updateData.resolutionDetails = undefined;
-            updateData.actualCompletionDate = undefined;
           }
 
           // Set scheduledAt timestamp when marking as scheduled
@@ -587,7 +586,6 @@ export default function ComplaintDbProvider({ children }: { children: ReactNode 
           // Explicitly remove undefined fields only when they were set to undefined
           if (updateData.hasOwnProperty('resolvedAt') && updateData.resolvedAt === undefined) delete updated.resolvedAt;
           if (updateData.hasOwnProperty('resolutionDetails') && updateData.resolutionDetails === undefined) delete updated.resolutionDetails;
-          if (updateData.hasOwnProperty('actualCompletionDate') && updateData.actualCompletionDate === undefined) delete updated.actualCompletionDate;
           if (updateData.hasOwnProperty('scheduledAt') && updateData.scheduledAt === undefined) delete updated.scheduledAt;
 
           updatedComplaint = updated;

@@ -35,7 +35,7 @@ export default function ComplaintAIAnalysisTab({ complaint }: ComplaintAIAnalysi
 
     try {
       await generateAIAnalysis(complaint.id);
-    } catch (error) {
+    } catch {
       toast.error("Failed to generate AI analysis. Please try again.");
     } finally {
       setIsGenerating(false);

@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import MultiImageUploader, { type FileUploadType } from "@/components/multi-image-uploader";
+import MultiImageUploader from "@/components/multi-image-uploader";
 import { updateProgressSchema, type UpdateProgressFormValues } from "@/schemas/project.schema";
 import { Trash2, ImageIcon } from "lucide-react";
 import { formatDate } from "@/lib/date-formatter";

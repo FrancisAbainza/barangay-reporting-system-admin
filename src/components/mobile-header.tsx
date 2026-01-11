@@ -15,15 +15,10 @@ import {
 } from "@/components/ui/sheet";
 import {
   LayoutDashboard,
-  Brain,
   MessageSquareWarning,
   Eye,
   Map,
-  MessageCircle,
-  TrendingUp,
-  FileText,
   Users,
-  Settings,
   LogOut,
   Menu,
   ShieldCheck,

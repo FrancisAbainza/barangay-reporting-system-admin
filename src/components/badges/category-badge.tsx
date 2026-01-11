@@ -58,9 +58,8 @@ export default function CategoryBadge({ type, category }: StatusBadgeProps) {
   return (
     <Badge
       style={{
-        backgroundColor: color.replace('hsl(', 'hsl(').replace(')', ' / 0.25)'),
+        backgroundColor: color.replace('hsl(', 'hsl(').replace(')', ' / 0.15)'),
         color: color,
-        borderColor: color.replace('hsl(', 'hsl(').replace(')', ' / 0.4)'),
       }}
     >
       {getCategoryLabel(category, type)}

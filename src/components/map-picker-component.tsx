@@ -39,20 +39,6 @@ export default function MapPickerComponent({ position, onLocationSelect }: MapPi
 
   const [map, setMap] = useState<google.maps.Map | null>(null);
 
-  // Check if API key is missing
-  if (!apiKey) {
-    return (
-      <div className="h-[400px] w-full rounded-md overflow-hidden border border-input bg-muted flex items-center justify-center p-4">
-        <div className="text-center space-y-2">
-          <p className="text-sm font-medium text-destructive">Google Maps API Key Missing</p>
-          <p className="text-xs text-muted-foreground">
-            Add NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to your .env.local file
-          </p>
-        </div>
-      </div>
-    );
-  }
-
   const onLoad = useCallback((map: google.maps.Map) => {
     setMap(map);
     // Pan to position if it exists
@@ -75,6 +61,20 @@ export default function MapPickerComponent({ position, onLocationSelect }: MapPi
     },
     [onLocationSelect]
   );
+
+  // Check if API key is missing
+  if (!apiKey) {
+    return (
+      <div className="h-[400px] w-full rounded-md overflow-hidden border border-input bg-muted flex items-center justify-center p-4">
+        <div className="text-center space-y-2">
+          <p className="text-sm font-medium text-destructive">Google Maps API Key Missing</p>
+          <p className="text-xs text-muted-foreground">
+            Add NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to your .env.local file
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   if (loadError) {
     return (

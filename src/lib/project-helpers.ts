@@ -21,12 +21,12 @@ export function formatBudget(amount?: number): string {
 
 export function getStatusColor(status: ProjectStatusType) {
   const colors: Record<ProjectStatusType, string> = {
-    planned: "hsl(217 91% 60%)",
-    approved: "hsl(199 89% 48%)",
-    ongoing: "hsl(25 95% 53%)",
-    on_hold: "hsl(48 96% 53%)",
-    completed: "hsl(142 76% 36%)",
-    cancelled: "hsl(215 14% 34%)",
+    planned: "hsl(220 9% 46%)",      // gray500: #6B7280
+    approved: "hsl(221 91% 60%)",    // info: #3B82F6
+    ongoing: "hsl(220 100% 33%)",    // primary: #0038A8
+    on_hold: "hsl(38 92% 50%)",      // warning: #F59E0B
+    completed: "hsl(142 76% 36%)",   // success: #16A34A
+    cancelled: "hsl(0 84% 51%)",     // error: #DC2626
   }
 
   return colors[status];

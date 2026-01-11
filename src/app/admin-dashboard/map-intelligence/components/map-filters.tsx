@@ -151,9 +151,6 @@ export default function MapFilters(props: MapFiltersProps) {
     { value: "urgent", label: "Urgent" },
   ];
 
-  const statuses = type === "complaints" ? complaintStatuses : projectStatuses;
-  const categories = type === "complaints" ? complaintCategories : projectCategories;
-
   return (
     <div className="flex flex-col gap-3 lg:flex-row">
       {/* Search and Filters */}

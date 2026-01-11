@@ -1,4 +1,4 @@
-import { BarChart3, Megaphone, Search, ShieldCheck } from "lucide-react";
+import { BarChart3, Megaphone, Search } from "lucide-react";
 import LoginForm from "@/components/forms/login-form";
 import Logo from "@/components/logo";
 

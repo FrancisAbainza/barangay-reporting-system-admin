@@ -31,9 +31,8 @@ export default function StatusBadge({ type, status }: StatusBadgeProps) {
     <Badge
       variant="secondary"
       style={{
-        backgroundColor: color.replace('hsl(', 'hsl(').replace(')', ' / 0.25)'),
+        backgroundColor: color.replace('hsl(', 'hsl(').replace(')', ' / 0.15)'),
         color: color,
-        borderColor: color.replace('hsl(', 'hsl(').replace(')', ' / 0.4)'),
       }}
     >
       {formatStatus(status)}
