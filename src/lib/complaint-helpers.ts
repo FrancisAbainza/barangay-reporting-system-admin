@@ -1,4 +1,4 @@
-import type { ComplaintStatusType, ComplaintCategoryType } from "@/types/complaint";
+import type { ComplaintStatusType, ComplaintCategoryType, ComplaintPriorityType } from "@/types/complaint";
 
 export function getStatusColor(status: ComplaintStatusType) {
   const colors: Record<ComplaintStatusType, string> = {
@@ -27,4 +27,15 @@ export function getCategoryColor(category: ComplaintCategoryType) {
   }
 
   return colors[category];
+}
+
+export function getPriorityColor(priority: ComplaintPriorityType) {
+  const colors: Record<ComplaintPriorityType, string> = {
+    low: "hsl(217 91% 60%)",
+    medium: "hsl(48 96% 53%)",
+    high: "hsl(25 95% 53%)",
+    urgent: "hsl(0 84% 60%)",
+  }
+
+  return colors[priority];
 }

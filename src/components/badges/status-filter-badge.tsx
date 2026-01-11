@@ -2,6 +2,8 @@ import { X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import type { ComplaintStatusType } from "@/types/complaint";
 import type { ProjectStatusType } from "@/types/project";
+import * as ComplaintHelpers from "@/lib/complaint-helpers";
+import * as ProjectHelpers from "@/lib/project-helpers";
 
 type StatusFilterBadgeProps = {
   type: "complaint" | "project";
@@ -11,29 +13,9 @@ type StatusFilterBadgeProps = {
 
 const getStatusColor = (status: string, type: "complaint" | "project") => {
   if (type === "complaint") {
-    switch (status) {
-      case "resolved":
-        return "bg-green-500/10 text-green-700 dark:text-green-400";
-      case "in_progress":
-      case "scheduled":
-        return "bg-orange-500/10 text-orange-700 dark:text-orange-400";
-      case "dismissed":
-        return "bg-gray-500/10 text-gray-700 dark:text-gray-400";
-      default:
-        return "bg-blue-500/10 text-blue-700 dark:text-blue-400";
-    }
+    return ComplaintHelpers.getStatusColor(status as ComplaintStatusType);
   } else {
-    switch (status) {
-      case "completed":
-        return "bg-green-500/10 text-green-700 dark:text-green-400";
-      case "ongoing":
-        return "bg-orange-500/10 text-orange-700 dark:text-orange-400";
-      case "cancelled":
-      case "on_hold":
-        return "bg-gray-500/10 text-gray-700 dark:text-gray-400";
-      default:
-        return "bg-purple-500/10 text-purple-700 dark:text-purple-400";
-    }
+    return ProjectHelpers.getStatusColor(status as ProjectStatusType);
   }
 };
 
@@ -45,9 +27,16 @@ const formatStatus = (status: string) => {
 };
 
 export default function StatusFilterBadge({ type, status, onRemove }: StatusFilterBadgeProps) {
+  const color = getStatusColor(status, type);
+  
   return (
     <Badge
-      className={`${getStatusColor(status, type)} flex items-center gap-1 pr-1`}
+      className="flex items-center gap-1 pr-1"
+      style={{
+        backgroundColor: color.replace('hsl(', 'hsl(').replace(')', ' / 0.25)'),
+        color: color,
+        borderColor: color.replace('hsl(', 'hsl(').replace(')', ' / 0.4)'),
+      }}
     >
       {formatStatus(status)}
       <button

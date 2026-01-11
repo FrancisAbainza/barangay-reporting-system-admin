@@ -1,5 +1,16 @@
 import type { ProjectStatusType, ProjectCategoryType } from "@/types/project";
 
+export function getContrastTextColor(hslColor: string): string {
+  // Extract lightness value from hsl string
+  const match = hslColor.match(/hsl\((\d+)\s+(\d+)%\s+(\d+)%\)/);
+  if (!match) return "hsl(0 0% 10%)";
+  
+  const lightness = parseInt(match[3]);
+  
+  // Use white text for dark backgrounds (lightness < 55%), black for light
+  return lightness < 55 ? "hsl(0 0% 98%)" : "hsl(0 0% 10%)";
+}
+
 export function formatBudget(amount?: number): string {
   if (!amount) return "N/A";
   return new Intl.NumberFormat("en-PH", {

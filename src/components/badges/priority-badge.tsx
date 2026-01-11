@@ -1,24 +1,23 @@
 
 import { ComplaintPriorityType } from "@/types/complaint";
 import { Badge } from "@/components/ui/badge";
+import { getPriorityColor } from "@/lib/complaint-helpers";
 
 type StatusBadgeProps = {
   priority: ComplaintPriorityType;
 };
 
-export function getPriorityBadge(priority: string) {
-  const colors: Record<string, string> = {
-    low: "bg-primary/10 text-primary",
-    medium: "bg-chart-4/20 text-chart-4",
-    high: "bg-chart-5/20 text-chart-5",
-    urgent: "bg-destructive/10 text-destructive",
-  };
-  return colors[priority] || colors.medium;
-}
-
 export default function PriorityBadge({ priority }: StatusBadgeProps) {
+  const color = getPriorityColor(priority);
+  
   return (
-    <Badge className={getPriorityBadge(priority)}>
+    <Badge
+      style={{
+        backgroundColor: color.replace('hsl(', 'hsl(').replace(')', ' / 0.25)'),
+        color: color,
+        borderColor: color.replace('hsl(', 'hsl(').replace(')', ' / 0.4)'),
+      }}
+    >
       {priority.charAt(0).toUpperCase() + priority.slice(1)}
     </Badge>
   );
