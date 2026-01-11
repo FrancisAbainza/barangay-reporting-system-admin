@@ -33,25 +33,27 @@ export default function UpdateProgressMenuItem({ project }: UpdateProgressMenuIt
       updateData.actualCompletionDate = undefined;
     }
 
-    // Add new progress updates
-    const description = data.progressUpdateDescription
-      ? data.progressUpdateDescription
-      : undefined;
+    if (data.progressUpdateDescription || data.progressUpdateImage) {
+      // Add new progress updates
+      const description = data.progressUpdateDescription
+        ? data.progressUpdateDescription
+        : undefined;
 
-    const image = data.progressUpdateImage
-      ? { uri: URL.createObjectURL(data.progressUpdateImage) }
-      : undefined;
+      const image = data.progressUpdateImage
+        ? { uri: URL.createObjectURL(data.progressUpdateImage) }
+        : undefined;
 
-    const newProgressUpdate: ProgressUpdateType = {
-      description: description,
-      image,
-      createdAt: new Date(),
-    };
+      const newProgressUpdate: ProgressUpdateType = {
+        description: description,
+        image,
+        createdAt: new Date(),
+      };
 
-    updateData.progressUpdates = [
-      ...(project.progressUpdates || []),
-      newProgressUpdate,
-    ];
+      updateData.progressUpdates = [
+        ...(project.progressUpdates || []),
+        newProgressUpdate,
+      ];
+    }
 
     // Handle deleted progress updates
     if (deletedProgressUpdateIndices.length > 0) {

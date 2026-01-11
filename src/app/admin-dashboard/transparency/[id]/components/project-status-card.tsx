@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 import { CheckCircle2, Clock, Pause, XCircle } from "lucide-react";
 import type { ProjectStatusType, ProjectCategoryType } from "@/types/project";
 import StatusBadge from "@/components/status-badge";
@@ -48,12 +49,7 @@ export default function ProjectStatusCard({
             <span className="text-muted-foreground">Progress</span>
             <span className="font-medium">{progressPercentage}%</span>
           </div>
-          <div className="h-3 w-full overflow-hidden rounded-full bg-muted">
-            <div
-              className="h-full bg-primary transition-all duration-500"
-              style={{ width: `${progressPercentage}%` }}
-            />
-          </div>
+          <Progress value={progressPercentage} className="h-3" />
         </div>
       </CardContent>
     </Card>
